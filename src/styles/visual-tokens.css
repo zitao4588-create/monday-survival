@@ -1,0 +1,112 @@
+:root {
+  --ms-stage-width: 426px;
+  --ms-stage-height: 922px;
+
+  --ms-ink: #1f211b;
+  --ms-muted-ink: #5f5b50;
+
+  --ms-paper: #eadfce;
+  --ms-paper-deep: #dccab3;
+  --ms-paper-light: #f3eadb;
+  --ms-paper-border: #b9aa93;
+
+  --ms-olive: #58664b;
+  --ms-olive-dark: #3f4a37;
+  --ms-olive-soft: #7a8668;
+
+  --ms-gold: #d9a321;
+  --ms-gold-dark: #b88516;
+
+  --ms-rust: #c95d43;
+  --ms-rust-dark: #a84532;
+
+  --ms-wood: #4a2d1c;
+  --ms-wood-light: #5b3923;
+  --ms-wood-dark: #3b2416;
+  --ms-wood-deep: #2c190f;
+  --ms-shadow: rgba(34, 22, 12, 0.36);
+
+  --ms-cream: #fff4df;
+  --ms-cream-soft: #f8efdf;
+  --ms-paper-block: #d7cbb7;
+  --ms-coffee: #4a4234;
+  --ms-coffee-soft: rgba(77, 65, 48, 0.15);
+  --ms-coffee-line: rgba(77, 65, 48, 0.12);
+  --ms-coffee-line-soft: rgba(77, 65, 48, 0.1);
+  --ms-paper-stain-warm: rgba(128, 92, 48, 0.08);
+  --ms-paper-stain-gold: rgba(165, 111, 46, 0.08);
+  --ms-paper-fiber-line: rgba(80, 62, 40, 0.018);
+  --ms-paper-grain: rgba(70, 48, 28, 0.12);
+  --ms-paper-surface-border: rgba(94, 77, 55, 0.28);
+  --ms-ticket-drop-shadow: rgba(39, 27, 16, 0.24);
+
+  --ms-white-glow-xs: rgba(255, 255, 255, 0.035);
+  --ms-white-glow-sm: rgba(255, 255, 255, 0.06);
+  --ms-white-glow-md: rgba(255, 255, 255, 0.08);
+  --ms-white-glow-lg: rgba(255, 255, 255, 0.16);
+  --ms-white-sheen: rgba(255, 255, 255, 0.55);
+  --ms-white-sheen-strong: rgba(255, 255, 255, 0.75);
+  --ms-paper-wash: rgba(255, 255, 255, 0.12);
+  --ms-paper-fiber-wash: rgba(247, 238, 222, 0.48);
+  --ms-paper-wash-strong: rgba(255, 255, 255, 0.62);
+  --ms-paper-wash-stronger: rgba(255, 255, 255, 0.68);
+  --ms-paper-wash-max: rgba(255, 255, 255, 0.74);
+  --ms-paper-border-soft: rgba(38, 43, 36, 0.24);
+  --ms-paper-border-mid: rgba(38, 43, 36, 0.25);
+  --ms-paper-border-dark: rgba(42, 38, 30, 0.34);
+  --ms-ticket-border: rgba(30, 40, 32, 0.28);
+  --ms-olive-border: rgba(49, 83, 62, 0.46);
+  --ms-paper-badge-fill: rgba(247, 238, 222, 0.52);
+  --ms-cream-border: rgba(247, 239, 220, 0.74);
+  --ms-hole: rgba(74, 66, 52, 0.5);
+  --ms-focus-ring: rgba(139, 63, 54, 0.34);
+  --ms-stamp-border: rgba(139, 63, 54, 0.64);
+  --ms-stamp-ink: rgba(139, 63, 54, 0.74);
+  --ms-illustration-ink: rgba(83, 98, 69, 0.52);
+  --ms-laurel-ink: rgba(83, 98, 69, 0.65);
+  --ms-page-vignette: rgba(0, 0, 0, 0.25);
+  --ms-page-shade: rgba(26, 14, 8, 0.14);
+  --ms-wood-overlay: rgba(29, 16, 9, 0.08);
+  --ms-wood-overlay-dark: rgba(18, 9, 5, 0.14);
+  --ms-wood-inner-shadow: rgba(92, 64, 38, 0.12);
+  --ms-stage-border-glow: rgba(255, 232, 188, 0.06);
+  --ms-index-shadow: rgba(30, 39, 31, 0.2);
+  --ms-delta-positive: var(--ms-olive);
+  --ms-delta-negative: var(--ms-rust);
+  --ms-delta-neutral: var(--ms-muted);
+
+  --ms-radius-sm: 8px;
+  --ms-radius-md: 14px;
+  --ms-radius-lg: 22px;
+
+  --ms-paper-shadow:
+    0 2px 0 var(--ms-white-sheen) inset,
+    0 -2px 0 var(--ms-wood-inner-shadow) inset,
+    0 14px 28px rgba(30, 20, 12, 0.28);
+
+  --ms-card-shadow:
+    0 1px 0 var(--ms-white-sheen-strong) inset,
+    0 2px 0 rgba(60, 44, 28, 0.14),
+    0 10px 18px rgba(49, 34, 20, 0.18);
+
+  --ms-shadow-paper: var(--ms-paper-shadow);
+  --ms-shadow-ticket: var(--ms-card-shadow);
+  --ms-shadow-soft: 0 10px 26px rgba(20, 12, 6, 0.24);
+  --ms-shadow-strong: 0 24px 56px var(--ms-shadow);
+
+  --ms-ink-soft: var(--ms-muted-ink);
+  --ms-muted: #766d5f;
+  --ms-green: var(--ms-olive);
+  --ms-green-dark: var(--ms-olive-dark);
+  --ms-green-soft: var(--ms-olive-soft);
+  --ms-red: var(--ms-rust);
+  --ms-stamp: var(--ms-rust-dark);
+  --ms-wood-1: var(--ms-wood-deep);
+  --ms-wood-2: var(--ms-wood);
+  --ms-wood-3: var(--ms-wood-light);
+
+  --ms-radius-paper: 6px;
+  --ms-radius-small: 4px;
+
+  --ms-font: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+}

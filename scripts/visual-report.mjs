@@ -1,0 +1,164 @@
+import { access, mkdir, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const scriptDir = dirname(fileURLToPath(import.meta.url));
+const gameRoot = resolve(scriptDir, "..");
+const reportRoot = resolve(gameRoot, "visual-report");
+const reportPath = resolve(reportRoot, "index.html");
+
+const comparisons = [
+  {
+    title: "Round Screen",
+    reference: "../reference/current-round.png",
+    current: "current/round.png"
+  },
+  {
+    title: "Feedback Screen",
+    reference: "../reference/choice-feedback.png",
+    current: "current/feedback.png"
+  },
+  {
+    title: "Result Screen",
+    reference: "../reference/result-card.png",
+    current: "current/result.png"
+  }
+];
+
+async function assertFile(relativePath) {
+  const absolutePath = resolve(reportRoot, relativePath);
+  await access(absolutePath);
+}
+
+function renderComparison({ title, reference, current }) {
+  return `
+    <section class="comparison">
+      <h2>${title}</h2>
+      <div class="screens">
+        <figure>
+          <figcaption>Product Design reference</figcaption>
+          <img src="${reference}" alt="${title} Product Design reference" />
+        </figure>
+        <figure>
+          <figcaption>Current static UI screenshot</figcaption>
+          <img src="${current}" alt="${title} current static UI screenshot" />
+        </figure>
+      </div>
+    </section>`;
+}
+
+async function generateReport() {
+  await mkdir(reportRoot, { recursive: true });
+
+  for (const comparison of comparisons) {
+    await assertFile(comparison.reference);
+    await assertFile(comparison.current);
+  }
+
+  const html = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monday Survival Visual Report</title>
+    <style>
+      :root {
+        color: #1f211b;
+        background: #eee9de;
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        padding: 32px;
+      }
+
+      main {
+        max-width: 1040px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 32px;
+        line-height: 1.1;
+      }
+
+      .meta {
+        margin: 0 0 28px;
+        color: #5f5b50;
+        font-weight: 650;
+      }
+
+      .comparison {
+        margin: 0 0 36px;
+      }
+
+      .comparison h2 {
+        margin: 0 0 12px;
+        font-size: 22px;
+      }
+
+      .screens {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 426px));
+        gap: 28px;
+        align-items: start;
+      }
+
+      figure {
+        margin: 0;
+      }
+
+      figcaption {
+        border: 1px solid #b9aa93;
+        border-radius: 8px 8px 0 0;
+        background: #eadfce;
+        padding: 12px 14px;
+        font-weight: 800;
+      }
+
+      img {
+        display: block;
+        width: 426px;
+        height: 922px;
+        border: 1px solid #b9aa93;
+        border-top: 0;
+        background: #dccab3;
+        object-fit: cover;
+      }
+
+      @media (max-width: 940px) {
+        body {
+          padding: 18px;
+        }
+
+        .screens {
+          grid-template-columns: 1fr;
+        }
+
+        img {
+          width: min(100%, 426px);
+          height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Monday Survival Visual Report</h1>
+      <p class="meta">Viewport: 426px x 922px. Left: Product Design reference. Right: current static UI.</p>
+      ${comparisons.map(renderComparison).join("\n")}
+    </main>
+  </body>
+</html>
+`;
+
+  await writeFile(reportPath, html, "utf8");
+  console.log(`Generated visual report: ${reportPath}`);
+}
+
+generateReport().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

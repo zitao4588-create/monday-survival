@@ -1,0 +1,664 @@
+.ms-claude-page,
+.ms-claude-page * {
+  box-sizing: border-box;
+}
+
+.ms-claude-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #16100b;
+  color: #25221b;
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+.ms-claude-viewport {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.ms-claude-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 426.5px;
+  height: 922px;
+  overflow: hidden;
+  transform-origin: top left;
+  background: #16100b;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ms-claude-screen,
+.ms-claude-bg {
+  position: absolute;
+  inset: 0;
+  width: 426.5px;
+  height: 922px;
+}
+
+.ms-claude-bg {
+  z-index: 0;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+.ms-claude-screen > *:not(.ms-claude-bg) {
+  position: absolute;
+  z-index: 1;
+}
+
+.ms-claude-round-box {
+  top: 71px;
+  left: 275px;
+  width: 97px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5.5px;
+  color: #4b443a;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.ms-claude-round-box--feedback {
+  top: 62.5px;
+  left: 274px;
+  width: 103px;
+  height: 38px;
+  border: 1.5px solid rgba(82, 74, 60, 0.75);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(82, 74, 60, 0.12);
+}
+
+.ms-claude-round-box strong {
+  color: #393028;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ms-claude-stat-number {
+  top: 153px;
+  height: 30px;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.ms-claude-screen--feedback .ms-claude-stat-number {
+  top: 156px;
+  gap: 4px;
+}
+
+.ms-claude-stat-number span {
+  color: #211e18;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 30px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ms-claude-stat-number small {
+  color: #8a8170;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ms-claude-stat-number--energy {
+  left: 85px;
+}
+
+.ms-claude-stat-number--mood {
+  left: 218px;
+}
+
+.ms-claude-stat-number--score {
+  left: 343px;
+}
+
+.ms-claude-screen--feedback .ms-claude-stat-number--energy {
+  left: 88.5px;
+}
+
+.ms-claude-screen--feedback .ms-claude-stat-number--mood {
+  left: 221px;
+}
+
+.ms-claude-screen--feedback .ms-claude-stat-number--score {
+  left: 346px;
+}
+
+.ms-claude-stat-bar {
+  top: 181px;
+  height: 17px;
+  display: flex;
+  gap: 2px;
+  --bar-color: #4e5a3b;
+}
+
+.ms-claude-screen--feedback .ms-claude-stat-bar {
+  top: 184px;
+}
+
+.ms-claude-stat-bar--energy {
+  left: 31.5px;
+}
+
+.ms-claude-stat-bar--mood {
+  left: 159.5px;
+  --bar-color: #d19b35;
+}
+
+.ms-claude-stat-bar--score {
+  left: 289.5px;
+}
+
+.ms-claude-screen--feedback .ms-claude-stat-bar--energy {
+  left: 30.5px;
+}
+
+.ms-claude-screen--feedback .ms-claude-stat-bar--score {
+  left: 290.5px;
+}
+
+.ms-claude-stat-bar span {
+  width: 10.5px;
+  height: 16.5px;
+  border-radius: 1.5px;
+  background:
+    linear-gradient(90deg, var(--bar-color) calc(var(--fill) * 100%), #d8cdba calc(var(--fill) * 100%));
+  box-shadow:
+    inset 0 1px 1.5px rgba(95, 80, 58, 0.35),
+    inset 0 -0.5px 0 rgba(255, 252, 242, 0.55);
+}
+
+.ms-claude-time-chip {
+  top: 266px;
+  left: 56px;
+  width: 76px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 3.5px;
+  background:
+    url("../assets/claude-ui/paper-grain-2x.png") center / 96px 50px,
+    #545d46;
+  background-blend-mode: soft-light, normal;
+  color: #ece5d1;
+  font-size: 20.5px;
+  font-weight: 700;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  box-shadow:
+    0 2px 4px rgba(40, 28, 16, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.22);
+}
+
+.ms-claude-event-title {
+  top: 266.5px;
+  left: 149.5px;
+  height: 35px;
+  margin: 0;
+  color: #25221b;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 35px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.ms-claude-event-body {
+  top: 325px;
+  left: 57px;
+  margin: 0;
+  color: #4a4234;
+  font-size: 17.5px;
+  font-weight: 500;
+  line-height: 26px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.ms-claude-event-body span {
+  display: block;
+}
+
+.ms-claude-choice-list {
+  top: 455px;
+  left: 27px;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ms-claude-choice-ticket {
+  position: relative;
+  width: 360px;
+  min-height: 82px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #29241d;
+  text-align: left;
+  cursor: pointer;
+  filter: drop-shadow(0 2.5px 4px rgba(40, 28, 16, 0.3));
+  transition: transform 120ms ease, filter 120ms ease;
+  --spine: #5e6a4a;
+  --cham: 9px;
+  --spine-width: 33px;
+}
+
+.ms-claude-choice-ticket:active {
+  transform: translateY(0.5px);
+}
+
+.ms-claude-choice-ticket--yellow {
+  --spine: #cf9a33;
+}
+
+.ms-claude-choice-ticket--red {
+  --spine: #c5572f;
+}
+
+.ms-claude-choice-ticket__shape {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background-color: #ece4d6;
+  background-image: url("../assets/claude-ui/paper-grain-2x.png");
+  background-size: 96px 50px;
+  background-blend-mode: multiply;
+  clip-path: polygon(
+    4px 0,
+    calc(100% - var(--cham)) 0,
+    100% var(--cham),
+    100% calc(100% - var(--cham)),
+    calc(100% - var(--cham)) 100%,
+    4px 100%,
+    0 calc(100% - 4px),
+    0 4px
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 252, 245, 0.6),
+    inset 0 -1.5px 3px rgba(120, 100, 72, 0.16);
+}
+
+.ms-claude-choice-ticket__spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--spine-width);
+  display: grid;
+  place-items: center;
+  background: var(--spine);
+  clip-path: polygon(4px 0, 100% 0, 100% 100%, 4px 100%, 0 calc(100% - 4px), 0 4px);
+  color: #efe9da;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.22);
+}
+
+.ms-claude-choice-ticket__row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  min-height: 82px;
+  padding: 13px var(--spine-width) 13px calc(var(--spine-width) + 13px);
+}
+
+.ms-claude-choice-ticket__icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+}
+
+.ms-claude-choice-ticket__icon .ms-skin-icon {
+  width: 56px;
+  height: 56px;
+  filter: brightness(0) saturate(100%) invert(36%) sepia(16%) saturate(769%) hue-rotate(33deg) brightness(92%) contrast(85%);
+}
+
+.ms-claude-choice-ticket__copy {
+  min-width: 0;
+  flex: 1 1 auto;
+  padding-left: 12px;
+}
+
+.ms-claude-choice-ticket__copy strong {
+  display: block;
+  color: #29241d;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 26px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.ms-claude-choice-ticket__copy small {
+  display: block;
+  margin-top: 3px;
+  color: #5b5244;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+
+.ms-claude-choice-ticket__deltas {
+  flex: 0 0 78px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  border-left: 1.5px dashed rgba(120, 104, 78, 0.4);
+  padding-left: 12px;
+}
+
+.ms-claude-choice-delta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 22px;
+}
+
+.ms-claude-choice-delta .ms-skin-icon {
+  width: 14px;
+  height: 14px;
+  filter: brightness(0) saturate(100%) invert(34%) sepia(13%) saturate(1041%) hue-rotate(36deg) brightness(91%) contrast(87%);
+}
+
+.ms-claude-choice-delta b {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.ms-claude-choice-delta--positive b {
+  color: #4a5230;
+}
+
+.ms-claude-choice-delta--negative b {
+  color: #c5532d;
+}
+
+.ms-claude-choice-ticket__chevron {
+  flex: 0 0 22px;
+  display: grid;
+  place-items: center;
+  color: #6b7350;
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.ms-claude-delta-tag {
+  top: 220px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ece5d1;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.ms-claude-delta-tag--energy {
+  left: 58px;
+  width: 38px;
+}
+
+.ms-claude-delta-tag--mood {
+  left: 192px;
+  width: 38px;
+}
+
+.ms-claude-delta-tag--score {
+  left: 329px;
+  width: 40px;
+}
+
+.ms-claude-chosen-name {
+  top: 279px;
+  left: 158px;
+  color: #2b2620;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.ms-claude-feedback-quote {
+  top: 460px;
+  left: 0;
+  width: 426.5px;
+  margin: 0;
+  color: #2b2620;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 35.5px;
+  letter-spacing: 0;
+}
+
+.ms-claude-feedback-quote span {
+  display: block;
+}
+
+.ms-claude-feedback-sub {
+  top: 537px;
+  left: 0;
+  width: 426.5px;
+  margin: 0;
+  color: #6b6354;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.ms-claude-next-chip {
+  top: 642.5px;
+  left: 57px;
+  width: 79px;
+  height: 31.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 3.5px;
+  background:
+    url("../assets/claude-ui/paper-grain-2x.png") center / 96px 50px,
+    #545d46;
+  background-blend-mode: soft-light, normal;
+  color: #ece5d1;
+  font-size: 16.5px;
+  font-weight: 700;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  box-shadow:
+    0 2px 4px rgba(40, 28, 16, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.22);
+}
+
+.ms-claude-next-chip .ms-skin-icon {
+  width: 13px;
+  height: 13px;
+  filter: brightness(0) saturate(100%) invert(90%) sepia(12%) saturate(404%) hue-rotate(358deg) brightness(104%) contrast(90%);
+}
+
+.ms-claude-next-title {
+  top: 643px;
+  left: 149px;
+  height: 35px;
+  margin: 0;
+  color: #25221b;
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 35px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.ms-claude-next-body {
+  top: 685px;
+  left: 62.5px;
+  margin: 0;
+  color: #4a4234;
+  font-size: 15.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.ms-claude-feedback-button {
+  top: 770px;
+  left: 62.5px;
+  width: 300px;
+  height: 82px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ms-claude-ending-title {
+  top: 338px;
+  left: 1px;
+  width: 426.5px;
+  margin: 0;
+  color: #2a2722;
+  text-align: center;
+  font-size: 62px;
+  font-weight: 900;
+  line-height: 72px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.ms-claude-ending-sub {
+  top: 441px;
+  left: 8px;
+  width: 410px;
+  margin: 0;
+  color: #46402f;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+
+.ms-claude-result-num {
+  top: 565px;
+  width: 110px;
+  color: #3d4730;
+  text-align: center;
+  font-size: 45px;
+  font-weight: 800;
+  line-height: 56px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ms-claude-result-num--score {
+  left: 50.5px;
+}
+
+.ms-claude-result-num--energy {
+  left: 162px;
+}
+
+.ms-claude-result-num--mood {
+  left: 270px;
+}
+
+.ms-claude-persona-pill {
+  top: 649px;
+  left: 222px;
+  min-width: 110px;
+  max-width: 160px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background:
+    url("../assets/claude-ui/paper-grain-2x.png") center / 96px 50px,
+    #4f5a44;
+  background-blend-mode: soft-light, normal;
+  padding: 0 14px;
+  color: #ece5d1;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  letter-spacing: 0;
+  box-shadow:
+    0 1.5px 3px rgba(40, 28, 16, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.ms-claude-persona-quote {
+  top: 681px;
+  left: 11px;
+  width: 405px;
+  margin: 0;
+  color: #55503f;
+  text-align: center;
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+
+.ms-claude-persona-quote span {
+  color: #3d3a30;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.ms-claude-result-button {
+  left: 62.5px;
+  width: 298px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ms-claude-result-button--restart {
+  top: 722px;
+  height: 58px;
+}
+
+.ms-claude-result-button--share {
+  top: 805px;
+  height: 50px;
+}
+
+.ms-claude-share-status {
+  top: 858px;
+  left: 0;
+  width: 426.5px;
+  margin: 0;
+  color: #ece5d1;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+}

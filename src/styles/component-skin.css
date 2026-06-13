@@ -1,0 +1,453 @@
+.ms-component-lab,
+.ms-component-lab * {
+  box-sizing: border-box;
+}
+
+.ms-component-lab {
+  min-height: 100dvh;
+  padding: 28px 18px 48px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(255, 244, 223, 0.13), transparent 240px),
+    linear-gradient(180deg, rgba(30, 18, 10, 0.72), rgba(20, 11, 6, 0.9)),
+    url("../assets/textures/wood.webp") center / cover fixed,
+    #24150d;
+  color: var(--ms-cream);
+  font-family: var(--ms-font);
+}
+
+.ms-component-lab__header {
+  width: min(100%, 980px);
+  margin: 0 auto 26px;
+}
+
+.ms-component-lab__header p,
+.ms-component-lab__header h1,
+.ms-component-lab__header span {
+  margin: 0;
+}
+
+.ms-component-lab__header p {
+  color: var(--ms-gold);
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ms-component-lab__header h1 {
+  margin-top: 7px;
+  color: var(--ms-cream);
+  font-size: 2rem;
+  font-weight: 950;
+  line-height: 1.08;
+}
+
+.ms-component-lab__header span {
+  display: block;
+  margin-top: 8px;
+  color: rgba(255, 244, 223, 0.74);
+  font-size: 0.95rem;
+  font-weight: 760;
+}
+
+.ms-component-lab__list {
+  width: min(100%, 980px);
+  display: grid;
+  gap: 18px;
+  margin: 0 auto;
+}
+
+.ms-component-lab__item {
+  border: 1px solid rgba(255, 244, 223, 0.14);
+  border-radius: 10px;
+  background: rgba(26, 14, 8, 0.55);
+  padding: 14px;
+  box-shadow: 0 18px 32px rgba(10, 5, 2, 0.28);
+}
+
+.ms-component-lab__item h2 {
+  margin: 0 0 12px;
+  color: var(--ms-cream);
+  font-size: 1rem;
+  font-weight: 950;
+}
+
+.ms-component-lab__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.ms-component-lab figure {
+  min-width: 0;
+  margin: 0;
+}
+
+.ms-component-lab figcaption {
+  margin-bottom: 8px;
+  color: rgba(255, 244, 223, 0.64);
+  font-size: 0.75rem;
+  font-weight: 850;
+}
+
+.ms-component-lab__frame,
+.ms-component-lab__render {
+  width: var(--component-width);
+  height: var(--component-height);
+  max-width: 100%;
+}
+
+.ms-component-lab__frame {
+  overflow: hidden;
+  background: rgba(255, 244, 223, 0.08);
+  box-shadow: 0 10px 24px rgba(8, 4, 2, 0.28);
+}
+
+.ms-component-lab__frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.ms-component-lab__render {
+  position: relative;
+  overflow: visible;
+  color: var(--ms-ink);
+}
+
+.ms-component-lab__render--paper-header .ms-paper-header {
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.ms-component-lab__render--stat-card .ms-stat-card {
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+}
+
+.ms-component-lab__render--choice-ticket .ms-choice-ticket {
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+}
+
+.ms-component-lab__render--feedback-card .ms-feedback-slip {
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+}
+
+.ms-component-lab__render--next-event-card .ms-event-paper--feedback {
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+}
+
+.ms-component-lab__render--result-paper .ms-result-paper {
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+}
+
+.ms-component-lab__render--primary-button .ms-primary-action,
+.ms-component-lab__render--secondary-button .ms-secondary-action {
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+}
+
+.ms-cskin-paper-header,
+.ms-cskin-stat-card,
+.ms-cskin-choice-ticket,
+.ms-cskin-feedback-card,
+.ms-cskin-next-event-card,
+.ms-cskin-result-paper,
+.ms-cskin-primary-button,
+.ms-cskin-secondary-button {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ms-cskin-paper-header > img,
+.ms-cskin-stat-card > img,
+.ms-cskin-choice-ticket > img,
+.ms-cskin-feedback-card > img,
+.ms-cskin-next-event-card > img,
+.ms-cskin-result-paper > img,
+.ms-cskin-primary-button > img,
+.ms-cskin-secondary-button > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ms-cskin-paper-header .ms-paper-header {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+  padding: 10px 14px 10px 78px;
+  gap: 4px;
+  box-shadow: none;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.ms-cskin-paper-header .ms-paper-header::after {
+  display: none;
+}
+
+.ms-cskin-paper-header .ms-paper-header__tab,
+.ms-cskin-paper-header .ms-paper-header__tape,
+.ms-cskin-paper-header .ms-paper-header__binder {
+  display: none;
+}
+
+.ms-cskin-paper-header .ms-paper-header__copy {
+  min-width: 0;
+}
+
+.ms-cskin-paper-header .ms-paper-header__copy h1 {
+  font-size: 1.72rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.ms-cskin-paper-header .ms-paper-header__copy p {
+  margin-top: 4px;
+  font-size: 0.76rem;
+}
+
+.ms-cskin-paper-header .ms-paper-header__badge {
+  justify-self: end;
+  min-height: 38px;
+  padding: 3px 10px;
+  border-color: rgba(49, 83, 62, 0.34);
+  background: rgba(247, 238, 222, 0.54);
+}
+
+.ms-cskin-paper-header .ms-paper-header__badge strong {
+  font-size: 1.2rem;
+}
+
+.ms-cskin-paper-header .ms-paper,
+.ms-cskin-paper-header .ms-paper--light,
+.ms-cskin-paper-header .ms-cut-corner,
+.ms-cskin-paper-header .ms-paper::before,
+.ms-cskin-paper-header .ms-paper--light::before,
+.ms-cskin-paper-header .ms-paper::after,
+.ms-cskin-paper-header .ms-paper--light::after {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.ms-cskin-stat-card > .ms-stat-card,
+.ms-cskin-stat-card > .ms-stat-card--mood,
+.ms-cskin-stat-card > .ms-stat-card--score {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 8px 8px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.ms-cskin-stat-card .ms-stat-card::after {
+  display: none;
+}
+
+.ms-cskin-stat-card .ms-paper,
+.ms-cskin-stat-card .ms-paper--light,
+.ms-cskin-stat-card .ms-cut-corner,
+.ms-cskin-stat-card .ms-paper::before,
+.ms-cskin-stat-card .ms-paper--light::before,
+.ms-cskin-stat-card .ms-paper::after,
+.ms-cskin-stat-card .ms-paper--light::after {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.ms-cskin-choice-ticket .ms-choice-ticket {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding-right: 14px;
+  box-shadow: none;
+  border: 0;
+}
+
+.ms-cskin-choice-ticket .ms-choice-ticket::after {
+  display: none;
+}
+
+.ms-cskin-choice-ticket .ms-choice-ticket__index {
+  width: 46px;
+  min-height: 100%;
+  font-size: 1.45rem;
+}
+
+.ms-cskin-choice-ticket .ms-choice-ticket__icon {
+  width: 48px;
+  height: 48px;
+}
+
+.ms-cskin-choice-ticket .ms-paper,
+.ms-cskin-choice-ticket .ms-paper--light,
+.ms-cskin-choice-ticket .ms-ticket,
+.ms-cskin-choice-ticket .ms-paper::before,
+.ms-cskin-choice-ticket .ms-paper--light::before,
+.ms-cskin-choice-ticket .ms-paper::after,
+.ms-cskin-choice-ticket .ms-paper--light::after {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.ms-cskin-feedback-card .ms-feedback-slip,
+.ms-cskin-next-event-card .ms-event-paper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.ms-cskin-feedback-card .ms-feedback-slip::before,
+.ms-cskin-feedback-card .ms-feedback-slip__tape,
+.ms-cskin-feedback-card .ms-feedback-slip__spark,
+.ms-cskin-feedback-card .ms-feedback-slip__selected,
+.ms-cskin-next-event-card .ms-event-paper__holes,
+.ms-cskin-next-event-card .ms-event-paper__clip,
+.ms-cskin-next-event-card .ms-event-paper__coffee,
+.ms-cskin-next-event-card .ms-event-paper__rule,
+.ms-cskin-next-event-card .ms-event-paper__illustration {
+  display: none;
+}
+
+.ms-cskin-feedback-card .ms-paper,
+.ms-cskin-feedback-card .ms-paper--light,
+.ms-cskin-feedback-card .ms-paper::before,
+.ms-cskin-feedback-card .ms-paper--light::before,
+.ms-cskin-feedback-card .ms-paper::after,
+.ms-cskin-feedback-card .ms-paper--light::after,
+.ms-cskin-next-event-card .ms-paper,
+.ms-cskin-next-event-card .ms-paper--light,
+.ms-cskin-next-event-card .ms-paper::before,
+.ms-cskin-next-event-card .ms-paper--light::before,
+.ms-cskin-next-event-card .ms-paper::after,
+.ms-cskin-next-event-card .ms-paper--light::after {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.ms-cskin-result-paper .ms-result-paper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding-top: 18px;
+}
+
+.ms-cskin-result-paper .ms-result-paper::before,
+.ms-cskin-result-paper .ms-result-paper__tape,
+.ms-cskin-result-paper .ms-result-paper__binder,
+.ms-cskin-result-paper .ms-result-paper__clip,
+.ms-cskin-result-paper .ms-coffee-ring,
+.ms-cskin-result-paper .ms-result-stamp {
+  display: none;
+}
+
+.ms-cskin-result-paper .ms-result-paper h2,
+.ms-cskin-result-paper .ms-result-paper p,
+.ms-cskin-result-paper .ms-result-paper strong {
+  position: relative;
+  z-index: 1;
+}
+
+.ms-cskin-result-paper .ms-stat-grid,
+.ms-cskin-result-paper .ms-result-persona {
+  position: relative;
+  z-index: 1;
+}
+
+.ms-cskin-result-paper .ms-result-actions,
+.ms-cskin-result-paper .ms-primary-action,
+.ms-cskin-result-paper .ms-secondary-action {
+  position: relative;
+  z-index: 1;
+}
+
+.ms-cskin-result-paper .ms-stat-card,
+.ms-cskin-result-paper .ms-result-persona {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.ms-cskin-result-paper .ms-stat-card::after {
+  display: none;
+}
+
+.ms-cskin-result-paper .ms-paper,
+.ms-cskin-result-paper .ms-paper--light,
+.ms-cskin-result-paper .ms-paper::before,
+.ms-cskin-result-paper .ms-paper--light::before,
+.ms-cskin-result-paper .ms-paper::after,
+.ms-cskin-result-paper .ms-paper--light::after,
+.ms-cskin-result-paper .ms-result-paper::before,
+.ms-cskin-result-paper .ms-result-paper__coffee {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.ms-cskin-primary-button .ms-primary-action,
+.ms-cskin-secondary-button .ms-secondary-action {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+@media (max-width: 860px) {
+  .ms-component-lab__pair {
+    grid-template-columns: 1fr;
+  }
+}

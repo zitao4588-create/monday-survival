@@ -1,0 +1,113 @@
+.ms-paper,
+.paper-texture {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 251, 240, 0.46), rgba(234, 218, 194, 0.12)),
+    radial-gradient(circle at 80% 28%, rgba(128, 92, 48, 0.095), transparent 96px),
+    radial-gradient(circle at 12% 88%, rgba(165, 111, 46, 0.09), transparent 104px),
+    url("../assets/textures/paper-noise.png") 0 0 / 310px 310px repeat,
+    repeating-linear-gradient(
+      0deg,
+      var(--ms-paper-fiber-line) 0,
+      var(--ms-paper-fiber-line) 1px,
+      transparent 1px,
+      transparent 12px
+    ),
+    linear-gradient(180deg, var(--ms-paper-light), var(--ms-paper));
+  border: 1px solid rgba(94, 77, 55, 0.34);
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.62) inset,
+    0 -2px 0 rgba(92, 64, 38, 0.13) inset,
+    0 16px 30px rgba(30, 20, 12, 0.3);
+  isolation: isolate;
+}
+
+.ms-paper::before,
+.ms-paper--light::before,
+.paper-texture::before,
+.paper-texture--light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background-image: radial-gradient(var(--ms-paper-grain) 0.6px, transparent 0.7px);
+  background-size: 11px 11px;
+  mix-blend-mode: multiply;
+  opacity: 0.13;
+  pointer-events: none;
+}
+
+.ms-paper > *,
+.ms-paper--light > *,
+.paper-texture > *,
+.paper-texture--light > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ms-paper--light,
+.paper-texture--light {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 251, 240, 0.5), rgba(234, 218, 194, 0.14)),
+    radial-gradient(circle at 78% 18%, rgba(128, 92, 48, 0.09), transparent 96px),
+    radial-gradient(circle at 10% 86%, rgba(165, 111, 46, 0.085), transparent 110px),
+    url("../assets/textures/paper-noise.png") 0 0 / 330px 330px repeat,
+    url("../assets/textures/paper-lines.svg") 0 10px / 100% 40px repeat-y,
+    repeating-linear-gradient(
+      0deg,
+      var(--ms-paper-fiber-line) 0,
+      var(--ms-paper-fiber-line) 1px,
+      transparent 1px,
+      transparent 13px
+    ),
+    linear-gradient(180deg, var(--ms-paper-light), var(--ms-paper));
+  border: 1px solid rgba(94, 77, 55, 0.32);
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.64) inset,
+    0 -2px 0 rgba(92, 64, 38, 0.12) inset,
+    0 16px 30px rgba(30, 20, 12, 0.28);
+  isolation: isolate;
+}
+
+.ms-cut-corner,
+.cut-ticket {
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+}
+
+.ms-ticket {
+  position: relative;
+  filter: drop-shadow(0 8px 12px var(--ms-ticket-drop-shadow));
+}
+
+.ms-paper-tape,
+.paper-tape {
+  position: absolute;
+  z-index: 4;
+  height: 28px;
+  background: url("../assets/textures/tape.svg") center / 100% 100% no-repeat;
+  box-shadow: var(--ms-card-shadow);
+  pointer-events: none;
+}
+
+.ms-coffee-ring,
+.coffee-ring {
+  position: absolute;
+  width: 132px;
+  height: 118px;
+  background: url("../assets/textures/coffee-stain.svg") center / contain no-repeat;
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.ms-paperclip,
+.paperclip {
+  position: absolute;
+  width: 32px;
+  height: 86px;
+  background: url("../assets/props/clip.svg") center / contain no-repeat;
+  filter: drop-shadow(0 3px 4px var(--ms-shadow));
+  pointer-events: none;
+  transform: rotate(12deg);
+}

@@ -1,0 +1,33 @@
+{
+  "name": "monday-survival",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.4",
+  "dependencies": {
+    "react-dom": "^19.0.0",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@playwright/test": "^1.50.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vitest": "^2.1.8"
+  },
+  "scripts": {
+    "dev": "vite --port 5180",
+    "build": "tsc -p tsconfig.json && vite build",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json",
+    "component-skins:generate": "python3 scripts/generate-component-skin-assets.py",
+    "shell:generate": "python3 scripts/generate-shell-v1-assets.py",
+    "skin:generate": "python3 scripts/generate-ui-skin-assets.py",
+    "visual:capture": "node scripts/visual-capture.mjs",
+    "visual:report": "node scripts/visual-report.mjs",
+    "visual:check": "pnpm visual:capture && pnpm visual:report"
+  }
+}

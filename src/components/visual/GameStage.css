@@ -1,0 +1,154 @@
+.ms-page {
+  width: 100%;
+  min-width: 100vw;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 8% 8%, var(--ms-white-glow-md), transparent 120px),
+    radial-gradient(circle at 92% 2%, var(--ms-page-vignette), transparent 110px),
+    linear-gradient(90deg, var(--ms-white-glow-xs) 1px, transparent 1px),
+    linear-gradient(180deg, var(--ms-wood-light) 0%, var(--ms-wood-dark) 100%);
+  background-size: auto, auto, 18px 100%, auto;
+  color: var(--ms-ink);
+  font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+.ms-stage-shell {
+  position: relative;
+  box-sizing: border-box;
+  width: min(100vw, var(--ms-stage-width));
+  min-height: var(--ms-stage-height);
+  padding: 18px 14px 22px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 16% 12%, rgba(255, 236, 202, 0.12), transparent 96px),
+    radial-gradient(circle at 82% 38%, rgba(255, 230, 180, 0.06), transparent 118px),
+    linear-gradient(180deg, rgba(44, 24, 13, 0.02), rgba(18, 9, 5, 0.09)),
+    var(--ms-wood-dark);
+  box-shadow: var(--ms-shadow-strong);
+}
+
+.ms-stage-shell::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  width: 1080px;
+  height: 620px;
+  background: url("../../assets/textures/wood.webp") center / cover no-repeat;
+  transform: translate(-50%, -50%) rotate(90deg);
+  transform-origin: center;
+  filter: saturate(1.04) contrast(1.16) brightness(1.08);
+}
+
+.ms-stage-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.26;
+  background:
+    radial-gradient(circle at 10% 2%, rgba(255, 239, 210, 0.18), transparent 88px),
+    radial-gradient(circle at 94% 10%, rgba(0, 0, 0, 0.18), transparent 118px),
+    radial-gradient(circle at 50% 78%, rgba(0, 0, 0, 0.2), transparent 244px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(180deg, transparent 0 60%, rgba(18, 9, 5, 0.18));
+  background-size: auto, auto, auto, 104px 100%, auto;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.ms-stage-content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.ms-desk-prop {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.ms-desk-prop--cup {
+  top: -42px;
+  left: -54px;
+  width: 132px;
+  height: 132px;
+  border: 12px solid var(--ms-paper-border);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ms-wood-deep) 0 45%, var(--ms-wood-dark) 46% 54%, transparent 55%);
+  box-shadow: 0 12px 26px var(--ms-shadow);
+}
+
+.ms-desk-prop--pen {
+  right: -2px;
+  bottom: -42px;
+  width: 64px;
+  height: 230px;
+  background: url("../../assets/props/pen.webp") center / contain no-repeat;
+  filter: drop-shadow(0 8px 10px var(--ms-shadow));
+  transform: rotate(27deg);
+}
+
+.ms-desk-prop--folder {
+  left: -22px;
+  bottom: -56px;
+  width: 64px;
+  height: 238px;
+  background: var(--ms-olive);
+  box-shadow: 13px 0 0 var(--ms-page-vignette);
+  transform: rotate(-18deg);
+}
+
+.ms-desk-prop--binder {
+  z-index: 3;
+  top: -12px;
+  right: -26px;
+  width: 96px;
+  height: 82px;
+  background: url("../../assets/props/binder-clip.svg") center / contain no-repeat;
+  filter: drop-shadow(0 8px 10px var(--ms-shadow));
+  opacity: 0;
+  transform: rotate(9deg);
+}
+
+.ms-stage-shell:has(.ms-screen--round) .ms-desk-prop--binder {
+  opacity: 0.86;
+}
+
+.ms-stage-shell:has(.ms-screen--feedback) .ms-desk-prop--binder {
+  top: -14px;
+  right: auto;
+  left: -42px;
+  width: 92px;
+  height: 78px;
+  opacity: 0.82;
+  transform: rotate(-12deg);
+}
+
+.ms-stage-shell:has(.ms-screen--result) .ms-desk-prop--binder {
+  opacity: 0;
+}
+
+@media (min-width: 760px) {
+  .ms-page {
+    padding: 24px;
+  }
+
+  .ms-stage-shell {
+    border-radius: 22px;
+  }
+}
+
+@media (max-width: 390px) {
+  .ms-stage-shell {
+    padding-inline: 10px;
+  }
+}
