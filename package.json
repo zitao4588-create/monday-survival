@@ -21,6 +21,8 @@
   "scripts": {
     "dev": "vite --port 5180",
     "build": "tsc -p tsconfig.json && vite build",
+    "deploy:cloudbase": "pnpm build && tcb hosting deploy dist -e",
+    "deploy:cloudbase:app": "tcb app deploy --framework react --build-command \"pnpm build\" --output-dir dist -e",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json",
     "component-skins:generate": "python3 scripts/generate-component-skin-assets.py",
