@@ -13,7 +13,7 @@ function getStageScale() {
     return 1;
   }
 
-  return Math.min(window.innerWidth / STAGE_WIDTH, window.innerHeight / STAGE_HEIGHT, 1);
+  return Math.min(window.innerWidth / STAGE_WIDTH, 1);
 }
 
 export function ClaudeGameStage({ children }: ClaudeGameStageProps) {

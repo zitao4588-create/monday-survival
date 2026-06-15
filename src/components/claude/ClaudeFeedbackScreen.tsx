@@ -25,6 +25,33 @@ function splitFeedback(text: string) {
   return [text.slice(0, 12), text.slice(12)];
 }
 
+function getFeedbackSubcopy(choice: ChoiceViewModel) {
+  const { energy, mood, score } = choice.effects;
+  const negativeCount = [energy, mood, score].filter((value) => value < 0).length;
+
+  if (negativeCount >= 2) {
+    return "这一步爽是爽，周一已经在小本子上记账。";
+  }
+
+  if (score >= 16 && (energy < 0 || mood < 0)) {
+    return "绩效往前冲了一格，代价也写进电量表。";
+  }
+
+  if (energy + mood >= 20 && score <= 8) {
+    return "你先把人保住，工作明天才有操作系统。";
+  }
+
+  if (energy > 0 && mood < 0) {
+    return "身体启动了，情绪账户被刷了一笔。";
+  }
+
+  if (score < 0) {
+    return "短暂省力不等于没有成本，下一轮会来收账。";
+  }
+
+  return "这一步改变了节奏，下一件事已经在排队。";
+}
+
 export function ClaudeFeedbackScreen({
   currentRound,
   nextEvent,
@@ -34,6 +61,7 @@ export function ClaudeFeedbackScreen({
   totalRounds
 }: ClaudeFeedbackScreenProps) {
   const feedbackLines = splitFeedback(selectedChoice.description);
+  const subcopy = getFeedbackSubcopy(selectedChoice);
 
   return (
     <section className="ms-claude-screen ms-claude-screen--feedback" aria-label="选择反馈">
@@ -56,12 +84,12 @@ export function ClaudeFeedbackScreen({
           <span key={line}>{line}</span>
         ))}
       </h2>
-      <p className="ms-claude-feedback-sub">你决定先照顾好自己，节奏稳一点也没关系。</p>
+      <p className="ms-claude-feedback-sub">{subcopy}</p>
 
       {nextEvent ? (
         <>
           <div className="ms-claude-next-chip">
-            <SkinIcon name="alarm" />
+            <SkinIcon name={nextEvent.visual ?? "alarm"} />
             <span>{nextEvent.time}</span>
           </div>
           <h2 className="ms-claude-next-title">{nextEvent.title}</h2>

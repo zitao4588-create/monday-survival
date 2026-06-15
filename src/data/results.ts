@@ -8,14 +8,14 @@ export interface MondayResultCopy {
 export const mondayResultCopy: Record<GameOutcome, MondayResultCopy> = {
   win: {
     title: "体面下班",
-    description: "你不仅活过了周一，还保住了明天的自己。"
+    description: "你把周一折成一份待办，带着完整灵魂离开工位。"
   },
   fail: {
     title: "周一把你打包带走",
-    description: "能量或心情已经见底，建议立刻补给。"
+    description: "它没有杀死你，但已经把你拖进会议纪要附件。"
   },
   survive: {
     title: "勉强存活",
-    description: "你撑到了下班，但灵魂还在公司缓存中。"
+    description: "你撑到了下班，灵魂还在公司缓存中排队释放。"
   }
 };

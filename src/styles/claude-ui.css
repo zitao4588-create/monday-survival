@@ -6,12 +6,17 @@
 .ms-claude-page {
   min-height: 100dvh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: #16100b;
   color: #25221b;
   font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  padding:
+    max(0px, env(safe-area-inset-top))
+    0
+    max(0px, env(safe-area-inset-bottom));
 }
 
 .ms-claude-viewport {
@@ -205,6 +210,7 @@
   top: 266.5px;
   left: 149.5px;
   height: 35px;
+  max-width: 236px;
   margin: 0;
   color: #25221b;
   font-size: 28px;
@@ -212,18 +218,21 @@
   line-height: 35px;
   letter-spacing: 0;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ms-claude-event-body {
   top: 325px;
   left: 57px;
+  width: 312px;
   margin: 0;
   color: #4a4234;
   font-size: 17.5px;
   font-weight: 500;
   line-height: 26px;
   letter-spacing: 0;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .ms-claude-event-body span {
@@ -418,6 +427,19 @@
   font-weight: 700;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;
+  border-radius: 4px;
+}
+
+.ms-claude-delta-tag--negative {
+  background: #f0d1c0;
+  color: #a8432a;
+  box-shadow:
+    0 1px 2px rgba(80, 40, 24, 0.16),
+    inset 0 1px 0 rgba(255, 248, 236, 0.55);
+}
+
+.ms-claude-delta-tag--positive {
+  color: #ece5d1;
 }
 
 .ms-claude-delta-tag--energy {
@@ -509,6 +531,7 @@
   top: 643px;
   left: 149px;
   height: 35px;
+  max-width: 220px;
   margin: 0;
   color: #25221b;
   font-size: 23px;
@@ -516,17 +539,21 @@
   line-height: 35px;
   letter-spacing: 0;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ms-claude-next-body {
   top: 685px;
   left: 62.5px;
+  width: 300px;
   margin: 0;
   color: #4a4234;
   font-size: 15.5px;
   font-weight: 500;
+  line-height: 22px;
   letter-spacing: 0;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .ms-claude-feedback-button {
@@ -539,6 +566,18 @@
   cursor: pointer;
 }
 
+.ms-claude-feedback-button:active,
+.ms-claude-result-button:active {
+  transform: translateY(1px) scale(0.992);
+}
+
+.ms-claude-feedback-button:focus-visible,
+.ms-claude-result-button:focus-visible,
+.ms-claude-choice-ticket:focus-visible {
+  outline: 3px solid rgba(239, 229, 203, 0.9);
+  outline-offset: 3px;
+}
+
 .ms-claude-ending-title {
   top: 338px;
   left: 1px;
@@ -546,11 +585,12 @@
   margin: 0;
   color: #2a2722;
   text-align: center;
-  font-size: 62px;
+  font-size: var(--ending-title-size, 62px);
   font-weight: 900;
-  line-height: 72px;
+  line-height: 1.12;
   letter-spacing: 0;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .ms-claude-ending-sub {
@@ -564,6 +604,7 @@
   font-weight: 500;
   line-height: 20px;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .ms-claude-result-num {
@@ -610,6 +651,7 @@
   line-height: 1.2;
   text-align: center;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
   box-shadow:
     0 1.5px 3px rgba(40, 28, 16, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
@@ -626,6 +668,7 @@
   font-weight: 500;
   line-height: 20px;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .ms-claude-persona-quote span {

@@ -89,7 +89,7 @@ function StaticMondayScreen({ screen }: { screen: "feedback" | "result" | "round
     return (
       <ClaudeGameStage>
         <ClaudeFeedbackScreen
-          currentRound={2}
+          currentRound={1}
           nextEvent={toEventViewModel(mondayTurns[1], "train")}
           selectedChoice={previewSelectedChoice}
           stats={previewFeedbackStats}
@@ -112,15 +112,44 @@ interface FeedbackState {
   selectedChoice: ChoiceViewModel;
 }
 
+type ShareStatus = "copied" | "failed" | "idle";
+
+type ShareNavigator = Navigator & {
+  share?: (data: { text?: string; title?: string; url?: string }) => Promise<void>;
+};
+
+function getShareUrl() {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return `${window.location.origin}${window.location.pathname}`;
+}
+
+function createResultShareText(result: ResultViewModel, stats: ReturnType<typeof toStatViewModels>) {
+  const score = stats.find((stat) => stat.kind === "score")?.value ?? 0;
+  const energy = stats.find((stat) => stat.kind === "energy")?.value ?? 0;
+  const mood = stats.find((stat) => stat.kind === "mood")?.value ?? 0;
+
+  return [
+    `我的周一求生结果：${result.title}`,
+    `${result.personaLabel}：${result.personaQuote}`,
+    `得分 ${score}/100 · 能量 ${energy}/100 · 心情 ${mood}/100`,
+    "来试试你能不能活过周一。"
+  ].join("\n");
+}
+
 function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
   const [progress, setProgress] = useState(createMondayRun);
   const [phase, setPhase] = useState<"feedback" | "result" | "round">("round");
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
+  const [shareStatus, setShareStatus] = useState<ShareStatus>("idle");
 
   function restart() {
     setProgress(createMondayRun());
     setFeedback(null);
     setPhase("round");
+    setShareStatus("idle");
     onEvent?.("restart");
   }
 
@@ -136,6 +165,7 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
     const after = chooseMondayAction(before, gameChoice);
     setProgress(after);
     setFeedback({ after, before, selectedChoice: choice });
+    setShareStatus("idle");
     setPhase("feedback");
     onEvent?.("choice_selected", {
       choiceId: choice.id,
@@ -152,12 +182,52 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
     });
   }
 
+  async function shareResult(result: ResultViewModel, stats: ReturnType<typeof toStatViewModels>) {
+    const nav = navigator as ShareNavigator;
+    const url = getShareUrl();
+    const text = createResultShareText(result, stats);
+
+    try {
+      if (nav.share) {
+        await nav.share({
+          text,
+          title: "今天你能活过周一吗",
+          url
+        });
+      } else if (nav.clipboard?.writeText) {
+        await nav.clipboard.writeText(`${text}\n${url}`);
+      } else {
+        throw new Error("No share or clipboard API available");
+      }
+
+      setShareStatus("copied");
+      onEvent?.("share_result", {
+        result: result.title
+      });
+    } catch {
+      try {
+        await nav.clipboard?.writeText?.(`${text}\n${url}`);
+        setShareStatus("copied");
+      } catch {
+        setShareStatus("failed");
+      }
+    }
+  }
+
   if (phase === "result" || (phase !== "feedback" && isMondayRunComplete(progress))) {
     const result = calculateMondayResult(progress);
+    const stats = toStatViewModels(progress);
+    const resultViewModel = toResultViewModel(result, progress);
 
     return (
       <ClaudeGameStage>
-        <ClaudeResultScreen result={toResultViewModel(result)} stats={toStatViewModels(progress)} onRestart={restart} />
+        <ClaudeResultScreen
+          onRestart={restart}
+          onShare={() => void shareResult(resultViewModel, stats)}
+          result={resultViewModel}
+          shareStatus={shareStatus}
+          stats={stats}
+        />
       </ClaudeGameStage>
     );
   }
@@ -168,7 +238,7 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
     return (
       <ClaudeGameStage>
         <ClaudeFeedbackScreen
-          currentRound={Math.min(feedback.after.turnIndex + 1, mondayTurns.length)}
+          currentRound={Math.min(feedback.before.turnIndex + 1, mondayTurns.length)}
           nextEvent={nextEvent}
           onContinue={continueRun}
           selectedChoice={feedback.selectedChoice}

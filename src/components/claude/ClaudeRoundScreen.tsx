@@ -82,9 +82,15 @@ export function ClaudeStats({ showDelta = false, stats }: ClaudeStatsProps) {
 
       {showDelta ? (
         <>
-          <b className="ms-claude-delta-tag ms-claude-delta-tag--energy">{formatDelta(energy.delta ?? 0)}</b>
-          <b className="ms-claude-delta-tag ms-claude-delta-tag--mood">{formatDelta(mood.delta ?? 0)}</b>
-          <b className="ms-claude-delta-tag ms-claude-delta-tag--score">{formatDelta(score.delta ?? 0)}</b>
+          <b className={`ms-claude-delta-tag ms-claude-delta-tag--energy ${(energy.delta ?? 0) < 0 ? "ms-claude-delta-tag--negative" : "ms-claude-delta-tag--positive"}`}>
+            {formatDelta(energy.delta ?? 0)}
+          </b>
+          <b className={`ms-claude-delta-tag ms-claude-delta-tag--mood ${(mood.delta ?? 0) < 0 ? "ms-claude-delta-tag--negative" : "ms-claude-delta-tag--positive"}`}>
+            {formatDelta(mood.delta ?? 0)}
+          </b>
+          <b className={`ms-claude-delta-tag ms-claude-delta-tag--score ${(score.delta ?? 0) < 0 ? "ms-claude-delta-tag--negative" : "ms-claude-delta-tag--positive"}`}>
+            {formatDelta(score.delta ?? 0)}
+          </b>
         </>
       ) : null}
     </>

@@ -71,7 +71,7 @@ export function getOutcome(progress: GameProgress): GameOutcome {
     return "fail";
   }
 
-  if (progress.score >= 45 && progress.energy >= 25 && progress.mood >= 25) {
+  if (progress.score >= 38 && progress.energy >= 25 && progress.mood >= 25) {
     return "win";
   }
 

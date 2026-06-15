@@ -19,6 +19,93 @@ const resultPersonas = {
   }
 };
 
+function getDynamicPersona(
+  result: MondayResult,
+  progress?: Pick<GameProgress, "energy" | "mood" | "score">
+) {
+  if (!progress) {
+    return resultPersonas[result.outcome];
+  }
+
+  if (result.outcome === "win") {
+    if (progress.score >= 60 && progress.energy >= 25) {
+      return {
+        label: "会议防火墙型",
+        quote: "废话穿过你身边时，被自动归档成待办。"
+      };
+    }
+
+    if (progress.energy < 35) {
+      return {
+        label: "燃尽通关者",
+        quote: "你赢了周一，但电量条已经在写遗书。"
+      };
+    }
+
+    if (progress.mood >= 80) {
+      return {
+        label: "情绪避险大师",
+        quote: "你没有消灭周一，你只是让它找不到入口。"
+      };
+    }
+  }
+
+  if (result.outcome === "fail") {
+    if (progress.energy <= 0) {
+      return {
+        label: "电量清零型",
+        quote: "系统提示：请先充电，再考虑人生和周报。"
+      };
+    }
+
+    if (progress.mood <= 0) {
+      return {
+        label: "情绪停机型",
+        quote: "微笑服务已下线，剩余功能仅支持沉默。"
+      };
+    }
+
+    if (progress.score < -10) {
+      return {
+        label: "绩效滑坡型",
+        quote: "你不是没努力，只是努力都投进了错误窗口。"
+      };
+    }
+  }
+
+  if (result.outcome === "survive") {
+    if (progress.energy < 25) {
+      return {
+        label: "低电量幸存者",
+        quote: "你抵达下班线时，电池图标已经变成求救信号。"
+      };
+    }
+
+    if (progress.mood < 25) {
+      return {
+        label: "微笑崩盘型",
+        quote: "表情管理还在营业，内心客服已经离线。"
+      };
+    }
+
+    if (progress.score < 20) {
+      return {
+        label: "摸鱼边缘人",
+        quote: "今天没翻船，主要感谢水面比较给面子。"
+      };
+    }
+
+    if (progress.energy >= 70 || progress.mood >= 75) {
+      return {
+        label: "自救优先型",
+        quote: "工作没有完全赢，但你把自己从周一手里抢回来了。"
+      };
+    }
+  }
+
+  return resultPersonas[result.outcome];
+}
+
 export function splitTurnTitle(title: string) {
   const match = title.match(/^(\d{2}:\d{2})\s+(.+)$/);
 
@@ -83,8 +170,11 @@ export function toStatViewModels(progress: Pick<GameProgress, "energy" | "mood" 
   ];
 }
 
-export function toResultViewModel(result: MondayResult): ResultViewModel {
-  const persona = resultPersonas[result.outcome];
+export function toResultViewModel(
+  result: MondayResult,
+  progress?: Pick<GameProgress, "energy" | "mood" | "score">
+): ResultViewModel {
+  const persona = getDynamicPersona(result, progress);
 
   return {
     description: result.description,
