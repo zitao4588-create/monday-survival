@@ -96,7 +96,10 @@ async function checkResultImage(page) {
   }
 
   await page.getByRole("link", { name: "下载图片" }).waitFor();
-  await page.getByRole("button", { name: "分享文案" }).waitFor();
+  const shareTextButton = page.getByRole("button", { name: "分享文案" });
+  await shareTextButton.waitFor();
+  await shareTextButton.click();
+  await page.getByText("分享文案已准备好，可以发给同事。").waitFor();
 }
 
 async function run() {
@@ -112,6 +115,7 @@ async function run() {
         isMobile: true,
         viewport
       });
+      await context.grantPermissions(["clipboard-write"], { origin: base.origin });
       const page = await context.newPage();
       const consoleErrors = [];
 
