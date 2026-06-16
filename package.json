@@ -30,6 +30,7 @@
     "skin:generate": "python3 scripts/generate-ui-skin-assets.py",
     "visual:capture": "node scripts/visual-capture.mjs",
     "visual:report": "node scripts/visual-report.mjs",
-    "visual:check": "pnpm visual:capture && pnpm visual:report"
+    "visual:check": "pnpm visual:capture && pnpm visual:report",
+    "wechat:check": "node scripts/wechat-h5-check.mjs"
   }
 }

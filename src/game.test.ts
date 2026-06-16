@@ -6,6 +6,7 @@ import {
   isMondayRunComplete,
   mondayTurns
 } from "./game";
+import { createResultShareText, toResultShareData } from "./resultShare";
 
 describe("monday-survival", () => {
   it("can complete a full run", () => {
@@ -74,5 +75,30 @@ describe("monday-survival", () => {
     expect(failReasons.energy).toBeGreaterThanOrEqual(10);
     expect(failReasons.mood).toBeGreaterThanOrEqual(20);
     expect(failReasons.score).toBeGreaterThanOrEqual(20);
+  });
+
+  it("creates share and poster data from dynamic result values", () => {
+    const result = {
+      description: "你下班时还记得自己叫什么。",
+      personaLabel: "边界感幸存者",
+      personaQuote: "不是每个会都值得你燃烧。",
+      title: "体面下班"
+    };
+    const stats = [
+      { kind: "energy" as const, label: "能量", value: 52 },
+      { kind: "mood" as const, label: "心情", value: 76 },
+      { kind: "score" as const, label: "得分", value: 88 }
+    ];
+
+    expect(toResultShareData(result, stats)).toMatchObject({
+      description: result.description,
+      energy: 52,
+      mood: 76,
+      personaLabel: result.personaLabel,
+      score: 88,
+      title: result.title
+    });
+    expect(createResultShareText(result, stats)).toContain("我的周一求生结果：体面下班");
+    expect(createResultShareText(result, stats)).toContain("得分 88/100 · 能量 52/100 · 心情 76/100");
   });
 });

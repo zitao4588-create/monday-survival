@@ -6,6 +6,7 @@ import { ClaudeGameStage } from "./components/claude/ClaudeGameStage";
 import { ClaudeResultScreen } from "./components/claude/ClaudeResultScreen";
 import { ClaudeRoundScreen } from "./components/claude/ClaudeRoundScreen";
 import type { ChoiceViewModel, EventViewModel, ResultViewModel } from "./components/visualTypes";
+import bgResultClean from "./assets/claude-ui/bg-result-clean-2x.jpg";
 import {
   calculateMondayResult,
   chooseMondayAction,
@@ -14,6 +15,8 @@ import {
   mondayTurns
 } from "./game";
 import { toChoiceViewModel, toEventViewModel, toResultViewModel, toStatViewModels } from "./gameViewModels";
+import { createResultPosterDataUrl } from "./resultPoster";
+import { createResultShareText, toResultShareData } from "./resultShare";
 
 export interface MondaySurvivalGameProps {
   onEvent?: (name: string, properties?: Record<string, string | number | boolean>) => void;
@@ -112,7 +115,7 @@ interface FeedbackState {
   selectedChoice: ChoiceViewModel;
 }
 
-type ShareStatus = "copied" | "failed" | "idle";
+type ShareStatus = "copied" | "failed" | "generating" | "idle" | "ready";
 
 type ShareNavigator = Navigator & {
   share?: (data: { text?: string; title?: string; url?: string }) => Promise<void>;
@@ -126,30 +129,19 @@ function getShareUrl() {
   return `${window.location.origin}${window.location.pathname}`;
 }
 
-function createResultShareText(result: ResultViewModel, stats: ReturnType<typeof toStatViewModels>) {
-  const score = stats.find((stat) => stat.kind === "score")?.value ?? 0;
-  const energy = stats.find((stat) => stat.kind === "energy")?.value ?? 0;
-  const mood = stats.find((stat) => stat.kind === "mood")?.value ?? 0;
-
-  return [
-    `我的周一求生结果：${result.title}`,
-    `${result.personaLabel}：${result.personaQuote}`,
-    `得分 ${score}/100 · 能量 ${energy}/100 · 心情 ${mood}/100`,
-    "来试试你能不能活过周一。"
-  ].join("\n");
-}
-
 function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
   const [progress, setProgress] = useState(createMondayRun);
   const [phase, setPhase] = useState<"feedback" | "result" | "round">("round");
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const [shareStatus, setShareStatus] = useState<ShareStatus>("idle");
+  const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
 
   function restart() {
     setProgress(createMondayRun());
     setFeedback(null);
     setPhase("round");
     setShareStatus("idle");
+    setResultImageUrl(null);
     onEvent?.("restart");
   }
 
@@ -166,6 +158,7 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
     setProgress(after);
     setFeedback({ after, before, selectedChoice: choice });
     setShareStatus("idle");
+    setResultImageUrl(null);
     setPhase("feedback");
     onEvent?.("choice_selected", {
       choiceId: choice.id,
@@ -182,7 +175,23 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
     });
   }
 
-  async function shareResult(result: ResultViewModel, stats: ReturnType<typeof toStatViewModels>) {
+  async function createResultImage(result: ResultViewModel, stats: ReturnType<typeof toStatViewModels>) {
+    setShareStatus("generating");
+
+    try {
+      const imageUrl = await createResultPosterDataUrl(bgResultClean, toResultShareData(result, stats));
+      setResultImageUrl(imageUrl);
+      setShareStatus("ready");
+      onEvent?.("result_image_generated", {
+        result: result.title
+      });
+    } catch {
+      setResultImageUrl(null);
+      setShareStatus("failed");
+    }
+  }
+
+  async function shareResultText(result: ResultViewModel, stats: ReturnType<typeof toStatViewModels>) {
     const nav = navigator as ShareNavigator;
     const url = getShareUrl();
     const text = createResultShareText(result, stats);
@@ -209,9 +218,9 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
         await nav.clipboard?.writeText?.(`${text}\n${url}`);
         setShareStatus("copied");
       } catch {
-        setShareStatus("failed");
-      }
+      setShareStatus("failed");
     }
+  }
   }
 
   if (phase === "result" || (phase !== "feedback" && isMondayRunComplete(progress))) {
@@ -222,9 +231,12 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
     return (
       <ClaudeGameStage>
         <ClaudeResultScreen
+          onCloseResultImage={() => setResultImageUrl(null)}
           onRestart={restart}
-          onShare={() => void shareResult(resultViewModel, stats)}
+          onShareText={() => void shareResultText(resultViewModel, stats)}
+          onCreateResultImage={() => void createResultImage(resultViewModel, stats)}
           result={resultViewModel}
+          resultImageUrl={resultImageUrl}
           shareStatus={shareStatus}
           stats={stats}
         />
