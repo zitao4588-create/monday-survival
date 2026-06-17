@@ -92,6 +92,10 @@ tcb hosting deploy dist -e <env-id>
 - 分享文案是否能复制或调起系统分享。
 - CloudBase 默认测试域名的风险提醒页是否影响内测体验。
 
+正式传播准备见 [WeChat Release Prep](./docs/wechat-release-prep.md)。
+
+找人内测时可以使用 [Inner Test Feedback Template](./docs/inner-test-feedback-template.md)。
+
 ## 当前边界
 
 - 不接后端。
