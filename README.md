@@ -94,6 +94,10 @@ tcb hosting deploy dist -e <env-id>
 
 正式传播准备见 [WeChat Release Prep](./docs/wechat-release-prep.md)。
 
+正式域名和 ICP 执行清单见 [Domain and ICP Action Plan](./docs/domain-icp-action-plan.md)。
+
+微信分享卡片规格见 [WeChat Share Card Spec](./docs/wechat-share-card-spec.md)。
+
 找人内测时可以使用 [Inner Test Feedback Template](./docs/inner-test-feedback-template.md)。
 
 ## 当前边界
