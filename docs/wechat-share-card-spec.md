@@ -31,7 +31,7 @@ JS-SDK requires a signature service. That means adding backend or CloudBase Func
 Primary:
 
 ```txt
-今天你能活过周一吗？
+今天你能熬过周一吗？
 ```
 
 Alternatives:
@@ -46,7 +46,7 @@ Alternatives:
 Primary:
 
 ```txt
-2 分钟职场黑色幽默小游戏，管理能量、心情和得分，看看你会以什么姿势活过周一。
+2 分钟职场黑色幽默小游戏，管理能量、心情和得分，看看你会以什么姿势熬过周一。
 ```
 
 Shorter option:
@@ -69,7 +69,7 @@ The current in-game result text should stay dynamic:
 我的周一求生结果：<结局标题>
 <人格标签>：<人格文案>
 得分 <score>/100 · 能量 <energy>/100 · 心情 <mood>/100
-来试试你能不能活过周一。
+来试试你能不能熬过周一。
 ```
 
 Keep this format short. It should fit in WeChat chat messages without feeling like a report.
@@ -94,7 +94,7 @@ Recommended size:
 Recommended visible text:
 
 ```txt
-活过周一
+熬过周一
 ```
 
 Asset path once created:

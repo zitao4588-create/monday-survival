@@ -13,7 +13,7 @@ export function SkinHeader({ badge }: SkinHeaderProps) {
         <SkinIcon name="cloud" />
       </span>
       <div className="ms-skin-header__copy">
-        <h1>今天你能活过周一吗</h1>
+        <h1>今天你能熬过周一吗</h1>
         <p>MONDAY SURVIVAL FILE</p>
       </div>
       <div className="ms-skin-header__badge" aria-label={badge}>

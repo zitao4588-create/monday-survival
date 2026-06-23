@@ -33,6 +33,6 @@ export function createResultShareText(result: ResultViewModel, stats: StatViewMo
     `我的周一求生结果：${data.title}`,
     `${data.personaLabel}：${data.personaQuote}`,
     `得分 ${data.score}/100 · 能量 ${data.energy}/100 · 心情 ${data.mood}/100`,
-    "来试试你能不能活过周一。"
+    "来试试你能不能熬过周一。"
   ].join("\n");
 }

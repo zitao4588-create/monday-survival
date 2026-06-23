@@ -22,7 +22,7 @@ function renderBadge(badge: string) {
   );
 }
 
-export function PaperHeader({ badge, eyebrow = "打工人生存测试", title = "活过周一" }: PaperHeaderProps) {
+export function PaperHeader({ badge, eyebrow = "打工人生存测试", title = "熬过周一" }: PaperHeaderProps) {
   return (
     <header className="ms-paper-header ms-paper ms-cut-corner">
       <div className="ms-paper-header__tab">

@@ -13,7 +13,7 @@ export function GameStage({ children }: GameStageProps) {
         <div className="ms-desk-prop ms-desk-prop--pen" aria-hidden="true" />
         <div className="ms-desk-prop ms-desk-prop--folder" aria-hidden="true" />
         <div className="ms-desk-prop ms-desk-prop--binder" aria-hidden="true" />
-        <section className="ms-stage-content" aria-label="今天你能活过周一吗">
+        <section className="ms-stage-content" aria-label="今天你能熬过周一吗">
           {children}
         </section>
       </div>
