@@ -68,12 +68,12 @@ async function assertNoHorizontalOverflow(page, viewportName) {
 
 async function playToResult(page) {
   for (const choiceIndex of resultPath) {
-    await page.locator(".ms-claude-choice-ticket").nth(choiceIndex).click();
-    await page.getByLabel("选择反馈").waitFor();
-    await page.getByLabel("继续").click();
+    await page.locator(".ms-choice-ticket").nth(choiceIndex).click();
+    await page.getByLabel("选择反馈", { exact: true }).waitFor();
+    await page.getByLabel("继续", { exact: true }).click();
   }
 
-  await page.getByLabel("结果分享卡").waitFor();
+  await page.getByLabel("结果分享卡", { exact: true }).waitFor();
 }
 
 async function checkResultImage(page) {
@@ -104,7 +104,7 @@ async function checkResultImage(page) {
 
 async function run() {
   const server = await ensureServer();
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
   const errors = [];
 
   try {
@@ -129,7 +129,7 @@ async function run() {
       });
 
       await page.goto(baseURL, { waitUntil: "load" });
-      await page.getByLabel("当前回合").waitFor();
+      await page.getByLabel("当前回合", { exact: true }).waitFor();
       await assertNoHorizontalOverflow(page, viewport.name);
 
       if (viewport.name === "target-stage") {

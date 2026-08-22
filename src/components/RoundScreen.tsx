@@ -16,7 +16,7 @@ export interface RoundScreenProps {
 
 export function RoundScreen({ choices, currentRound, event, onChoose, stats, totalRounds }: RoundScreenProps) {
   return (
-    <div className="ms-screen ms-screen--round">
+    <div className="ms-screen ms-screen--round" aria-label="当前回合">
       <PaperHeader badge={`第 ${currentRound}/${totalRounds} 回合`} />
       <StatGrid ariaLabel="当前状态" stats={stats} />
       <section className="ms-round-file ms-paper ms-paper--light" aria-label="当前回合档案">

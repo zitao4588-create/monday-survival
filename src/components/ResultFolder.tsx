@@ -13,7 +13,9 @@ export function ResultFolder({ children }: ResultFolderProps) {
       <div className="ms-coffee-ring ms-result-paper__coffee" aria-hidden="true" />
       {children}
       <div className="ms-result-stamp" aria-hidden="true">
-        生存测试完成
+        生存测试
+        <br />
+        完成
       </div>
     </article>
   );
