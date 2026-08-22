@@ -1,6 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
 import feedbackCardRef from "../../assets/component-refs/feedback-card.png";
-import nextEventCardRef from "../../assets/component-refs/next-event-card.png";
 import paperHeaderRef from "../../assets/component-refs/paper-header.png";
 import primaryButtonRef from "../../assets/component-refs/primary-button.png";
 import resultPaperRef from "../../assets/component-refs/result-paper.png";
@@ -10,9 +9,9 @@ import choiceTicketGreenRef from "../../assets/component-refs/choice-ticket-gree
 import choiceTicketRedRef from "../../assets/component-refs/choice-ticket-red.png";
 import choiceTicketYellowRef from "../../assets/component-refs/choice-ticket-yellow.png";
 import { mondayTurns } from "../../game";
-import { toChoiceViewModel, toEventViewModel, toStatViewModels } from "../../gameViewModels";
+import { toChoiceViewModel, toStatViewModels } from "../../gameViewModels";
 import type { ResultViewModel } from "../visualTypes";
-import { SkinChoiceTicket, SkinFeedbackCard, SkinNextEventCard, SkinPaperHeader, SkinPrimaryButton, SkinResultPaper, SkinSecondaryButton, SkinStatCard } from "./SkinPreviewComponents";
+import { SkinChoiceTicket, SkinFeedbackCard, SkinPaperHeader, SkinPrimaryButton, SkinResultPaper, SkinSecondaryButton, SkinStatCard } from "./SkinPreviewComponents";
 import "../../styles/component-skin.css";
 
 interface LabItem {
@@ -26,7 +25,6 @@ interface LabItem {
 
 const labChoices = mondayTurns[0].choices.map(toChoiceViewModel);
 const labSelectedChoice = labChoices[0];
-const labNextEvent = toEventViewModel(mondayTurns[1], "train");
 const labStats = toStatViewModels({ energy: 70, mood: 60, score: 0 });
 const labResultStats = toStatViewModels({ energy: 52, mood: 92, score: 78 });
 const labResult: ResultViewModel = {
@@ -85,14 +83,6 @@ const labItems: LabItem[] = [
     name: "FeedbackCard",
     reference: feedbackCardRef,
     render: <SkinFeedbackCard selectedChoice={labSelectedChoice} />,
-    width: 370
-  },
-  {
-    className: "next-event-card",
-    height: 169,
-    name: "NextEventCard",
-    reference: nextEventCardRef,
-    render: <SkinNextEventCard event={labNextEvent} />,
     width: 370
   },
   {

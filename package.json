@@ -5,15 +5,16 @@
   "type": "module",
   "packageManager": "pnpm@9.15.4",
   "dependencies": {
-    "react-dom": "^19.0.0",
-    "react": "^19.0.0"
+    "lucide-react": "^1.32.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.50.0",
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
-    "@playwright/test": "^1.50.0",
     "typescript": "^5.7.3",
     "vite": "^6.0.7",
     "vitest": "^2.1.8"
@@ -21,6 +22,7 @@
   "scripts": {
     "dev": "vite --port 5180",
     "build": "tsc -p tsconfig.json && vite build",
+    "build:xhs": "tsc -p tsconfig.json && vite build --mode xhs && node scripts/xhs-build-check.mjs",
     "deploy:cloudbase": "pnpm build && tcb hosting deploy dist -e",
     "deploy:cloudbase:app": "tcb app deploy --framework react --build-command \"pnpm build\" --output-dir dist -e",
     "test": "vitest run",
@@ -31,6 +33,8 @@
     "visual:capture": "node scripts/visual-capture.mjs",
     "visual:report": "node scripts/visual-report.mjs",
     "visual:check": "pnpm visual:capture && pnpm visual:report",
-    "wechat:check": "node scripts/wechat-h5-check.mjs"
+    "wechat:check": "node scripts/wechat-h5-check.mjs",
+    "xhs:artifact-check": "node scripts/xhs-build-check.mjs",
+    "xhs:check": "pnpm build:xhs && node scripts/xhs-h5-check.mjs"
   }
 }

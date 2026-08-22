@@ -1,11 +1,10 @@
-import bgFeedbackClean from "../../assets/claude-ui/bg-feedback-clean-2x.jpg";
-import type { ChoiceViewModel, EventViewModel, StatViewModel } from "../visualTypes";
-import { SkinIcon } from "../skin/SkinIcon";
+import bgFeedbackOriginal from "../../assets/claude-ui/bg-feedback-clean-2x.jpg";
+import bgFeedbackNoPreview from "../../assets/claude-ui/bg-feedback-no-preview-2x.jpg";
+import type { ChoiceViewModel, StatViewModel } from "../visualTypes";
 import { ClaudeStats } from "./ClaudeRoundScreen";
 
 export interface ClaudeFeedbackScreenProps {
   currentRound: number;
-  nextEvent?: EventViewModel;
   onContinue?: () => void;
   selectedChoice: ChoiceViewModel;
   stats: StatViewModel[];
@@ -46,15 +45,14 @@ function getFeedbackSubcopy(choice: ChoiceViewModel) {
   }
 
   if (score < 0) {
-    return "短暂省力不等于没有成本，下一轮会来收账。";
+    return "短暂省力不等于没有成本，变化已经记到账上。";
   }
 
-  return "这一步改变了节奏，下一件事已经在排队。";
+  return "这一步改变了节奏，变化已经记到账上。";
 }
 
 export function ClaudeFeedbackScreen({
   currentRound,
-  nextEvent,
   onContinue,
   selectedChoice,
   stats,
@@ -62,10 +60,17 @@ export function ClaudeFeedbackScreen({
 }: ClaudeFeedbackScreenProps) {
   const feedbackLines = splitFeedback(selectedChoice.description);
   const subcopy = getFeedbackSubcopy(selectedChoice);
+  const isFinalRound = currentRound >= totalRounds;
 
   return (
     <section className="ms-claude-screen ms-claude-screen--feedback" aria-label="选择反馈">
-      <img className="ms-claude-bg" src={bgFeedbackClean} alt="" aria-hidden="true" />
+      <img className="ms-claude-bg" src={bgFeedbackOriginal} alt="" aria-hidden="true" />
+      <img
+        className="ms-claude-bg ms-claude-bg--feedback-preview-cover"
+        src={bgFeedbackNoPreview}
+        alt=""
+        aria-hidden="true"
+      />
 
       <div className="ms-claude-round-box ms-claude-round-box--feedback">
         <span>第</span>
@@ -86,18 +91,15 @@ export function ClaudeFeedbackScreen({
       </h2>
       <p className="ms-claude-feedback-sub">{subcopy}</p>
 
-      {nextEvent ? (
-        <>
-          <div className="ms-claude-next-chip">
-            <SkinIcon name={nextEvent.visual ?? "alarm"} />
-            <span>{nextEvent.time}</span>
-          </div>
-          <h2 className="ms-claude-next-title">{nextEvent.title}</h2>
-          <p className="ms-claude-next-body">{nextEvent.body}</p>
-        </>
-      ) : null}
+      <section className="ms-claude-settlement" aria-label={isFinalRound ? "本局结算" : "本回合结算"}>
+        <div className="ms-claude-settlement__label">{isFinalRound ? "本局结算" : "本回合结算"}</div>
+        <h2>{isFinalRound ? "你的周一人格已生成" : "状态已更新"}</h2>
+        <p>{isFinalRound ? "最后一笔变化已记账，继续查看结果" : "本回合变化已记账，继续进入下一回合"}</p>
+      </section>
 
-      <button className="ms-claude-feedback-button" type="button" onClick={onContinue} aria-label="继续" />
+      <button className="ms-claude-feedback-button" type="button" onClick={onContinue} aria-label="继续">
+        <span className="ms-visually-hidden">继续</span>
+      </button>
     </section>
   );
 }

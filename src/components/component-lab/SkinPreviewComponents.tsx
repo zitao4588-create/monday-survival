@@ -8,7 +8,6 @@ import choiceTicketGreen from "../../assets/component-skins/choice-ticket-green@
 import choiceTicketRed from "../../assets/component-skins/choice-ticket-red@2x.png";
 import choiceTicketYellow from "../../assets/component-skins/choice-ticket-yellow@2x.png";
 import feedbackCard from "../../assets/component-skins/feedback-card@2x.png";
-import nextEventCard from "../../assets/component-skins/next-event-card@2x.png";
 import resultPaper from "../../assets/component-skins/result-paper@2x.png";
 
 import { ChoiceTicket } from "../ChoiceTicket";
@@ -16,14 +15,13 @@ import { ContinueButton } from "../ContinueButton";
 import { EndingTitle } from "../EndingTitle";
 import { FeedbackPaper } from "../FeedbackPaper";
 import { FinalStats } from "../FinalStats";
-import { NextEventPreview } from "../NextEventPreview";
 import { PaperHeader, type PaperHeaderProps } from "../PaperHeader";
 import { PersonaTag } from "../PersonaTag";
 import { PrintIcon } from "../PrintIcon";
 import { ResultActions } from "../ResultActions";
 import { ResultFolder } from "../ResultFolder";
 import { StatCard } from "../StatCard";
-import type { ChoiceViewModel, EventViewModel, ResultViewModel, StatViewModel, StatKind } from "../visualTypes";
+import type { ChoiceViewModel, ResultViewModel, StatViewModel, StatKind } from "../visualTypes";
 
 type SkinChoiceTone = "green" | "yellow" | "rust";
 
@@ -93,19 +91,6 @@ export function SkinFeedbackCard({ selectedChoice }: SkinFeedbackCardProps) {
     <div className="ms-cskin-feedback-card">
       <img src={feedbackCard} alt="" aria-hidden="true" />
       <FeedbackPaper selectedChoice={selectedChoice} />
-    </div>
-  );
-}
-
-interface SkinNextEventCardProps {
-  event?: EventViewModel;
-}
-
-export function SkinNextEventCard({ event }: SkinNextEventCardProps) {
-  return (
-    <div className="ms-cskin-next-event-card">
-      <img src={nextEventCard} alt="" aria-hidden="true" />
-      <NextEventPreview event={event} />
     </div>
   );
 }

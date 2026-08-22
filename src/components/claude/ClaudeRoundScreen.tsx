@@ -1,6 +1,8 @@
-import bgRoundBase from "../../assets/claude-ui/bg-round-base-2x.jpg";
+import bgRoundBase from "../../assets/claude-ui/bg-round-no-rules-2x.jpg";
+import statProgressCell from "../../assets/component-skins/stat-progress-cell@2x.png";
 import type { ChoiceViewModel, EventViewModel, StatViewModel } from "../visualTypes";
-import { SkinIcon, type SkinIconName } from "../skin/SkinIcon";
+import { ChoiceIcon } from "../ChoiceIcon";
+import { getStatSegmentCount } from "../../gameViewModels";
 
 export interface ClaudeRoundScreenProps {
   choices: ChoiceViewModel[];
@@ -10,8 +12,6 @@ export interface ClaudeRoundScreenProps {
   stats: StatViewModel[];
   totalRounds: number;
 }
-
-const choiceTones = ["green", "yellow", "red"] as const;
 
 function splitChineseSentences(text: string) {
   return text.match(/[^。！？]+[。！？]?/g)?.map((line) => line.trim()).filter(Boolean) ?? [text];
@@ -26,29 +26,31 @@ function formatDelta(value: number) {
     return `+${value}`;
   }
 
-  if (value < 0) {
-    return `−${Math.abs(value)}`;
+  return `${value}`;
+}
+
+function getDeltaLabel(label: string, value: number) {
+  if (value > 0) {
+    return `${label}增加 ${value}`;
   }
 
-  return "0";
+  if (value < 0) {
+    return `${label}减少 ${Math.abs(value)}`;
+  }
+
+  return `${label}不变`;
 }
 
-interface ClaudeStatBarProps {
-  kind: StatViewModel["kind"];
-  value: number;
-}
+function getDeltaTone(value: number) {
+  if (value > 0) {
+    return "positive";
+  }
 
-function ClaudeStatBar({ kind, value }: ClaudeStatBarProps) {
-  const cells = (Math.max(0, Math.min(100, value)) / 100) * 8;
+  if (value < 0) {
+    return "negative";
+  }
 
-  return (
-    <div className={`ms-claude-stat-bar ms-claude-stat-bar--${kind}`} aria-hidden="true">
-      {Array.from({ length: 8 }, (_, index) => {
-        const fill = Math.max(0, Math.min(1, cells - index));
-        return <span key={index} style={{ "--fill": fill } as React.CSSProperties} />;
-      })}
-    </div>
-  );
+  return "neutral";
 }
 
 interface ClaudeStatsProps {
@@ -56,60 +58,58 @@ interface ClaudeStatsProps {
   stats: StatViewModel[];
 }
 
+const statOrder = ["energy", "mood", "score"] as const;
+
 export function ClaudeStats({ showDelta = false, stats }: ClaudeStatsProps) {
-  const energy = getStat(stats, "energy");
-  const mood = getStat(stats, "mood");
-  const score = getStat(stats, "score");
+  const orderedStats = statOrder.map((kind) => getStat(stats, kind));
 
   return (
-    <>
-      <div className="ms-claude-stat-number ms-claude-stat-number--energy">
-        <span>{energy.value}</span>
-        <small>/100</small>
-      </div>
-      <div className="ms-claude-stat-number ms-claude-stat-number--mood">
-        <span>{mood.value}</span>
-        <small>/100</small>
-      </div>
-      <div className="ms-claude-stat-number ms-claude-stat-number--score">
-        <span>{score.value}</span>
-        <small>/100</small>
-      </div>
+    <div className="ms-claude-stat-grid" aria-label="当前状态">
+      {orderedStats.map((stat) => {
+        const filledSegments = getStatSegmentCount(stat.kind, stat.value);
 
-      <ClaudeStatBar kind="energy" value={energy.value} />
-      <ClaudeStatBar kind="mood" value={mood.value} />
-      <ClaudeStatBar kind="score" value={score.value} />
-
+        return (
+          <div
+            aria-label={`${stat.label} ${stat.value}/100`}
+            className="ms-claude-stat-card"
+            data-stat-kind={stat.kind}
+            key={stat.kind}
+          >
+            <div className="ms-claude-stat-card__content">
+              <div className="ms-claude-stat-card__topline">
+                <span className="ms-visually-hidden">{stat.label}</span>
+                <strong>{stat.value}</strong>
+                <small>/100</small>
+              </div>
+              <div className="ms-claude-stat-bar" aria-hidden="true">
+                {Array.from({ length: 7 }, (_, index) => (
+                  <img
+                    alt=""
+                    className={index < filledSegments ? "is-filled" : ""}
+                    key={index}
+                    src={statProgressCell}
+                  />
+                ))}
+              </div>
+            </div>
+            {showDelta ? (
+              <b
+                aria-label={getDeltaLabel(stat.label, stat.delta ?? 0)}
+                className={`ms-claude-delta-tag ms-claude-delta-tag--${stat.kind} ms-claude-delta-tag--${getDeltaTone(stat.delta ?? 0)}`}
+                data-delta-kind={stat.kind}
+              >
+                {formatDelta(stat.delta ?? 0)}
+              </b>
+            ) : null}
+          </div>
+        );
+      })}
       {showDelta ? (
-        <>
-          <b className={`ms-claude-delta-tag ms-claude-delta-tag--energy ${(energy.delta ?? 0) < 0 ? "ms-claude-delta-tag--negative" : "ms-claude-delta-tag--positive"}`}>
-            {formatDelta(energy.delta ?? 0)}
-          </b>
-          <b className={`ms-claude-delta-tag ms-claude-delta-tag--mood ${(mood.delta ?? 0) < 0 ? "ms-claude-delta-tag--negative" : "ms-claude-delta-tag--positive"}`}>
-            {formatDelta(mood.delta ?? 0)}
-          </b>
-          <b className={`ms-claude-delta-tag ms-claude-delta-tag--score ${(score.delta ?? 0) < 0 ? "ms-claude-delta-tag--negative" : "ms-claude-delta-tag--positive"}`}>
-            {formatDelta(score.delta ?? 0)}
-          </b>
-        </>
+        <span className="ms-visually-hidden" role="status" aria-atomic="true" aria-live="polite">
+          {orderedStats.map((stat) => getDeltaLabel(stat.label, stat.delta ?? 0)).join("，")}
+        </span>
       ) : null}
-    </>
-  );
-}
-
-interface ChoiceDeltaProps {
-  icon: SkinIconName;
-  value: number;
-}
-
-function ChoiceDelta({ icon, value }: ChoiceDeltaProps) {
-  const tone = value < 0 ? "negative" : "positive";
-
-  return (
-    <span className={`ms-claude-choice-delta ms-claude-choice-delta--${tone}`}>
-      <SkinIcon name={icon} />
-      <b>{formatDelta(value)}</b>
-    </span>
+    </div>
   );
 }
 
@@ -120,11 +120,9 @@ interface ClaudeChoiceTicketProps {
 }
 
 function ClaudeChoiceTicket({ choice, index, onChoose }: ClaudeChoiceTicketProps) {
-  const tone = choiceTones[index] ?? "green";
-
   return (
     <button
-      className={`ms-claude-choice-ticket ms-claude-choice-ticket--${tone}`}
+      className="ms-claude-choice-ticket"
       type="button"
       onClick={() => onChoose?.(choice)}
     >
@@ -134,16 +132,11 @@ function ClaudeChoiceTicket({ choice, index, onChoose }: ClaudeChoiceTicketProps
       </span>
       <span className="ms-claude-choice-ticket__row">
         <span className="ms-claude-choice-ticket__icon" aria-hidden="true">
-          <SkinIcon name={choice.visual} />
+          <ChoiceIcon name={choice.visual} />
         </span>
         <span className="ms-claude-choice-ticket__copy">
           <strong>{choice.label}</strong>
-          <small>{choice.description}</small>
-        </span>
-        <span className="ms-claude-choice-ticket__deltas" aria-label="选择影响">
-          <ChoiceDelta icon="energy" value={choice.effects.energy} />
-          <ChoiceDelta icon="mood" value={choice.effects.mood} />
-          <ChoiceDelta icon="score" value={choice.effects.score} />
+          <small>{choice.preview}</small>
         </span>
         <span className="ms-claude-choice-ticket__chevron" aria-hidden="true">
           ›
@@ -181,11 +174,18 @@ export function ClaudeRoundScreen({
         <span>{event.time}</span>
       </div>
       <h2 className="ms-claude-event-title">{event.title}</h2>
-      <p className="ms-claude-event-body">
-        {bodyLines.map((line) => (
-          <span key={line}>{line}</span>
-        ))}
-      </p>
+      <div className="ms-claude-event-copy">
+        <p className="ms-claude-event-body">
+          {bodyLines.map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </p>
+        <div className="ms-claude-event-rules" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
 
       <div className="ms-claude-choice-list">
         {choices.map((choice, index) => (

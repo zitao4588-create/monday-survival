@@ -625,6 +625,13 @@ button {
   font-size: 2rem;
 }
 
+.ms-choice-icon {
+  display: block;
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+}
+
 .ms-choice-ticket__copy {
   display: grid;
   gap: 6px;

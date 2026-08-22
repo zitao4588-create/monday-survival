@@ -28,6 +28,26 @@ function getEndingTitleSize(title: string) {
   return "62px";
 }
 
+function getShareStatusText(shareStatus: NonNullable<ClaudeResultScreenProps["shareStatus"]>) {
+  if (shareStatus === "generating") {
+    return "正在生成结果图…";
+  }
+
+  if (shareStatus === "ready") {
+    return __XHS_BUILD__ ? "结果图已生成，请长按图片或使用系统截图保存。" : "结果图已生成，长按可保存。";
+  }
+
+  if (shareStatus === "failed") {
+    return "暂时无法生成，请手动截图。";
+  }
+
+  if (!__XHS_BUILD__ && shareStatus === "copied") {
+    return "分享文案已准备好，可以发给同事。";
+  }
+
+  return null;
+}
+
 export function ClaudeResultScreen({
   onCloseResultImage,
   onCreateResultImage,
@@ -66,10 +86,7 @@ export function ClaudeResultScreen({
 
       {shareStatus !== "idle" ? (
         <p className="ms-claude-share-status" role="status">
-          {shareStatus === "generating" ? "正在生成结果图…" : null}
-          {shareStatus === "ready" ? "结果图已生成，长按可保存。" : null}
-          {shareStatus === "copied" ? "分享文案已准备好，可以发给同事。" : null}
-          {shareStatus === "failed" ? "暂时无法生成，请手动截图。" : null}
+          {getShareStatusText(shareStatus)}
         </p>
       ) : null}
 
@@ -80,15 +97,21 @@ export function ClaudeResultScreen({
               ×
             </button>
             <img className="ms-claude-poster-preview" src={resultImageUrl} alt="可保存的周一结果图" />
-            <p className="ms-claude-poster-hint">长按保存结果图</p>
-            <div className="ms-claude-poster-actions">
-              <a className="ms-claude-poster-action" href={resultImageUrl} download="monday-survival-result.png">
-                下载图片
-              </a>
-              <button className="ms-claude-poster-action" type="button" onClick={onShareText}>
-                分享文案
-              </button>
-            </div>
+            {__XHS_BUILD__ ? (
+              <p className="ms-claude-poster-hint">长按图片或使用系统截图保存</p>
+            ) : (
+              <>
+                <p className="ms-claude-poster-hint">长按保存结果图</p>
+                <div className="ms-claude-poster-actions">
+                  <a className="ms-claude-poster-action" href={resultImageUrl} download="monday-survival-result.png">
+                    下载图片
+                  </a>
+                  <button className="ms-claude-poster-action" type="button" onClick={onShareText}>
+                    分享文案
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       ) : null}

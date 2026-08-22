@@ -2,8 +2,6 @@ import type { GameChoice, GameProgress, GameTurn } from "./gameCore";
 import type { MondayResult } from "./game";
 import type { ChoiceViewModel, EventViewModel, ResultViewModel, StatViewModel } from "./components/visualTypes";
 
-const choiceVisuals = ["water", "alarm", "coffee"] as const;
-
 const resultPersonas = {
   win: {
     label: "边界感幸存者",
@@ -133,7 +131,7 @@ export function toEventViewModel(turn: GameTurn, visual: EventViewModel["visual"
   };
 }
 
-export function toChoiceViewModel(choice: GameChoice, index: number): ChoiceViewModel {
+export function toChoiceViewModel(choice: GameChoice): ChoiceViewModel {
   return {
     description: choice.description,
     effects: {
@@ -143,12 +141,30 @@ export function toChoiceViewModel(choice: GameChoice, index: number): ChoiceView
     },
     id: choice.id,
     label: choice.label,
-    visual: choiceVisuals[index] ?? "coffee"
+    preview: choice.preview,
+    visual: choice.visual
   };
+}
+
+export function getStatSegmentCount(kind: "energy" | "mood" | "score", value: number) {
+  const clampedValue = Math.max(0, Math.min(100, value));
+
+  if (clampedValue === 0) {
+    return 0;
+  }
+
+  const proportionalSegments = Math.ceil((clampedValue / 100) * 7);
+  return kind === "score" ? Math.max(2, proportionalSegments) : proportionalSegments;
 }
 
 export function toStatViewModels(progress: Pick<GameProgress, "energy" | "mood" | "score">, delta?: Partial<Record<"energy" | "mood" | "score", number>>): StatViewModel[] {
   return [
+    {
+      delta: delta?.score,
+      kind: "score",
+      label: "得分",
+      value: progress.score
+    },
     {
       delta: delta?.energy,
       kind: "energy",
@@ -160,12 +176,6 @@ export function toStatViewModels(progress: Pick<GameProgress, "energy" | "mood" 
       kind: "mood",
       label: "心情",
       value: progress.mood
-    },
-    {
-      delta: delta?.score,
-      kind: "score",
-      label: "得分",
-      value: progress.score
     }
   ];
 }

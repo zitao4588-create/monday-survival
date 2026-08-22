@@ -1,4 +1,5 @@
 import type { PrintIconName } from "./PrintIcon";
+import type { GameChoiceIcon } from "../gameCore";
 
 export type StatKind = "energy" | "mood" | "score";
 
@@ -25,7 +26,8 @@ export interface ChoiceViewModel {
   };
   id: string;
   label: string;
-  visual: PrintIconName;
+  preview: string;
+  visual: GameChoiceIcon;
 }
 
 export interface ResultViewModel {

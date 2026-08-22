@@ -20,10 +20,29 @@ export interface ChoiceEffect {
   moodDelta?: number;
 }
 
+export type GameChoiceIcon =
+  | "calendar-clock"
+  | "coffee"
+  | "door-open"
+  | "eye-off"
+  | "laptop"
+  | "list-filter"
+  | "message-circle-warning"
+  | "message-square-reply"
+  | "notebook-pen"
+  | "notebook-text"
+  | "panels-top-left"
+  | "power"
+  | "sandwich"
+  | "shower-head"
+  | "smartphone";
+
 export interface GameChoice {
   id: string;
   label: string;
+  preview: string;
   description: string;
+  visual: GameChoiceIcon;
   effect: ChoiceEffect;
 }
 

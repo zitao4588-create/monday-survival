@@ -2,6 +2,7 @@ import choiceTicketGreen from "../../assets/skin-v2/choice-ticket-green@2x.png";
 import choiceTicketRed from "../../assets/skin-v2/choice-ticket-red@2x.png";
 import choiceTicketYellow from "../../assets/skin-v2/choice-ticket-yellow@2x.png";
 import type { ChoiceViewModel } from "../visualTypes";
+import { ChoiceIcon } from "../ChoiceIcon";
 import { SkinIcon, type SkinIconName } from "./SkinIcon";
 
 type ChoiceTone = "green" | "red" | "yellow";
@@ -51,7 +52,7 @@ export function SkinChoiceTicket({ choice, index, onChoose }: SkinChoiceTicketPr
       <img className="ms-skin-choice-ticket__asset" src={choiceAsset[tone]} alt="" aria-hidden="true" />
       <span className="ms-skin-choice-ticket__index">{String(index + 1).padStart(2, "0")}</span>
       <span className="ms-skin-choice-ticket__icon" aria-hidden="true">
-        <SkinIcon name={choice.visual} />
+        <ChoiceIcon name={choice.visual} />
       </span>
       <span className="ms-skin-choice-ticket__copy">
         <strong>{choice.label}</strong>

@@ -1,5 +1,6 @@
 import { PrintIcon } from "./PrintIcon";
 import type { PrintIconName } from "./PrintIcon";
+import { ChoiceIcon } from "./ChoiceIcon";
 import type { ChoiceViewModel } from "./visualTypes";
 
 type ChoiceTone = "green" | "gold" | "rust";
@@ -43,7 +44,7 @@ export function ChoiceTicket({ choice, index, onChoose }: ChoiceTicketProps) {
     >
       <span className="ms-choice-ticket__index">{String(index + 1).padStart(2, "0")}</span>
       <span className="ms-choice-ticket__icon" aria-hidden="true">
-        <PrintIcon name={choice.visual} />
+        <ChoiceIcon name={choice.visual} />
       </span>
       <span className="ms-choice-ticket__copy">
         <strong>{choice.label}</strong>

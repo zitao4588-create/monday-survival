@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import type { GameProgress } from "./gameCore";
 import { ComponentLab } from "./components/component-lab/ComponentLab";
 import { ClaudeFeedbackScreen } from "./components/claude/ClaudeFeedbackScreen";
@@ -6,6 +6,7 @@ import { ClaudeGameStage } from "./components/claude/ClaudeGameStage";
 import { ClaudeResultScreen } from "./components/claude/ClaudeResultScreen";
 import { ClaudeRoundScreen } from "./components/claude/ClaudeRoundScreen";
 import type { ChoiceViewModel, EventViewModel, ResultViewModel } from "./components/visualTypes";
+import bgFeedbackClean from "./assets/claude-ui/bg-feedback-no-preview-2x.jpg";
 import bgResultClean from "./assets/claude-ui/bg-result-clean-2x.jpg";
 import {
   calculateMondayResult,
@@ -17,6 +18,14 @@ import {
 import { toChoiceViewModel, toEventViewModel, toResultViewModel, toStatViewModels } from "./gameViewModels";
 import { createResultPosterDataUrl } from "./resultPoster";
 import { createResultShareText, toResultShareData } from "./resultShare";
+
+if (typeof window !== "undefined") {
+  const feedbackBackgroundImage = new Image();
+  feedbackBackgroundImage.src = bgFeedbackClean;
+
+  const resultBackgroundImage = new Image();
+  resultBackgroundImage.src = bgResultClean;
+}
 
 export interface MondaySurvivalGameProps {
   onEvent?: (name: string, properties?: Record<string, string | number | boolean>) => void;
@@ -93,7 +102,6 @@ function StaticMondayScreen({ screen }: { screen: "feedback" | "result" | "round
       <ClaudeGameStage>
         <ClaudeFeedbackScreen
           currentRound={1}
-          nextEvent={toEventViewModel(mondayTurns[1], "train")}
           selectedChoice={previewSelectedChoice}
           stats={previewFeedbackStats}
           totalRounds={mondayTurns.length}
@@ -135,6 +143,12 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const [shareStatus, setShareStatus] = useState<ShareStatus>("idle");
   const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [phase, resultImageUrl]);
 
   function restart() {
     setProgress(createMondayRun());
@@ -192,6 +206,10 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
   }
 
   async function shareResultText(result: ResultViewModel, stats: ReturnType<typeof toStatViewModels>) {
+    if (__XHS_BUILD__) {
+      return;
+    }
+
     const nav = navigator as ShareNavigator;
     const url = getShareUrl();
     const text = createResultShareText(result, stats);
@@ -233,7 +251,7 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
         <ClaudeResultScreen
           onCloseResultImage={() => setResultImageUrl(null)}
           onRestart={restart}
-          onShareText={() => void shareResultText(resultViewModel, stats)}
+          onShareText={__XHS_BUILD__ ? undefined : () => void shareResultText(resultViewModel, stats)}
           onCreateResultImage={() => void createResultImage(resultViewModel, stats)}
           result={resultViewModel}
           resultImageUrl={resultImageUrl}
@@ -245,13 +263,10 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
   }
 
   if (phase === "feedback" && feedback) {
-    const nextEvent = isMondayRunComplete(feedback.after) ? undefined : getEventViewModel(feedback.after.turnIndex);
-
     return (
       <ClaudeGameStage>
         <ClaudeFeedbackScreen
           currentRound={Math.min(feedback.before.turnIndex + 1, mondayTurns.length)}
-          nextEvent={nextEvent}
           onContinue={continueRun}
           selectedChoice={feedback.selectedChoice}
           stats={toStatViewModels(feedback.after, getStatDelta(feedback.before, feedback.after))}

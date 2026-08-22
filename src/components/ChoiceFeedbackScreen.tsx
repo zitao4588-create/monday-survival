@@ -1,13 +1,11 @@
 import { ContinueButton } from "./ContinueButton";
 import { FeedbackPaper } from "./FeedbackPaper";
-import { NextEventPreview } from "./NextEventPreview";
 import { PaperHeader } from "./PaperHeader";
 import { StatGrid } from "./StatGrid";
-import type { ChoiceViewModel, EventViewModel, StatViewModel } from "./visualTypes";
+import type { ChoiceViewModel, StatViewModel } from "./visualTypes";
 
 export interface ChoiceFeedbackScreenProps {
   currentRound: number;
-  nextEvent?: EventViewModel;
   onContinue?: () => void;
   selectedChoice: ChoiceViewModel;
   stats: StatViewModel[];
@@ -16,7 +14,6 @@ export interface ChoiceFeedbackScreenProps {
 
 export function ChoiceFeedbackScreen({
   currentRound,
-  nextEvent,
   onContinue,
   selectedChoice,
   stats,
@@ -30,7 +27,6 @@ export function ChoiceFeedbackScreen({
         <span className="ms-paperclip ms-feedback-deck__clip" aria-hidden="true" />
         <StatGrid ariaLabel="选择后的状态" stats={stats} variant="feedback" />
         <FeedbackPaper selectedChoice={selectedChoice} />
-        <NextEventPreview event={nextEvent} />
         <div className="ms-feedback-deck__action">
           <ContinueButton onContinue={onContinue} />
         </div>

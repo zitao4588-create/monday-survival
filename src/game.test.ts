@@ -6,6 +6,7 @@ import {
   isMondayRunComplete,
   mondayTurns
 } from "./game";
+import { getStatSegmentCount, toStatViewModels } from "./gameViewModels";
 import { createResultShareText, toResultShareData } from "./resultShare";
 
 describe("monday-survival", () => {
@@ -20,8 +21,9 @@ describe("monday-survival", () => {
   });
 
   it("can fail when bad choices drain the player", () => {
-    const progress = mondayTurns.reduce((current, turn) => {
-      return chooseMondayAction(current, turn.choices[1]);
+    const failPath = [1, 1, 2, 2, 2];
+    const progress = mondayTurns.reduce((current, turn, index) => {
+      return chooseMondayAction(current, turn.choices[failPath[index]]);
     }, createMondayRun());
 
     expect(calculateMondayResult(progress).outcome).toBe("fail");
@@ -66,15 +68,84 @@ describe("monday-survival", () => {
 
     walk(0, createMondayRun());
 
-    expect(outcomes.win).toBeGreaterThanOrEqual(45);
-    expect(outcomes.win).toBeLessThanOrEqual(60);
-    expect(outcomes.survive).toBeGreaterThanOrEqual(110);
-    expect(outcomes.survive).toBeLessThanOrEqual(135);
-    expect(outcomes.fail).toBeGreaterThanOrEqual(55);
-    expect(outcomes.fail).toBeLessThanOrEqual(75);
+    const total = outcomes.win + outcomes.survive + outcomes.fail;
+
+    expect(outcomes.win / total).toBeGreaterThanOrEqual(0.2);
+    expect(outcomes.win / total).toBeLessThanOrEqual(0.25);
+    expect(outcomes.survive / total).toBeGreaterThanOrEqual(0.45);
+    expect(outcomes.survive / total).toBeLessThanOrEqual(0.55);
+    expect(outcomes.fail / total).toBeGreaterThanOrEqual(0.25);
+    expect(outcomes.fail / total).toBeLessThanOrEqual(0.3);
     expect(failReasons.energy).toBeGreaterThanOrEqual(10);
     expect(failReasons.mood).toBeGreaterThanOrEqual(20);
     expect(failReasons.score).toBeGreaterThanOrEqual(20);
+  });
+
+  it("keeps every turn free of Pareto-dominated choices", () => {
+    for (const turn of mondayTurns) {
+      for (const choice of turn.choices) {
+        const values = [choice.effect.scoreDelta, choice.effect.energyDelta ?? 0, choice.effect.moodDelta ?? 0];
+        const isDominated = turn.choices.some((candidate) => {
+          if (candidate.id === choice.id) {
+            return false;
+          }
+
+          const candidateValues = [
+            candidate.effect.scoreDelta,
+            candidate.effect.energyDelta ?? 0,
+            candidate.effect.moodDelta ?? 0
+          ];
+
+          return candidateValues.every((value, index) => value >= values[index])
+            && candidateValues.some((value, index) => value > values[index]);
+        });
+
+        expect(isDominated, `${turn.id}/${choice.id} must keep a real advantage`).toBe(false);
+      }
+    }
+  });
+
+  it("provides complete preview, outcome, and distinct semantic choice icons", () => {
+    const expectedIcons = [
+      "shower-head",
+      "smartphone",
+      "coffee",
+      "message-square-reply",
+      "eye-off",
+      "notebook-pen",
+      "notebook-text",
+      "message-circle-warning",
+      "power",
+      "panels-top-left",
+      "sandwich",
+      "list-filter",
+      "calendar-clock",
+      "laptop",
+      "door-open"
+    ];
+    const actualIcons = mondayTurns.flatMap((turn) => turn.choices.map((choice) => choice.visual));
+
+    expect(actualIcons).toEqual(expectedIcons);
+    expect(new Set(actualIcons).size).toBe(15);
+    expect(actualIcons).not.toContain("check");
+
+    for (const turn of mondayTurns) {
+      for (const choice of turn.choices) {
+        expect(choice.preview.trim().length).toBeGreaterThan(0);
+        expect(choice.description.trim().length).toBeGreaterThan(0);
+        expect(choice.preview).not.toBe(choice.description);
+        expect(choice.visual.trim().length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("keeps low positive score visible as two of seven segments", () => {
+    expect(getStatSegmentCount("energy", 78)).toBe(6);
+    expect(getStatSegmentCount("mood", 64)).toBe(5);
+    expect(getStatSegmentCount("score", 12)).toBe(2);
+    expect(getStatSegmentCount("score", 0)).toBe(0);
+    expect(getStatSegmentCount("score", -18)).toBe(0);
+    expect(getStatSegmentCount("score", 100)).toBe(7);
   });
 
   it("creates share and poster data from dynamic result values", () => {
@@ -89,6 +160,12 @@ describe("monday-survival", () => {
       { kind: "mood" as const, label: "心情", value: 76 },
       { kind: "score" as const, label: "得分", value: 88 }
     ];
+
+    expect(toStatViewModels({ energy: 52, mood: 76, score: 88 }).map((stat) => stat.kind)).toEqual([
+      "score",
+      "energy",
+      "mood"
+    ]);
 
     expect(toResultShareData(result, stats)).toMatchObject({
       description: result.description,

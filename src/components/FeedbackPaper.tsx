@@ -1,4 +1,4 @@
-import { PrintIcon } from "./PrintIcon";
+import { ChoiceIcon } from "./ChoiceIcon";
 import { SelectedReceipt } from "./SelectedReceipt";
 import type { ChoiceViewModel } from "./visualTypes";
 
@@ -15,7 +15,7 @@ export function FeedbackPaper({ selectedChoice }: FeedbackPaperProps) {
         <span className="ms-feedback-slip__spark ms-feedback-slip__spark--left" aria-hidden="true" />
         <span className="ms-feedback-slip__spark ms-feedback-slip__spark--right" aria-hidden="true" />
         <div className="ms-feedback-slip__icon" aria-hidden="true">
-          <PrintIcon name={selectedChoice.visual} />
+          <ChoiceIcon name={selectedChoice.visual} />
         </div>
         <h2>{selectedChoice.description}</h2>
         <p>你决定先照顾好自己，节奏稳一点也没关系。</p>

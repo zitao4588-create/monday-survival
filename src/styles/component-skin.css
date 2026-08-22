@@ -142,12 +142,6 @@
   height: 100%;
 }
 
-.ms-component-lab__render--next-event-card .ms-event-paper--feedback {
-  width: 100%;
-  min-height: 100%;
-  height: 100%;
-}
-
 .ms-component-lab__render--result-paper .ms-result-paper {
   width: 100%;
   min-height: 100%;
@@ -165,7 +159,6 @@
 .ms-cskin-stat-card,
 .ms-cskin-choice-ticket,
 .ms-cskin-feedback-card,
-.ms-cskin-next-event-card,
 .ms-cskin-result-paper,
 .ms-cskin-primary-button,
 .ms-cskin-secondary-button {
@@ -179,7 +172,6 @@
 .ms-cskin-stat-card > img,
 .ms-cskin-choice-ticket > img,
 .ms-cskin-feedback-card > img,
-.ms-cskin-next-event-card > img,
 .ms-cskin-result-paper > img,
 .ms-cskin-primary-button > img,
 .ms-cskin-secondary-button > img {
@@ -326,8 +318,7 @@
   box-shadow: none;
 }
 
-.ms-cskin-feedback-card .ms-feedback-slip,
-.ms-cskin-next-event-card .ms-event-paper {
+.ms-cskin-feedback-card .ms-feedback-slip {
   position: relative;
   z-index: 1;
   width: 100%;
@@ -342,12 +333,7 @@
 .ms-cskin-feedback-card .ms-feedback-slip::before,
 .ms-cskin-feedback-card .ms-feedback-slip__tape,
 .ms-cskin-feedback-card .ms-feedback-slip__spark,
-.ms-cskin-feedback-card .ms-feedback-slip__selected,
-.ms-cskin-next-event-card .ms-event-paper__holes,
-.ms-cskin-next-event-card .ms-event-paper__clip,
-.ms-cskin-next-event-card .ms-event-paper__coffee,
-.ms-cskin-next-event-card .ms-event-paper__rule,
-.ms-cskin-next-event-card .ms-event-paper__illustration {
+.ms-cskin-feedback-card .ms-feedback-slip__selected {
   display: none;
 }
 
@@ -356,13 +342,7 @@
 .ms-cskin-feedback-card .ms-paper::before,
 .ms-cskin-feedback-card .ms-paper--light::before,
 .ms-cskin-feedback-card .ms-paper::after,
-.ms-cskin-feedback-card .ms-paper--light::after,
-.ms-cskin-next-event-card .ms-paper,
-.ms-cskin-next-event-card .ms-paper--light,
-.ms-cskin-next-event-card .ms-paper::before,
-.ms-cskin-next-event-card .ms-paper--light::before,
-.ms-cskin-next-event-card .ms-paper::after,
-.ms-cskin-next-event-card .ms-paper--light::after {
+.ms-cskin-feedback-card .ms-paper--light::after {
   background: transparent;
   border-color: transparent;
   box-shadow: none;
