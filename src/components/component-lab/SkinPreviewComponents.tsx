@@ -111,12 +111,7 @@ export function SkinResultPaper({ result, stats, onRestart, onShare, shareStatus
         <EndingTitle result={result} />
         <FinalStats stats={stats} />
         <PersonaTag result={result} />
-        <ResultActions
-          onRestart={onRestart}
-          onSaveResult={onShare}
-          saveLabel="保存结果图"
-          statusMessage={shareStatus === "idle" ? null : "请使用系统截图保存当前结果。"}
-        />
+        <ResultActions onRestart={onRestart} onShare={onShare} shareStatus={shareStatus} />
       </ResultFolder>
     </div>
   );

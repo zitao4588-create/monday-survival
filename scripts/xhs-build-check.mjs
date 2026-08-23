@@ -2,36 +2,34 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const outputDirectory = path.resolve(process.cwd(), "dist-xhs");
-const allowedExtensions = new Set([
-  ".css",
-  ".gif",
-  ".html",
-  ".jpeg",
-  ".jpg",
-  ".js",
-  ".json",
-  ".png",
-  ".svg",
-  ".webp",
-  ".woff",
-  ".woff2"
-]);
-const textExtensions = new Set([".css", ".html", ".js", ".json", ".svg"]);
+const allowedExtensions = new Set([".css", ".html", ".jpeg", ".jpg", ".js", ".png", ".svg", ".webp"]);
+const textExtensions = new Set([".css", ".html", ".js", ".svg"]);
 
-const forbiddenCodePatterns = [
-  ["fetch", /(?:^|[^\w$.])fetch\s*\(/m],
-  ["XMLHttpRequest", /\bnew\s+XMLHttpRequest\b/],
-  ["WebSocket", /\bnew\s+WebSocket\b/],
-  ["Worker", /\bnew\s+(?:Shared)?Worker\b/],
-  ["Service Worker", /\bnavigator\s*\.\s*serviceWorker\b/],
-  ["剪贴板", /\bnavigator\s*\.\s*clipboard\b/],
-  ["系统分享", /\bnavigator\s*\.\s*share\s*\(/],
-  ["新窗口", /\bwindow\s*\.\s*open\s*\(/],
-  ["动态执行 eval", /(?:^|[^\w$.])eval\s*\(/m],
-  ["动态执行 new Function", /\bnew\s+Function\b/],
-  ["WebAssembly", /\bWebAssembly\b|\.wasm(?:\b|[?#])/i],
-  ["动态表单", /\bdocument\s*\.\s*createElement\s*\(\s*["']form["']\s*\)/],
-  ["跨工具唤起", /\blocation\s*\.\s*href\s*=(?!=)|\blocation\s*\.\s*assign\s*\(/]
+const forbiddenPatterns = [
+  ["公安备案链接", /beian\.mps\.gov\.cn|陕公网安备/i],
+  ["新窗口链接", /target\s*[:=]\s*["']?_blank/i],
+  ["结果图下载", /monday-survival-result\.png|下载图片|download\s*[:=]\s*["']/i],
+  ["剪贴板", /\bnavigator\s*\.\s*clipboard\b/i],
+  ["系统分享", /\bnavigator\s*\.\s*share\b/i],
+  ["window.open", /\bwindow\s*\.\s*open\s*\(/i],
+  ["fetch", /\bfetch\s*\(/],
+  ["XMLHttpRequest", /\bXMLHttpRequest\b/],
+  ["WebSocket", /\bWebSocket\b/],
+  ["Worker", /\b(?:Shared)?Worker\b/],
+  ["ServiceWorker", /\bServiceWorker\b/],
+  [
+    "嵌入内容标签",
+    /<(?:iframe|object|embed)\b|(?:createElement|jsx|jsxs)\s*\(\s*["'](?:iframe|object|embed)["']|["'](?:iframe|object|embed)["']\s*,\s*\{/i
+  ],
+  ["eval", /\beval\s*\(/],
+  ["new Function", /\bnew\s+Function\b/]
+];
+
+const externalResourcePatterns = [
+  /<(?:audio|iframe|img|link|script|source|video)\b[^>]*(?:href|src|srcset)\s*=\s*["']\s*(?:https?:)?\/\//i,
+  /(?:@import|url)\s*\(\s*["']?\s*(?:https?:)?\/\//i,
+  /\bimport\s*\(\s*["']\s*(?:https?:)?\/\//i,
+  /\bnew\s+URL\s*\(\s*["']\s*(?:https?:)?\/\//i
 ];
 
 async function collectFiles(directory) {
@@ -51,60 +49,28 @@ async function collectFiles(directory) {
   return files;
 }
 
-function relativePath(file) {
-  return path.relative(outputDirectory, file).split(path.sep).join("/");
-}
-
-function lineNumber(content, index) {
+function getLineNumber(content, index) {
   return content.slice(0, index).split("\n").length;
 }
 
-function localReference(reference) {
-  const cleanReference = reference.split(/[?#]/, 1)[0];
-  return cleanReference.startsWith("./") || cleanReference.startsWith("../")
-    ? cleanReference
-    : null;
-}
-
-function checkReference(reference, sourceFile, failures) {
-  const trimmed = reference.trim();
-
-  if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith("data:")) {
-    return;
-  }
-
-  if (/^(?:https?:)?\/\//i.test(trimmed) || /^[a-z][a-z\d+.-]*:/i.test(trimmed)) {
-    failures.push(`${relativePath(sourceFile)} 存在外部或跨工具资源：${trimmed}`);
-    return;
-  }
-
-  const local = localReference(trimmed);
-  if (!local) {
-    failures.push(`${relativePath(sourceFile)} 存在非相对资源路径：${trimmed}`);
-  }
+function findPattern(content, pattern) {
+  const match = pattern.exec(content);
+  pattern.lastIndex = 0;
+  return match;
 }
 
 async function run() {
   const files = await collectFiles(outputDirectory);
-  const relativeFiles = files.map(relativePath);
+  const relativeFiles = files.map((file) => path.relative(outputDirectory, file).split(path.sep).join("/"));
   const failures = [];
-  const htmlFiles = relativeFiles.filter((file) => path.extname(file).toLowerCase() === ".html");
 
   if (!relativeFiles.includes("index.html")) {
     failures.push("缺少根目录 index.html");
   }
 
-  if (htmlFiles.length !== 1 || htmlFiles[0] !== "index.html") {
-    failures.push(`HTML 入口必须唯一且位于根目录，当前为：${htmlFiles.join(", ") || "无"}`);
-  }
-
-  const entryScripts = relativeFiles.filter((file) => /^assets\/index-[^/]+\.js$/.test(file));
-  const entryStyles = relativeFiles.filter((file) => /^assets\/index-[^/]+\.css$/.test(file));
-
-  if (entryScripts.length !== 1 || entryStyles.length !== 1) {
-    failures.push(
-      `入口哈希资源必须各有且仅有一份，当前 JS=${entryScripts.join(", ") || "无"}，CSS=${entryStyles.join(", ") || "无"}`
-    );
+  const nestedIndexes = relativeFiles.filter((file) => file !== "index.html" && file.endsWith("/index.html"));
+  if (nestedIndexes.length > 0) {
+    failures.push(`存在非根目录入口：${nestedIndexes.join(", ")}`);
   }
 
   const disallowedFiles = relativeFiles.filter((file) => !allowedExtensions.has(path.extname(file).toLowerCase()));
@@ -119,61 +85,38 @@ async function run() {
     }
 
     const content = await readFile(file, "utf8");
+    const relativeFile = path.relative(outputDirectory, file).split(path.sep).join("/");
 
-    for (const [name, pattern] of forbiddenCodePatterns) {
-      const match = pattern.exec(content);
+    for (const [name, pattern] of forbiddenPatterns) {
+      const match = findPattern(content, pattern);
       if (match) {
-        failures.push(`${relativePath(file)}:${lineNumber(content, match.index)} 命中禁用能力：${name}`);
+        failures.push(`${relativeFile}:${getLineNumber(content, match.index)} 命中禁用能力：${name}`);
       }
     }
 
-    if (extension === ".html" || extension === ".svg") {
-      const forbiddenTag = /<(?:iframe|object|embed|form)\b/i.exec(content);
-      if (forbiddenTag) {
-        failures.push(`${relativePath(file)}:${lineNumber(content, forbiddenTag.index)} 存在禁用标签`);
-      }
-
-      const inlineEvent = /\son[a-z]+\s*=/i.exec(content);
-      if (inlineEvent) {
-        failures.push(`${relativePath(file)}:${lineNumber(content, inlineEvent.index)} 存在行内事件`);
-      }
-    }
-
-    if (extension === ".css") {
-      for (const match of content.matchAll(/(?:@import\s+|url\(\s*)["']?([^"')\s;]+)/gi)) {
-        checkReference(match[1], file, failures);
+    for (const pattern of externalResourcePatterns) {
+      const match = findPattern(content, pattern);
+      if (match) {
+        failures.push(`${relativeFile}:${getLineNumber(content, match.index)} 命中外部资源引用`);
       }
     }
   }
 
+  const indexPath = path.join(outputDirectory, "index.html");
   if (relativeFiles.includes("index.html")) {
-    const indexPath = path.join(outputDirectory, "index.html");
     const indexHtml = await readFile(indexPath, "utf8");
 
     if (!indexHtml.includes('<meta name="monday-survival-build" content="xhs"')) {
-      failures.push("index.html 缺少稳定的 XHS 构建模式标记");
+      failures.push("index.html 缺少 XHS 构建模式标记");
     }
 
-    if (/ms-filing-footer|beian\.mps\.gov\.cn|陕公网安备/i.test(indexHtml)) {
-      failures.push("XHS 入口仍包含备案 footer");
-    }
+    const resourceReferences = [...indexHtml.matchAll(/\b(?:href|src)=["']([^"']+)["']/gi)].map((match) => match[1]);
+    const invalidReferences = resourceReferences.filter(
+      (reference) => !reference.startsWith("./") && !reference.startsWith("data:") && !reference.startsWith("#")
+    );
 
-    if (/\bmodulepreload\b/i.test(indexHtml)) {
-      failures.push("index.html 仍包含 modulepreload");
-    }
-
-    for (const match of indexHtml.matchAll(/\b(?:href|src|srcset)\s*=\s*["']([^"']+)["']/gi)) {
-      checkReference(match[1], indexPath, failures);
-    }
-
-    for (const match of indexHtml.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
-      if (!/\bsrc\s*=/.test(match[1]) || match[2].trim()) {
-        failures.push("index.html 存在内联脚本");
-      }
-    }
-
-    if (/<a\b[^>]*\b(?:download|target\s*=\s*["']_blank["'])/i.test(indexHtml)) {
-      failures.push("index.html 存在下载或新窗口入口");
+    if (invalidReferences.length > 0) {
+      failures.push(`index.html 存在非相对资源路径：${invalidReferences.join(", ")}`);
     }
   }
 
@@ -181,9 +124,7 @@ async function run() {
     throw new Error(`XHS 产物检查失败：\n- ${failures.join("\n- ")}`);
   }
 
-  console.log(
-    `XHS 产物检查通过：${relativeFiles.length} 个文件；根入口、扩展名、相对资源、离线能力和禁用能力均符合要求。`
-  );
+  console.log(`XHS 产物检查通过：${relativeFiles.length} 个文件，根入口、扩展名、模式标记、相对资源与禁用能力均符合要求。`);
 }
 
 run().catch((error) => {

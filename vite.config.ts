@@ -8,7 +8,6 @@ export default defineConfig(({ mode }) => {
     base: "./",
     build: {
       copyPublicDir: !isXhsBuild,
-      emptyOutDir: true,
       modulePreload: isXhsBuild ? { polyfill: false } : undefined,
       outDir: isXhsBuild ? "dist-xhs" : "dist"
     },

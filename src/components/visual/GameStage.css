@@ -19,8 +19,8 @@
   position: relative;
   box-sizing: border-box;
   width: min(100vw, var(--ms-stage-width));
-  min-height: 100dvh;
-  padding: 12px 10px 16px;
+  min-height: var(--ms-stage-height);
+  padding: 18px 14px 22px;
   overflow: hidden;
   isolation: isolate;
   background:
@@ -66,7 +66,7 @@
   position: relative;
   z-index: 2;
   display: grid;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -143,13 +143,12 @@
   }
 
   .ms-stage-shell {
-    min-height: var(--ms-stage-height);
     border-radius: 22px;
   }
 }
 
 @media (max-width: 390px) {
   .ms-stage-shell {
-    padding-inline: 8px;
+    padding-inline: 10px;
   }
 }

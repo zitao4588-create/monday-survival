@@ -1,12 +1,13 @@
 import { useLayoutEffect, useState } from "react";
 import type { GameProgress } from "./gameCore";
-import bgResultClean from "./assets/claude-ui/bg-result-clean-2x.jpg";
 import { ComponentLab } from "./components/component-lab/ComponentLab";
-import { ChoiceFeedbackScreen } from "./components/ChoiceFeedbackScreen";
-import { ResultScreen } from "./components/ResultScreen";
-import { RoundScreen } from "./components/RoundScreen";
-import { GameStage } from "./components/visual/GameStage";
+import { ClaudeFeedbackScreen } from "./components/claude/ClaudeFeedbackScreen";
+import { ClaudeGameStage } from "./components/claude/ClaudeGameStage";
+import { ClaudeResultScreen } from "./components/claude/ClaudeResultScreen";
+import { ClaudeRoundScreen } from "./components/claude/ClaudeRoundScreen";
 import type { ChoiceViewModel, EventViewModel, ResultViewModel } from "./components/visualTypes";
+import bgFeedbackClean from "./assets/claude-ui/bg-feedback-no-preview-2x.jpg";
+import bgResultClean from "./assets/claude-ui/bg-result-clean-2x.jpg";
 import {
   calculateMondayResult,
   chooseMondayAction,
@@ -17,6 +18,14 @@ import {
 import { toChoiceViewModel, toEventViewModel, toResultViewModel, toStatViewModels } from "./gameViewModels";
 import { createResultPosterDataUrl } from "./resultPoster";
 import { createResultShareText, toResultShareData } from "./resultShare";
+
+if (typeof window !== "undefined") {
+  const feedbackBackgroundImage = new Image();
+  feedbackBackgroundImage.src = bgFeedbackClean;
+
+  const resultBackgroundImage = new Image();
+  resultBackgroundImage.src = bgResultClean;
+}
 
 export interface MondaySurvivalGameProps {
   onEvent?: (name: string, properties?: Record<string, string | number | boolean>) => void;
@@ -76,36 +85,35 @@ function getStatDelta(before: GameProgress, after: GameProgress) {
 function StaticMondayScreen({ screen }: { screen: "feedback" | "result" | "round" }) {
   if (screen === "round") {
     return (
-      <GameStage>
-        <RoundScreen
+      <ClaudeGameStage>
+        <ClaudeRoundScreen
           choices={previewChoices}
           currentRound={1}
           event={toEventViewModel(mondayTurns[0], "alarm")}
           stats={previewRoundStats}
           totalRounds={mondayTurns.length}
         />
-      </GameStage>
+      </ClaudeGameStage>
     );
   }
 
   if (screen === "feedback") {
     return (
-      <GameStage>
-        <ChoiceFeedbackScreen
-          currentRound={2}
-          nextEvent={toEventViewModel(mondayTurns[1], "train")}
+      <ClaudeGameStage>
+        <ClaudeFeedbackScreen
+          currentRound={1}
           selectedChoice={previewSelectedChoice}
           stats={previewFeedbackStats}
           totalRounds={mondayTurns.length}
         />
-      </GameStage>
+      </ClaudeGameStage>
     );
   }
 
   return (
-    <GameStage>
-      <ResultScreen result={previewResult} stats={previewResultStats} />
-    </GameStage>
+    <ClaudeGameStage>
+      <ClaudeResultScreen result={previewResult} stats={previewResultStats} />
+    </ClaudeGameStage>
   );
 }
 
@@ -115,7 +123,7 @@ interface FeedbackState {
   selectedChoice: ChoiceViewModel;
 }
 
-type ShareStatus = "copied" | "failed" | "generating" | "idle" | "ready" | "screenshot";
+type ShareStatus = "copied" | "failed" | "generating" | "idle" | "ready";
 
 type ShareNavigator = Navigator & {
   share?: (data: { text?: string; title?: string; url?: string }) => Promise<void>;
@@ -181,20 +189,16 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
     });
   }
 
-  async function saveResultImage(result: ResultViewModel, stats: ReturnType<typeof toStatViewModels>) {
-    if (__XHS_BUILD__) {
-      setShareStatus("screenshot");
-      onEvent?.("share_hint_shown");
-      return;
-    }
-
+  async function createResultImage(result: ResultViewModel, stats: ReturnType<typeof toStatViewModels>) {
     setShareStatus("generating");
 
     try {
       const imageUrl = await createResultPosterDataUrl(bgResultClean, toResultShareData(result, stats));
       setResultImageUrl(imageUrl);
       setShareStatus("ready");
-      onEvent?.("result_image_generated", { result: result.title });
+      onEvent?.("result_image_generated", {
+        result: result.title
+      });
     } catch {
       setResultImageUrl(null);
       setShareStatus("failed");
@@ -211,24 +215,30 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
     const text = createResultShareText(result, stats);
 
     try {
-      if (nav.clipboard?.writeText) {
+      if (nav.share) {
+        await nav.share({
+          text,
+          title: "今天你能熬过周一吗",
+          url
+        });
+      } else if (nav.clipboard?.writeText) {
         await nav.clipboard.writeText(`${text}\n${url}`);
-      } else if (nav.share) {
-        await nav.share({ text, title: "今天你能熬过周一吗", url });
       } else {
         throw new Error("No share or clipboard API available");
       }
 
       setShareStatus("copied");
-      onEvent?.("share_result", { result: result.title });
+      onEvent?.("share_result", {
+        result: result.title
+      });
     } catch {
       try {
         await nav.clipboard?.writeText?.(`${text}\n${url}`);
         setShareStatus("copied");
       } catch {
-        setShareStatus("failed");
-      }
+      setShareStatus("failed");
     }
+  }
   }
 
   if (phase === "result" || (phase !== "feedback" && isMondayRunComplete(progress))) {
@@ -237,43 +247,40 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
     const resultViewModel = toResultViewModel(result, progress);
 
     return (
-      <GameStage>
-        <ResultScreen
+      <ClaudeGameStage>
+        <ClaudeResultScreen
           onCloseResultImage={() => setResultImageUrl(null)}
           onRestart={restart}
           onShareText={__XHS_BUILD__ ? undefined : () => void shareResultText(resultViewModel, stats)}
-          onSaveResult={() => void saveResultImage(resultViewModel, stats)}
+          onCreateResultImage={() => void createResultImage(resultViewModel, stats)}
           result={resultViewModel}
           resultImageUrl={resultImageUrl}
           shareStatus={shareStatus}
           stats={stats}
         />
-      </GameStage>
+      </ClaudeGameStage>
     );
   }
 
   if (phase === "feedback" && feedback) {
-    const nextEvent = isMondayRunComplete(feedback.after) ? undefined : getEventViewModel(feedback.after.turnIndex);
-
     return (
-      <GameStage>
-        <ChoiceFeedbackScreen
-          currentRound={Math.min(feedback.after.turnIndex + 1, mondayTurns.length)}
-          nextEvent={nextEvent}
+      <ClaudeGameStage>
+        <ClaudeFeedbackScreen
+          currentRound={Math.min(feedback.before.turnIndex + 1, mondayTurns.length)}
           onContinue={continueRun}
           selectedChoice={feedback.selectedChoice}
           stats={toStatViewModels(feedback.after, getStatDelta(feedback.before, feedback.after))}
           totalRounds={mondayTurns.length}
         />
-      </GameStage>
+      </ClaudeGameStage>
     );
   }
 
   const currentTurnIndex = Math.min(progress.turnIndex, mondayTurns.length - 1);
 
   return (
-    <GameStage>
-      <RoundScreen
+    <ClaudeGameStage>
+      <ClaudeRoundScreen
         choices={getChoiceViewModels(currentTurnIndex)}
         currentRound={currentTurnIndex + 1}
         event={getEventViewModel(currentTurnIndex)}
@@ -281,7 +288,7 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
         stats={toStatViewModels(progress)}
         totalRounds={mondayTurns.length}
       />
-    </GameStage>
+    </ClaudeGameStage>
   );
 }
 
