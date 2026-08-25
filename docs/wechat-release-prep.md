@@ -18,7 +18,7 @@ This document tracks what is needed before `monday-survival` moves from an inter
 - Do not add login.
 - Do not add payment.
 - Do not add Docker.
-- Do not replace the Claude fable5 visual system.
+- Keep the approved Fixed round, feedback, and result visual system.
 - Do not add WeChat JS-SDK until the final domain decision is made.
 
 ## Public Sharing Checklist
@@ -48,7 +48,6 @@ CloudBase official docs note that mainland China custom domains require ICP fili
 - [ ] Add WeChat JS-SDK sharing only after the custom domain is ready.
 - [ ] Define final WeChat share title, description, and cover image.
 - [ ] Add a lightweight manual feedback link or QR code outside the game UI.
-- [ ] Clean unused historical visual experiment assets from a separate branch or PR after confirming no rollback need.
 
 ## WeChat JS-SDK Decision
 

@@ -20,22 +20,22 @@ async function isServerReady() {
   }
 }
 
-async function waitForServer() {
+async function waitForServer(expectedReady = true) {
   const startedAt = Date.now();
 
   while (Date.now() - startedAt < 20_000) {
-    if (await isServerReady()) {
+    if ((await isServerReady()) === expectedReady) {
       return;
     }
     await new Promise((resolve) => setTimeout(resolve, 250));
   }
 
-  throw new Error(`Timed out waiting for ${baseURL}`);
+  throw new Error(`等待 ${baseURL} ${expectedReady ? "启动" : "停止"}超时`);
 }
 
 async function ensureServer() {
   if (await isServerReady()) {
-    return undefined;
+    throw new Error(`${baseURL} 已被旧服务占用，请先停止该服务再运行微信 H5 验收`);
   }
 
   if (!localHosts.has(base.hostname)) {
@@ -49,8 +49,30 @@ async function ensureServer() {
     stdio: "ignore"
   });
 
-  await waitForServer();
-  return server;
+  try {
+    await waitForServer(true);
+    return server;
+  } catch (error) {
+    await stopServer(server);
+    throw error;
+  }
+}
+
+async function stopServer(server) {
+  if (!server) {
+    return;
+  }
+
+  if (server.exitCode === null) {
+    const exited = new Promise((resolve) => server.once("exit", resolve));
+    server.kill("SIGTERM");
+    await Promise.race([
+      exited,
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Vite 服务未能在 5 秒内退出")), 5_000))
+    ]);
+  }
+
+  await waitForServer(false);
 }
 
 async function assertNoHorizontalOverflow(page, viewportName) {
@@ -104,10 +126,12 @@ async function checkResultImage(page) {
 
 async function run() {
   const server = await ensureServer();
-  const browser = await chromium.launch();
+  let browser;
   const errors = [];
 
   try {
+    browser = await chromium.launch();
+
     for (const viewport of viewports) {
       const context = await browser.newContext({
         deviceScaleFactor: 1,
@@ -146,9 +170,10 @@ async function run() {
       console.log(`Passed ${viewport.name}`);
     }
   } finally {
-    await browser.close();
-    if (server) {
-      server.kill();
+    try {
+      await browser?.close();
+    } finally {
+      await stopServer(server);
     }
   }
 

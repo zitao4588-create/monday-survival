@@ -1,6 +1,5 @@
 import { useLayoutEffect, useState } from "react";
 import type { GameProgress } from "./gameCore";
-import { ComponentLab } from "./components/component-lab/ComponentLab";
 import { FixedFeedbackScreen } from "./components/fixed-feedback/FixedFeedbackScreen";
 import { FixedResultScreen } from "./components/fixed-result/FixedResultScreen";
 import { FixedRoundScreen } from "./components/fixed-round/FixedRoundScreen";
@@ -46,15 +45,6 @@ function getStaticScreen() {
   const screen = new URLSearchParams(window.location.search).get("screen") ?? pathScreen;
 
   return screen === "round" || screen === "feedback" || screen === "result" ? screen : null;
-}
-
-function getComponentLab() {
-  if (new URLSearchParams(window.location.search).get("lab") === "components") {
-    return true;
-  }
-
-  const path = window.location.pathname.toLowerCase();
-  return path.includes("components") || path.endsWith("/lab") || path.endsWith("/lab/");
 }
 
 function getEventViewModel(turnIndex: number) {
@@ -293,10 +283,6 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
 }
 
 export function MondaySurvivalGame(props: MondaySurvivalGameProps = {}) {
-  if (getComponentLab()) {
-    return <ComponentLab />;
-  }
-
   const staticScreen = getStaticScreen();
 
   if (staticScreen) {

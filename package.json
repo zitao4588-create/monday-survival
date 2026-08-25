@@ -1,11 +1,10 @@
 {
-  "name": "monday-survival",
+  "name": "@game-lab/monday-survival",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@9.15.4",
   "dependencies": {
-    "lucide-react": "^1.32.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -27,9 +26,6 @@
     "deploy:cloudbase:app": "tcb app deploy --framework react --build-command \"pnpm build\" --output-dir dist -e",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json",
-    "component-skins:generate": "python3 scripts/generate-component-skin-assets.py",
-    "shell:generate": "python3 scripts/generate-shell-v1-assets.py",
-    "skin:generate": "python3 scripts/generate-ui-skin-assets.py",
     "visual:capture": "node scripts/visual-capture.mjs",
     "visual:report": "node scripts/visual-report.mjs",
     "visual:check": "pnpm visual:capture && pnpm visual:report",

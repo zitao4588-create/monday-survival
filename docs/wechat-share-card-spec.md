@@ -76,7 +76,7 @@ Keep this format short. It should fit in WeChat chat messages without feeling li
 
 ## Share Thumbnail Direction
 
-The share thumbnail should not be a full page screenshot. It should be a small, readable visual cue from the existing Claude fable5 style:
+The share thumbnail should not be a full page screenshot. It should be a small, readable visual cue from the approved Fixed style:
 
 - warm paper report card,
 - dark green stamp,

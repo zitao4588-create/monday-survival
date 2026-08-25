@@ -1,7 +1,7 @@
-import type { PrintIconName } from "./PrintIcon";
 import type { GameChoiceIcon } from "../gameCore";
 
 export type StatKind = "energy" | "mood" | "score";
+export type EventVisual = "alarm" | "coffee" | "train";
 
 export interface StatViewModel {
   kind: StatKind;
@@ -14,7 +14,7 @@ export interface EventViewModel {
   body: string;
   time: string;
   title: string;
-  visual?: PrintIconName;
+  visual?: EventVisual;
 }
 
 export interface ChoiceViewModel {

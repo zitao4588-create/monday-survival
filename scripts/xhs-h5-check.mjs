@@ -69,11 +69,15 @@ async function stopServer(server) {
     return;
   }
 
-  server.kill("SIGTERM");
-  await Promise.race([
-    new Promise((resolve) => server.once("exit", resolve)),
-    new Promise((_, reject) => setTimeout(() => reject(new Error("Vite preview 进程未能及时退出")), 5_000))
-  ]);
+  if (server.exitCode === null) {
+    const exited = new Promise((resolve) => server.once("exit", resolve));
+    server.kill("SIGTERM");
+    await Promise.race([
+      exited,
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Vite preview 进程未能及时退出")), 5_000))
+    ]);
+  }
+
   await waitForServer(false);
 }
 
