@@ -1,7 +1,10 @@
 import { useLayoutEffect, useState } from "react";
 import type { GameProgress } from "./gameCore";
 import { FixedFeedbackScreen } from "./components/fixed-feedback/FixedFeedbackScreen";
-import { FixedResultScreen } from "./components/fixed-result/FixedResultScreen";
+import {
+  FixedResultScreen,
+  type ResultShareStatus
+} from "./components/fixed-result/FixedResultScreen";
 import { FixedRoundScreen } from "./components/fixed-round/FixedRoundScreen";
 import { FixedRoundStage } from "./components/fixed-round/FixedRoundStage";
 import { FixedScreenStage } from "./components/fixed-screen/FixedScreenStage";
@@ -88,7 +91,6 @@ function StaticMondayScreen({ screen }: { screen: "feedback" | "result" | "round
           currentRound={1}
           nextEvent={toEventViewModel(mondayTurns[1], "train")}
           selectedChoice={previewSelectedChoice}
-          selectedChoiceIndex={0}
           stats={previewFeedbackStats}
           totalRounds={mondayTurns.length}
         />
@@ -107,10 +109,7 @@ interface FeedbackState {
   after: GameProgress;
   before: GameProgress;
   selectedChoice: ChoiceViewModel;
-  selectedChoiceIndex: number;
 }
-
-type ShareStatus = "copied" | "failed" | "generating" | "idle" | "ready";
 
 type ShareNavigator = Navigator & {
   share?: (data: { text?: string; title?: string; url?: string }) => Promise<void>;
@@ -124,17 +123,29 @@ function getShareUrl() {
   return `${window.location.origin}${window.location.pathname}`;
 }
 
+function isAbortError(error: unknown) {
+  return error instanceof DOMException
+    ? error.name === "AbortError"
+    : error instanceof Error && error.name === "AbortError";
+}
+
 function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
   const [progress, setProgress] = useState(createMondayRun);
   const [phase, setPhase] = useState<"feedback" | "result" | "round">("round");
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
-  const [shareStatus, setShareStatus] = useState<ShareStatus>("idle");
+  const [shareStatus, setShareStatus] = useState<ResultShareStatus>("idle");
   const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
 
   useLayoutEffect(() => {
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    function resetScroll() {
+      window.scrollTo({ left: 0, top: 0, behavior: "instant" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+
+    resetScroll();
+    const frame = window.requestAnimationFrame(resetScroll);
+    return () => window.cancelAnimationFrame(frame);
   }, [phase, resultImageUrl]);
 
   function restart() {
@@ -156,9 +167,8 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
 
     const before = progress;
     const after = chooseMondayAction(before, gameChoice);
-    const selectedChoiceIndex = currentTurn.choices.findIndex((candidate) => candidate.id === choice.id);
     setProgress(after);
-    setFeedback({ after, before, selectedChoice: choice, selectedChoiceIndex });
+    setFeedback({ after, before, selectedChoice: choice });
     setShareStatus("idle");
     setResultImageUrl(null);
     setPhase("feedback");
@@ -201,31 +211,48 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
     const nav = navigator as ShareNavigator;
     const url = getShareUrl();
     const text = createResultShareText(result, stats);
+    const shareText = `${text}\n${url}`;
 
-    try {
-      if (nav.share) {
+    if (nav.share) {
+      setShareStatus("sharing");
+
+      try {
         await nav.share({
           text,
           title: "今天你能熬过周一吗",
           url
         });
-      } else if (nav.clipboard?.writeText) {
-        await nav.clipboard.writeText(`${text}\n${url}`);
-      } else {
-        throw new Error("No share or clipboard API available");
-      }
+        setShareStatus("shared");
+        onEvent?.("share_result", {
+          result: result.title
+        });
+        return;
+      } catch (error) {
+        if (isAbortError(error)) {
+          setShareStatus("cancelled");
+          return;
+        }
 
+        if (!nav.clipboard?.writeText) {
+          setShareStatus("failed");
+          return;
+        }
+      }
+    }
+
+    if (!nav.clipboard?.writeText) {
+      setShareStatus("failed");
+      return;
+    }
+
+    try {
+      await nav.clipboard.writeText(shareText);
       setShareStatus("copied");
       onEvent?.("share_result", {
         result: result.title
       });
     } catch {
-      try {
-        await nav.clipboard?.writeText?.(`${text}\n${url}`);
-        setShareStatus("copied");
-      } catch {
-        setShareStatus("failed");
-      }
+      setShareStatus("failed");
     }
   }
 
@@ -237,7 +264,10 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
     return (
       <FixedScreenStage>
         <FixedResultScreen
-          onCloseResultImage={() => setResultImageUrl(null)}
+          onCloseResultImage={() => {
+            setResultImageUrl(null);
+            setShareStatus("idle");
+          }}
           onRestart={restart}
           onShareText={isXhsBuild ? undefined : () => void shareResultText(resultViewModel, stats)}
           onCreateResultImage={() => void createResultImage(resultViewModel, stats)}
@@ -260,7 +290,6 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
           nextEvent={nextEvent}
           onContinue={continueRun}
           selectedChoice={feedback.selectedChoice}
-          selectedChoiceIndex={feedback.selectedChoiceIndex}
           stats={toStatViewModels(feedback.after, getStatDelta(feedback.before, feedback.after))}
           totalRounds={mondayTurns.length}
         />

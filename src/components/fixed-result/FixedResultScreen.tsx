@@ -1,10 +1,22 @@
 import resultBackground from "../../assets/backgrounds/result-background-fixed@2x.jpg";
+import { formatPerformance } from "../../gameViewModels";
 import "../../styles/fixed-result.css";
 import { PrintIcon } from "../PrintIcon";
+import { ViewportAssist } from "../ViewportAssist";
 import type { ResultViewModel, StatViewModel } from "../visualTypes";
 import { SkinIcon, type SkinIconName } from "../skin/SkinIcon";
 
 const isXhsBuild = import.meta.env.MODE === "xhs";
+
+export type ResultShareStatus =
+  | "cancelled"
+  | "copied"
+  | "failed"
+  | "generating"
+  | "idle"
+  | "ready"
+  | "shared"
+  | "sharing";
 
 export interface FixedResultScreenProps {
   onCloseResultImage?: () => void;
@@ -13,7 +25,7 @@ export interface FixedResultScreenProps {
   onShareText?: () => void;
   result: ResultViewModel;
   resultImageUrl?: string | null;
-  shareStatus?: "copied" | "failed" | "generating" | "idle" | "ready";
+  shareStatus?: ResultShareStatus;
   stats: StatViewModel[];
 }
 
@@ -35,11 +47,23 @@ function getShareStatusText(shareStatus: NonNullable<FixedResultScreenProps["sha
   }
 
   if (shareStatus === "failed") {
-    return "暂时无法生成，请手动截图。";
+    return "操作失败，请重试或手动截图。";
   }
 
   if (!isXhsBuild && shareStatus === "copied") {
-    return "分享文案已准备好，可以发给同事。";
+    return "分享文案已复制，可以发给同事。";
+  }
+
+  if (!isXhsBuild && shareStatus === "sharing") {
+    return "正在打开系统分享…";
+  }
+
+  if (!isXhsBuild && shareStatus === "shared") {
+    return "分享已完成。";
+  }
+
+  if (!isXhsBuild && shareStatus === "cancelled") {
+    return "已取消分享，未复制任何内容。";
   }
 
   return null;
@@ -50,11 +74,13 @@ function getDisplayValue(value: number) {
 }
 
 function FixedResultStat({ stat }: { stat: StatViewModel }) {
+  const isPerformance = stat.kind === "score";
   const displayValue = getDisplayValue(stat.value);
+  const renderedValue = isPerformance ? formatPerformance(stat.value) : displayValue;
 
   return (
     <article
-      aria-label={`${stat.label} ${displayValue}/100`}
+      aria-label={isPerformance ? `${stat.label} ${renderedValue}` : `${stat.label} ${displayValue}/100`}
       className={`ms-fixed-result-stat ms-fixed-result-stat--${stat.kind}`}
       data-stat-kind={stat.kind}
     >
@@ -62,8 +88,8 @@ function FixedResultStat({ stat }: { stat: StatViewModel }) {
         <SkinIcon name={statIcons[stat.kind]} />
         <strong>{stat.label}</strong>
       </div>
-      <span>{displayValue}</span>
-      <small>/ 100</small>
+      <span>{renderedValue}</span>
+      {isPerformance ? null : <small>/ 100</small>}
     </article>
   );
 }
@@ -84,6 +110,7 @@ export function FixedResultScreen({
   const endingTitleClassName = result.title.length > 6
     ? "ms-fixed-result-ending__title is-long"
     : "ms-fixed-result-ending__title";
+  const shareStatusText = getShareStatusText(shareStatus);
 
   return (
     <section className="ms-fixed-result-screen" aria-label="结果分享卡">
@@ -123,14 +150,6 @@ export function FixedResultScreen({
 
       <div className="ms-fixed-result-actions">
         <button
-          aria-label="再活一次周一"
-          className="ms-fixed-result-action ms-fixed-result-action--restart"
-          type="button"
-          onClick={onRestart}
-        >
-          <span>再活一次周一</span>
-        </button>
-        <button
           aria-label="生成结果图"
           className="ms-fixed-result-action ms-fixed-result-action--share"
           type="button"
@@ -139,14 +158,43 @@ export function FixedResultScreen({
           <PrintIcon name="download" />
           <span>保存结果图</span>
         </button>
-        {shareStatus !== "idle" ? (
+        <button
+          aria-label="再活一次周一"
+          className="ms-fixed-result-action ms-fixed-result-action--restart"
+          type="button"
+          onClick={onRestart}
+        >
+          <span>再活一次周一</span>
+        </button>
+        {shareStatusText && !resultImageUrl ? (
           <p className="ms-fixed-result-share-status" role="status">
-            {getShareStatusText(shareStatus)}
+            {shareStatusText}
           </p>
         ) : null}
       </div>
 
       <p className="ms-fixed-result-thanks">感谢你的努力，周二会更温柔。</p>
+
+      {!resultImageUrl ? (
+        <ViewportAssist actionBottom={826} className="ms-viewport-assist--result">
+          <button
+            aria-label="保存结果图（固定操作）"
+            className="ms-viewport-assist__primary"
+            onClick={onCreateResultImage}
+            type="button"
+          >
+            保存结果图
+          </button>
+          <button
+            aria-label="再活一次周一（固定操作）"
+            className="ms-viewport-assist__secondary"
+            onClick={onRestart}
+            type="button"
+          >
+            再活一次周一
+          </button>
+        </ViewportAssist>
+      ) : null}
 
       {resultImageUrl ? (
         <div className="ms-fixed-result-poster-modal" role="dialog" aria-modal="true" aria-label="保存结果图">
@@ -179,6 +227,9 @@ export function FixedResultScreen({
                 </div>
               </>
             )}
+            {shareStatusText ? (
+              <p className="ms-fixed-result-poster-status" role="status">{shareStatusText}</p>
+            ) : null}
           </div>
         </div>
       ) : null}

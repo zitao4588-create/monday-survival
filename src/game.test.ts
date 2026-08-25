@@ -6,7 +6,7 @@ import {
   isMondayRunComplete,
   mondayTurns
 } from "./game";
-import { getStatSegmentCount, toStatViewModels } from "./gameViewModels";
+import { formatPerformance, getStatSegmentCount, toStatViewModels } from "./gameViewModels";
 import { createResultShareText, toResultShareData } from "./resultShare";
 
 describe("monday-survival", () => {
@@ -139,13 +139,12 @@ describe("monday-survival", () => {
     }
   });
 
-  it("keeps low positive score visible as two of seven segments", () => {
+  it("keeps bounded energy and mood visible as seven segments", () => {
     expect(getStatSegmentCount("energy", 78)).toBe(6);
     expect(getStatSegmentCount("mood", 64)).toBe(5);
-    expect(getStatSegmentCount("score", 12)).toBe(2);
-    expect(getStatSegmentCount("score", 0)).toBe(0);
-    expect(getStatSegmentCount("score", -18)).toBe(0);
-    expect(getStatSegmentCount("score", 100)).toBe(7);
+    expect(formatPerformance(12)).toBe("+12");
+    expect(formatPerformance(0)).toBe("0");
+    expect(formatPerformance(-18)).toBe("-18");
   });
 
   it("creates share and poster data from dynamic result values", () => {
@@ -158,7 +157,7 @@ describe("monday-survival", () => {
     const stats = [
       { kind: "energy" as const, label: "能量", value: 52 },
       { kind: "mood" as const, label: "心情", value: 76 },
-      { kind: "score" as const, label: "得分", value: 88 }
+      { kind: "score" as const, label: "绩效", value: 88 }
     ];
 
     expect(toStatViewModels({ energy: 52, mood: 76, score: 88 }).map((stat) => stat.kind)).toEqual([
@@ -176,6 +175,9 @@ describe("monday-survival", () => {
       title: result.title
     });
     expect(createResultShareText(result, stats)).toContain("我的周一求生结果：体面下班");
-    expect(createResultShareText(result, stats)).toContain("得分 88/100 · 能量 52/100 · 心情 76/100");
+    expect(createResultShareText(result, stats)).toContain("绩效 +88 · 能量 52/100 · 心情 76/100");
+
+    const negativeStats = stats.map((stat) => stat.kind === "score" ? { ...stat, value: -18 } : stat);
+    expect(createResultShareText(result, negativeStats)).toContain("绩效 -18 · 能量 52/100 · 心情 76/100");
   });
 });

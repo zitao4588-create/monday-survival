@@ -157,12 +157,16 @@ export function getStatSegmentCount(kind: "energy" | "mood" | "score", value: nu
   return kind === "score" ? Math.max(2, proportionalSegments) : proportionalSegments;
 }
 
+export function formatPerformance(value: number) {
+  return value > 0 ? `+${value}` : String(value);
+}
+
 export function toStatViewModels(progress: Pick<GameProgress, "energy" | "mood" | "score">, delta?: Partial<Record<"energy" | "mood" | "score", number>>): StatViewModel[] {
   return [
     {
       delta: delta?.score,
       kind: "score",
-      label: "得分",
+      label: "绩效",
       value: progress.score
     },
     {

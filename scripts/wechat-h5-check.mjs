@@ -143,7 +143,28 @@ async function checkResultImage(page) {
   const shareTextButton = page.getByRole("button", { name: "分享文案" });
   await shareTextButton.waitFor();
   await shareTextButton.click();
-  await page.getByText("分享文案已准备好，可以发给同事。").waitFor();
+  await page.getByText("分享文案已复制，可以发给同事。").waitFor();
+
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "share", {
+      configurable: true,
+      value: () => Promise.reject(new DOMException("Share cancelled", "AbortError"))
+    });
+  });
+  await shareTextButton.click();
+  await page.getByText("已取消分享，未复制任何内容。").waitFor();
+
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "share", { configurable: true, value: undefined });
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: undefined });
+  });
+  await shareTextButton.click();
+  await page.getByText("操作失败，请重试或手动截图。").waitFor();
+
+  await page.getByLabel("关闭结果图", { exact: true }).click();
+  if ((await page.getByText("操作失败，请重试或手动截图。", { exact: true }).count()) !== 0) {
+    throw new Error("关闭结果图后仍残留分享失败状态");
+  }
 }
 
 async function run() {

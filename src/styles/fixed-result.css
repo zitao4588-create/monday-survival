@@ -171,6 +171,10 @@
   line-height: 18px;
 }
 
+.ms-fixed-result-stat--score > span {
+  font-size: 38px;
+}
+
 .ms-fixed-result-persona {
   top: 646px;
   left: 54px;
@@ -271,27 +275,26 @@
 }
 
 .ms-fixed-result-action--restart {
-  top: 0;
-  height: 54px;
-  padding-right: 33px;
-  color: #eee6d7;
+  top: 64px;
+  height: 43px;
+  color: #5f6d4c;
 }
 
 .ms-fixed-result-action--restart span {
-  font-size: 24px;
-  font-weight: 900;
-  line-height: 54px;
-  letter-spacing: 0.08em;
-  text-shadow: 0 1px 1px rgba(29, 22, 15, 0.34);
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 43px;
+  letter-spacing: 0.12em;
 }
 
 .ms-fixed-result-action--share {
-  top: 64px;
-  height: 43px;
+  top: 0;
+  height: 54px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #5f6d4c;
+  padding-right: 33px;
+  color: #eee6d7;
 }
 
 .ms-fixed-result-action--share .ms-icon {
@@ -301,10 +304,11 @@
 }
 
 .ms-fixed-result-action--share span {
-  font-size: 18px;
-  font-weight: 750;
-  line-height: 43px;
-  letter-spacing: 0.14em;
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 54px;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 1px rgba(29, 22, 15, 0.34);
 }
 
 .ms-fixed-result-action:hover {
@@ -442,6 +446,15 @@
 .ms-fixed-result-poster-action:nth-child(2) {
   background: #4f5a44;
   color: #ece5d1;
+}
+
+.ms-fixed-result-poster-status {
+  margin: 14px 0 0;
+  color: #ece5d1;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 18px;
+  text-align: center;
 }
 
 .ms-fixed-result-poster-close:focus-visible,

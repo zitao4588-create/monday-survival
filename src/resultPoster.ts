@@ -1,4 +1,5 @@
 import type { ResultShareData } from "./resultShare";
+import { formatPerformance } from "./gameViewModels";
 
 const POSTER_WIDTH = 853;
 const POSTER_HEIGHT = 1844;
@@ -138,8 +139,13 @@ export async function createResultPosterDataUrl(backgroundSrc: string, data: Res
   drawCenteredText(context, data.description, POSTER_WIDTH / 2, 882, 820, 40, 2);
 
   context.fillStyle = "#3d4730";
+  context.font = getFont(800, 32);
+  context.fillText("绩效", 211, 1075, 220);
+  context.fillText("能量", 434, 1075, 220);
+  context.fillText("心情", 650, 1075, 220);
+
   context.font = getFont(800, 90);
-  context.fillText(String(data.score), 211, 1130, 220);
+  context.fillText(formatPerformance(data.score), 211, 1130, 220);
   context.fillText(String(data.energy), 434, 1130, 220);
   context.fillText(String(data.mood), 650, 1130, 220);
 

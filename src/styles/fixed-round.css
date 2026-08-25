@@ -320,22 +320,22 @@
   border-radius: 50%;
 }
 
-.ms-fixed-choice__icon .ms-skin-icon {
+.ms-fixed-choice__icon .ms-choice-icon {
   width: 34px;
   height: 34px;
-  --ms-skin-icon-filter: brightness(0) saturate(100%) invert(38%) sepia(18%) saturate(844%) hue-rotate(37deg) brightness(92%) contrast(85%);
+  color: #5f6d4c;
 }
 
-.ms-fixed-choice--yellow .ms-fixed-choice__icon .ms-skin-icon {
-  --ms-skin-icon-filter: brightness(0) saturate(100%) invert(65%) sepia(54%) saturate(869%) hue-rotate(1deg) brightness(94%) contrast(87%);
+.ms-fixed-choice--yellow .ms-fixed-choice__icon .ms-choice-icon {
+  color: #c99428;
 }
 
 .ms-fixed-choice--yellow .ms-fixed-choice__icon {
   border-color: #c99428;
 }
 
-.ms-fixed-choice--red .ms-fixed-choice__icon .ms-skin-icon {
-  --ms-skin-icon-filter: brightness(0) saturate(100%) invert(42%) sepia(68%) saturate(892%) hue-rotate(335deg) brightness(93%) contrast(86%);
+.ms-fixed-choice--red .ms-fixed-choice__icon .ms-choice-icon {
+  color: #bd552f;
 }
 
 .ms-fixed-choice--red .ms-fixed-choice__icon {

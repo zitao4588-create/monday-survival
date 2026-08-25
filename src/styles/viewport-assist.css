@@ -1,0 +1,77 @@
+.ms-viewport-assist,
+.ms-viewport-assist * {
+  box-sizing: border-box;
+}
+
+.ms-viewport-assist {
+  position: fixed;
+  right: 12px;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  left: 12px;
+  z-index: 100;
+  max-width: 402px;
+  margin: 0 auto;
+  font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+.ms-viewport-assist__primary,
+.ms-viewport-assist__secondary {
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid rgba(238, 230, 215, 0.72);
+  border-radius: 13px;
+  box-shadow: 0 8px 24px rgba(19, 13, 8, 0.3);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ms-viewport-assist__primary {
+  background: #4f5a44;
+  color: #f3ead8;
+}
+
+.ms-viewport-assist__secondary {
+  min-height: 43px;
+  margin-top: 8px;
+  background: rgba(239, 231, 213, 0.96);
+  color: #4f5a44;
+}
+
+.ms-viewport-assist__primary:focus-visible,
+.ms-viewport-assist__secondary:focus-visible {
+  outline: 3px solid #f0d890;
+  outline-offset: 2px;
+}
+
+.ms-viewport-assist--round-hint {
+  right: 8px;
+  bottom: calc(8px + env(safe-area-inset-bottom));
+  left: auto;
+  width: auto;
+  max-width: none;
+  pointer-events: none;
+}
+
+.ms-viewport-assist__hint {
+  display: block;
+  border: 1px solid rgba(239, 231, 213, 0.68);
+  border-radius: 999px;
+  background: rgba(41, 35, 27, 0.9);
+  box-shadow: 0 5px 16px rgba(19, 13, 8, 0.28);
+  padding: 7px 11px;
+  color: #f3ead8;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ms-viewport-assist * {
+    scroll-behavior: auto;
+  }
+}

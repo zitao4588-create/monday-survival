@@ -1,4 +1,5 @@
 import type { ResultViewModel, StatViewModel } from "./components/visualTypes";
+import { formatPerformance } from "./gameViewModels";
 
 export interface ResultShareData {
   description: string;
@@ -32,7 +33,7 @@ export function createResultShareText(result: ResultViewModel, stats: StatViewMo
   return [
     `我的周一求生结果：${data.title}`,
     `${data.personaLabel}：${data.personaQuote}`,
-    `得分 ${data.score}/100 · 能量 ${data.energy}/100 · 心情 ${data.mood}/100`,
+    `绩效 ${formatPerformance(data.score)} · 能量 ${data.energy}/100 · 心情 ${data.mood}/100`,
     "来试试你能不能熬过周一。"
   ].join("\n");
 }

@@ -1,16 +1,16 @@
 import feedbackBackground from "../../assets/backgrounds/feedback-background-fixed@2x.jpg";
-import { getStatSegmentCount } from "../../gameViewModels";
+import { formatPerformance, getStatSegmentCount } from "../../gameViewModels";
 import "../../styles/fixed-feedback.css";
+import { ChoiceIcon } from "../ChoiceIcon";
+import { ViewportAssist } from "../ViewportAssist";
 import type { ChoiceViewModel, EventViewModel, StatViewModel } from "../visualTypes";
 import { SkinIcon, type SkinIconName } from "../skin/SkinIcon";
-import { getFixedChoiceVisual } from "../fixed-round/FixedRoundScreen";
 
 export interface FixedFeedbackScreenProps {
   currentRound: number;
   nextEvent?: EventViewModel;
   onContinue?: () => void;
   selectedChoice: ChoiceViewModel;
-  selectedChoiceIndex?: number;
   stats: StatViewModel[];
   totalRounds: number;
 }
@@ -49,7 +49,7 @@ function describeDelta(kind: StatViewModel["kind"], delta: number) {
   const amount = Math.abs(delta);
 
   if (delta === 0) {
-    return `${kind === "energy" ? "能量" : kind === "mood" ? "心情" : "得分"}不变`;
+    return `${kind === "energy" ? "能量" : kind === "mood" ? "心情" : "绩效"}不变`;
   }
 
   if (kind === "energy") {
@@ -60,7 +60,7 @@ function describeDelta(kind: StatViewModel["kind"], delta: number) {
     return delta > 0 ? `心情提升 ${amount}` : `心情下降 ${amount}`;
   }
 
-  return delta > 0 ? `得分增加 ${amount}` : `得分减少 ${amount}`;
+  return delta > 0 ? `绩效增加 ${amount}` : `绩效减少 ${amount}`;
 }
 
 function getFeedbackSummary(selectedChoice: ChoiceViewModel, stats: StatViewModel[]) {
@@ -73,28 +73,39 @@ function getFeedbackSummary(selectedChoice: ChoiceViewModel, stats: StatViewMode
 }
 
 function FixedFeedbackStat({ stat }: { stat: StatViewModel }) {
+  const isPerformance = stat.kind === "score";
   const displayValue = getDisplayValue(stat.value);
   const fillCount = getStatSegmentCount(stat.kind, displayValue);
+  const renderedValue = isPerformance ? formatPerformance(stat.value) : displayValue;
+  const deltaTone = stat.delta === undefined
+    ? ""
+    : stat.delta > 0
+      ? " is-positive"
+      : stat.delta < 0
+        ? " is-negative"
+        : " is-neutral";
 
   return (
     <article
       className={`ms-fixed-feedback-stat ms-fixed-feedback-stat--${stat.kind}`}
       data-stat-kind={stat.kind}
-      aria-label={`${stat.label} ${displayValue}/100${stat.delta === undefined ? "" : `，变化 ${formatDelta(stat.delta)}`}`}
+      aria-label={`${stat.label} ${renderedValue}${isPerformance ? "" : "/100"}${stat.delta === undefined ? "" : `，变化 ${formatDelta(stat.delta)}`}`}
     >
       <div className="ms-fixed-feedback-stat__heading">
         <SkinIcon name={statIcons[stat.kind]} />
         <strong>{stat.label}</strong>
-        <span>{displayValue}</span>
-        <small>/100</small>
+        <span>{renderedValue}</span>
+        {isPerformance ? null : <small>/100</small>}
       </div>
-      <div className="ms-fixed-feedback-stat__bar" aria-hidden="true">
-        {Array.from({ length: 7 }, (_, index) => (
-          <span className={index < fillCount ? "is-filled" : undefined} key={index} />
-        ))}
-      </div>
+      {isPerformance ? null : (
+        <div className="ms-fixed-feedback-stat__bar" aria-hidden="true">
+          {Array.from({ length: 7 }, (_, index) => (
+            <span className={index < fillCount ? "is-filled" : undefined} key={index} />
+          ))}
+        </div>
+      )}
       {stat.delta === undefined ? null : (
-        <strong className="ms-fixed-feedback-stat__delta" data-delta-kind={stat.kind}>
+        <strong className={`ms-fixed-feedback-stat__delta${deltaTone}`} data-delta-kind={stat.kind}>
           {formatDelta(stat.delta)}
         </strong>
       )}
@@ -107,7 +118,6 @@ export function FixedFeedbackScreen({
   nextEvent,
   onContinue,
   selectedChoice,
-  selectedChoiceIndex = 0,
   stats,
   totalRounds
 }: FixedFeedbackScreenProps) {
@@ -116,7 +126,6 @@ export function FixedFeedbackScreen({
     .filter((stat): stat is StatViewModel => Boolean(stat));
   const feedbackLines = splitFeedback(selectedChoice.description);
   const feedbackSummary = getFeedbackSummary(selectedChoice, orderedStats);
-  const selectedVisual = getFixedChoiceVisual(selectedChoiceIndex);
   const isFinalRound = currentRound >= totalRounds;
   const continueLabel = nextEvent ? "继续" : "查看结果";
 
@@ -154,9 +163,9 @@ export function FixedFeedbackScreen({
         <div
           aria-hidden="true"
           className="ms-fixed-feedback-message__icon"
-          data-fixed-choice-icon={selectedVisual}
+          data-fixed-choice-icon={selectedChoice.visual}
         >
-          <SkinIcon name={selectedVisual} />
+          <ChoiceIcon name={selectedChoice.visual} />
         </div>
         <h2>
           {feedbackLines.map((line) => <span key={line}>{line}</span>)}
@@ -202,6 +211,17 @@ export function FixedFeedbackScreen({
       >
         <span>{continueLabel}</span>
       </button>
+
+      <ViewportAssist actionBottom={853} className="ms-viewport-assist--feedback">
+        <button
+          aria-label={`${continueLabel}（固定操作）`}
+          className="ms-viewport-assist__primary"
+          onClick={onContinue}
+          type="button"
+        >
+          {continueLabel}
+        </button>
+      </ViewportAssist>
     </section>
   );
 }

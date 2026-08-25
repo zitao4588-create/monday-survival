@@ -14,7 +14,13 @@ const resultPath = [0, 2, 0, 1, 0];
 const eventTitles = ["闹钟第三次响起", "通勤路上", "周会突然加长", "下午低电量", "下班前最后一击"];
 const expectedRoundStatOrder = ["energy", "mood", "score"];
 const expectedResultStatOrder = ["score", "energy", "mood"];
-const expectedFixedChoiceIcons = ["water", "alarm", "coffee"];
+const expectedChoiceIconsByRound = [
+  ["shower-head", "smartphone", "coffee"],
+  ["message-square-reply", "eye-off", "notebook-pen"],
+  ["notebook-text", "message-circle-warning", "power"],
+  ["panels-top-left", "sandwich", "list-filter"],
+  ["calendar-clock", "laptop", "door-open"]
+];
 
 async function isServerReady() {
   try {
@@ -161,10 +167,22 @@ async function assertDeltaDisclosure(page, roundNumber) {
     throw new Error(`第 ${roundNumber} 回合变化值内容或顺序错误：${JSON.stringify(states)}`);
   }
 
-  const statusSummary = page.locator('[role="status"]');
+  const statusSummary = page.locator('.ms-fixed-feedback-message [role="status"]');
   const summaryText = (await statusSummary.count()) === 1 ? await statusSummary.innerText() : "";
-  if (!summaryText.includes("能量") || !summaryText.includes("心情") || !summaryText.includes("得分")) {
+  if (!summaryText.includes("能量") || !summaryText.includes("心情") || !summaryText.includes("绩效")) {
     throw new Error(`第 ${roundNumber} 回合缺少可访问的变化汇总`);
+  }
+
+  const toneStates = await revealedDeltas.evaluateAll((elements) => elements.map((element) => ({
+    className: element.className,
+    value: Number.parseInt(element.textContent?.trim() ?? "0", 10)
+  })));
+  if (toneStates.some(({ className, value }) => (
+    (value > 0 && !className.includes("is-positive"))
+      || (value < 0 && !className.includes("is-negative"))
+      || (value === 0 && !className.includes("is-neutral"))
+  ))) {
+    throw new Error(`第 ${roundNumber} 回合变化值颜色语义错误：${JSON.stringify(toneStates)}`);
   }
 }
 
@@ -181,20 +199,20 @@ async function assertCompactStatCards(page, screenLabel, roundNumber, expectDelt
   }
 
   const bars = screen.locator(expectDeltas ? ".ms-fixed-feedback-stat__bar" : ".ms-fixed-stat__bar");
-  if ((await bars.count()) !== 3) {
-    throw new Error(`${screenLabel}第 ${roundNumber} 回合没有恰好显示 3 条七段进度条`);
+  if ((await bars.count()) !== 2) {
+    throw new Error(`${screenLabel}第 ${roundNumber} 回合能量和心情没有恰好显示 2 条七段进度条`);
   }
 
-  for (let index = 0; index < 3; index += 1) {
+  for (let index = 0; index < 2; index += 1) {
     if ((await bars.nth(index).locator("span").count()) !== 7) {
       throw new Error(`${screenLabel}第 ${roundNumber} 回合第 ${index + 1} 张统计卡不是七段进度条`);
     }
   }
 
-  const scoreCard = screen.locator('[data-stat-kind="score"]');
-  const scoreLabel = await scoreCard.getAttribute("aria-label");
-  if (scoreLabel?.includes("得分 12/100") && (await scoreCard.locator(".is-filled").count()) !== 2) {
-    throw new Error(`${screenLabel}第 ${roundNumber} 回合得分 12 没有显示为 2/7 段`);
+  const performanceCard = screen.locator('[data-stat-kind="score"]');
+  const performanceLabel = await performanceCard.getAttribute("aria-label");
+  if (!performanceLabel?.startsWith("绩效 ") || performanceLabel.includes("/100") || (await performanceCard.locator(".is-filled").count()) !== 0) {
+    throw new Error(`${screenLabel}第 ${roundNumber} 回合绩效仍被截断或显示为进度条：${performanceLabel}`);
   }
 
   const deltaKinds = states.map((state) => state.deltaKind);
@@ -208,12 +226,18 @@ async function assertCompactStatCards(page, screenLabel, roundNumber, expectDelt
 }
 
 async function assertResultStatOrder(page) {
-  const order = await page.locator(".ms-fixed-result-stats [data-stat-kind]").evaluateAll((elements) => (
+  const resultStats = page.locator(".ms-fixed-result-stats [data-stat-kind]");
+  const order = await resultStats.evaluateAll((elements) => (
     elements.map((element) => element.getAttribute("data-stat-kind") ?? "")
   ));
 
   if (JSON.stringify(order) !== JSON.stringify(expectedResultStatOrder)) {
     throw new Error(`结果页统计顺序被改动：${JSON.stringify(order)}`);
+  }
+
+  const performanceLabel = await page.locator('.ms-fixed-result-stat[data-stat-kind="score"]').getAttribute("aria-label");
+  if (!performanceLabel?.startsWith("绩效 ") || performanceLabel.includes("/100")) {
+    throw new Error(`结果页绩效没有保留真实带符号值：${performanceLabel}`);
   }
 }
 
@@ -222,11 +246,43 @@ async function assertChoiceIcons(page, roundNumber) {
     elements.map((element) => element.getAttribute("data-fixed-choice-icon") ?? "")
   ));
 
-  if (JSON.stringify(icons) !== JSON.stringify(expectedFixedChoiceIcons)) {
-    throw new Error(`第 ${roundNumber} 回合 Fixed 图标顺序错误：${JSON.stringify(icons)}`);
+  const expectedIcons = expectedChoiceIconsByRound[roundNumber - 1];
+  if (JSON.stringify(icons) !== JSON.stringify(expectedIcons)) {
+    throw new Error(`第 ${roundNumber} 回合语义图标错误：${JSON.stringify(icons)}`);
+  }
+
+  const renderedIcons = await page.locator(".ms-fixed-choice [data-choice-icon]").evaluateAll((elements) => (
+    elements.map((element) => element.getAttribute("data-choice-icon") ?? "")
+  ));
+  if (JSON.stringify(renderedIcons) !== JSON.stringify(expectedIcons)) {
+    throw new Error(`第 ${roundNumber} 回合 Lucide 图标没有按 turns 数据渲染：${JSON.stringify(renderedIcons)}`);
   }
 
   return icons;
+}
+
+async function assertButtonInViewport(page, locator, description) {
+  await locator.waitFor({ state: "visible" });
+  const viewport = page.viewportSize();
+  const box = await locator.boundingBox();
+
+  if (!viewport || !box || box.y < 0 || box.y + box.height > viewport.height) {
+    throw new Error(`${description} 初始不在视口内：${JSON.stringify({ box, viewport })}`);
+  }
+}
+
+async function getVisibleAction(page, originalLabel, fixedLabel) {
+  const fixedAction = page.getByLabel(fixedLabel, { exact: true });
+  if ((page.viewportSize()?.height ?? 0) <= 700) {
+    const fixedVisible = await fixedAction.waitFor({ state: "visible", timeout: 1_000 })
+      .then(() => true)
+      .catch(() => false);
+    if (fixedVisible) {
+      return fixedAction;
+    }
+  }
+
+  return page.getByLabel(originalLabel, { exact: true });
 }
 
 async function assertNextEventOrSettlement(page, roundNumber) {
@@ -259,6 +315,14 @@ async function playToResult(page) {
 
     await assertChoiceIcons(page, roundIndex + 1);
 
+    if (page.viewportSize()?.height === 667) {
+      const hint = page.getByText("上滑查看全部选项 ↑", { exact: true });
+      await hint.waitFor({ state: "visible" });
+      await page.evaluate(() => window.scrollTo(0, 20));
+      await hint.waitFor({ state: "hidden" });
+      await page.evaluate(() => window.scrollTo(0, 0));
+    }
+
     const selectedIndex = resultPath[roundIndex];
     const selectedRoundText = await page.locator(".ms-fixed-choice").nth(selectedIndex).innerText();
     await page.locator(".ms-fixed-choice").nth(selectedIndex).click();
@@ -272,15 +336,20 @@ async function playToResult(page) {
       throw new Error(`第 ${roundIndex + 1} 回合没有在反馈页延迟揭示结果文案`);
     }
     const selectedFeedbackIcon = await page.locator("[data-fixed-choice-icon]").getAttribute("data-fixed-choice-icon");
-    if (selectedFeedbackIcon !== expectedFixedChoiceIcons[selectedIndex]) {
-      throw new Error(`第 ${roundIndex + 1} 回合反馈图标没有跟随所选序号`);
+    if (selectedFeedbackIcon !== expectedChoiceIconsByRound[roundIndex][selectedIndex]) {
+      throw new Error(`第 ${roundIndex + 1} 回合反馈图标没有跟随 selectedChoice.visual`);
     }
 
-    await page.getByLabel(roundIndex === resultPath.length - 1 ? "查看结果" : "继续", { exact: true }).click();
+    const continueLabel = roundIndex === resultPath.length - 1 ? "查看结果" : "继续";
+    const continueAction = await getVisibleAction(page, continueLabel, `${continueLabel}（固定操作）`);
+    await assertButtonInViewport(page, continueAction, `第 ${roundIndex + 1} 回合${continueLabel}按钮`);
+    await continueAction.click();
 
     if (roundIndex === resultPath.length - 1) {
       await assertScreenReady(page, "结果分享卡", "进入结果页");
       await assertResultStatOrder(page);
+      const saveAction = await getVisibleAction(page, "生成结果图", "保存结果图（固定操作）");
+      await assertButtonInViewport(page, saveAction, "结果页保存结果图按钮");
     }
   }
 }
@@ -295,7 +364,9 @@ async function checkXhsResult(page) {
     throw new Error("XHS 结果页仍包含分享文案或下载图片入口");
   }
 
-  await page.getByLabel("生成结果图", { exact: true }).click();
+  const saveAction = await getVisibleAction(page, "生成结果图", "保存结果图（固定操作）");
+  await assertButtonInViewport(page, saveAction, "结果页保存结果图按钮");
+  await saveAction.click();
   const poster = page.getByAltText("可保存的周一结果图");
   await poster.waitFor();
   await assertAtTop(page, "打开结果图弹层");
@@ -339,7 +410,13 @@ async function checkXhsResult(page) {
   await poster.waitFor({ state: "hidden" });
   await assertAtTop(page, "关闭结果图弹层");
 
-  await page.getByLabel("再活一次周一", { exact: true }).click();
+  if ((await page.getByText("结果图已生成，请长按图片或使用系统截图保存。", { exact: true }).count()) !== 0) {
+    throw new Error("关闭结果图后仍残留已生成状态");
+  }
+
+  const restartAction = await getVisibleAction(page, "再活一次周一", "再活一次周一（固定操作）");
+  await assertButtonInViewport(page, restartAction, "结果页再玩一次按钮");
+  await restartAction.click();
   await assertScreenReady(page, "当前回合", "重新开始");
 }
 
