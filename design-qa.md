@@ -1,3 +1,34 @@
+# Monday Survival Fixed UI QA
+
+## Current implementation (2026-08-25)
+
+- Design source: the approved non-Claude Fixed round, feedback, and result frames from the current Game Lab working copy.
+- Default `/`: real five-round flow using the standalone repository's existing data, result thresholds, dynamic persona, Canvas poster, and normal-H5 share behavior.
+- Static comparison routes: `/?screen=round`, `/?screen=feedback`, `/?screen=result`.
+- Dynamic disclosure contract: round uses `choice.preview`; feedback reveals `choice.description` and energy/mood/score deltas.
+- Stat order: round/feedback are energy-mood-score; result is score-energy-mood.
+- XHS boundary: generated `853 x 1844` PNG remains visible for long-press/system screenshot; download and share controls are omitted.
+
+## Current evidence targets
+
+- `visual-report/current/round.png`
+- `visual-report/current/feedback.png`
+- `visual-report/current/result.png`
+- `visual-report/index.html`
+
+Verification status for this checkout:
+
+- `pnpm typecheck`: passed.
+- `pnpm build`: passed; ordinary H5 output generated in `dist/`.
+- `pnpm xhs:check`: passed at 375x667, 390x844, and 426x922; five rounds, delayed disclosure, next-event/final settlement, `853 x 1844` PNG poster, XHS capability boundary, restart, zero external requests/runtime errors/horizontal overflow, and preview cleanup were verified.
+- `pnpm visual:check`: passed; the three current screenshots and `visual-report/index.html` were regenerated.
+- Local image inspection: round, feedback, and result captures show the approved Fixed frame with readable dynamic content, intact action controls, and no visible horizontal clipping at the 426x922 capture viewport.
+- Port postflight: no listener remained on 5180 or 5322.
+
+## Historical comparison report
+
+The report below records the earlier Claude-background implementation and is retained for provenance. Its selectors and runtime claims do not describe the current Fixed production route.
+
 **Comparison Target**
 
 - Source visual truth: `/Users/qzt/Developer/Game Lab/outputs/github/monday-survival-standalone/reference/choice-feedback.png`

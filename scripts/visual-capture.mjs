@@ -25,21 +25,21 @@ async function isServerReady() {
   }
 }
 
-async function waitForServer() {
+async function waitForServer(expectedReady = true) {
   const startedAt = Date.now();
   while (Date.now() - startedAt < 15_000) {
-    if (await isServerReady()) {
+    if ((await isServerReady()) === expectedReady) {
       return;
     }
     await new Promise((resolveTimeout) => setTimeout(resolveTimeout, 250));
   }
 
-  throw new Error(`Timed out waiting for dev server at ${baseURL}`);
+  throw new Error(`Timed out waiting for dev server at ${baseURL} to ${expectedReady ? "start" : "stop"}`);
 }
 
 async function ensureServer() {
   if (await isServerReady()) {
-    return undefined;
+    throw new Error(`${baseURL} 已被旧服务占用，请先停止该服务再运行视觉验收`);
   }
 
   const server = spawn("pnpm", ["exec", "vite", "--host", "127.0.0.1", "--port", "5180"], {
@@ -48,17 +48,40 @@ async function ensureServer() {
     stdio: "ignore"
   });
 
-  await waitForServer();
-  return server;
+  try {
+    await waitForServer(true);
+    return server;
+  } catch (error) {
+    await stopServer(server);
+    throw error;
+  }
+}
+
+async function stopServer(server) {
+  if (!server || server.exitCode !== null) {
+    return;
+  }
+
+  const exited = new Promise((resolveExit) => server.once("exit", resolveExit));
+  server.kill("SIGTERM");
+
+  await Promise.race([
+    exited,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Vite 服务未能在 5 秒内退出")), 5_000);
+    })
+  ]);
+  await waitForServer(false);
 }
 
 async function captureScreens() {
   await mkdir(outputDir, { recursive: true });
 
   const server = await ensureServer();
-  const browser = await chromium.launch();
+  let browser;
 
   try {
+    browser = await chromium.launch({ headless: true });
     const page = await browser.newPage({ viewport, deviceScaleFactor: 1 });
 
     for (const screen of screens) {
@@ -70,11 +93,8 @@ async function captureScreens() {
       console.log(`Captured ${screen.name}: ${outputPath}`);
     }
   } finally {
-    await browser.close();
-
-    if (server) {
-      server.kill();
-    }
+    await browser?.close();
+    await stopServer(server);
   }
 }
 

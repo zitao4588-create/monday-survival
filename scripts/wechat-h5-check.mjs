@@ -67,10 +67,10 @@ async function assertNoHorizontalOverflow(page, viewportName) {
 }
 
 async function playToResult(page) {
-  for (const choiceIndex of resultPath) {
-    await page.locator(".ms-claude-choice-ticket").nth(choiceIndex).click();
+  for (let roundIndex = 0; roundIndex < resultPath.length; roundIndex += 1) {
+    await page.locator(".ms-fixed-choice").nth(resultPath[roundIndex]).click();
     await page.getByLabel("选择反馈").waitFor();
-    await page.getByLabel("继续").click();
+    await page.getByLabel(roundIndex === resultPath.length - 1 ? "查看结果" : "继续", { exact: true }).click();
   }
 
   await page.getByLabel("结果分享卡").waitFor();

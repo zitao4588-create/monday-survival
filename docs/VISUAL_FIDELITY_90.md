@@ -1,5 +1,7 @@
 # Monday Survival Visual Fidelity Goal
 
+> 2026-08-25 状态注记：90% 目标已收敛为获批的 Fixed 三页静态框架 + React 动态内容实现。默认 `/` 是真实五回合流程，`?screen=round|feedback|result` 只用于静态截图。以下内容保留为历史目标与评分依据，不再要求回到旧组件实现。
+
 ## Objective
 
 Improve the visual fidelity of games/monday-survival from the current 68%-72% level to a perceived 90%+ match against the Product Design references.
@@ -32,7 +34,7 @@ The implemented pages to compare:
 
 - Do not rewrite game logic.
 - Do not change event data shape unless necessary.
-- Do not replace the whole UI with a screenshot background.
+- The approved Fixed implementation may use cleaned reference imagery as a static frame, while all gameplay copy, values, choices, deltas, persona, result, and controls remain React-rendered.
 - Do not use emoji as final icons.
 - Do not introduce backend logic.
 - Do not introduce large animation libraries.

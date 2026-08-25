@@ -1,5 +1,7 @@
 # Monday Survival Visual Spec
 
+> 2026-08-25 状态：当前获批实现使用 `FixedRoundScreen`、`FixedFeedbackScreen`、`FixedResultScreen` 与 Fixed 背景框架，动态回合、选项、状态、反馈、人格和结算仍由 React 渲染。本文件后续章节保留为早期视觉探索记录。
+
 ## 目标
 
 本轮视觉还原以 Product Design 的三张手机端参考图为准：
@@ -25,13 +27,13 @@
 
 ## 页面状态
 
-先做三个静态预览入口：
+三个静态预览入口用于视觉对照：
 
 - `/?screen=round`
 - `/?screen=feedback`
 - `/?screen=result`
 
-静态预览用于对照视觉图，不依赖真实游戏状态。当前阶段暂停真实游戏状态接入，默认入口 `/` 也展示 round 静态稿。视觉还原确认后，再把真实 `energy`、`mood`、`score`、回合、选项和结算接回同一组组件。
+静态预览不依赖真实游戏状态。默认入口 `/` 已接回真实五回合流程，动态使用 `energy`、`mood`、`score`、回合、选项、反馈和结算；静态入口不替代正式流程验收。
 
 ## 资产层
 
@@ -68,7 +70,7 @@
 
 - 不改 `src/game.ts`、`src/data/*` 的游戏规则和数据结构。
 - 不引入后端、数据库、复杂动画库。
-- 不把参考图作为背景图。
+- 当前获批 Fixed 方案允许将已清理参考图作为静态背景框架；交互、动态文案、状态值、delta、人格和结果仍必须由 React 渲染。
 - 正式图标优先使用 `src/assets/icons`，少量缺失的印章和勾选图标可暂时保留 inline SVG fallback。
 - 视觉颜色、阴影和圆角统一从 `src/styles/visual-tokens.css` 取值；组件样式里不要直接散落 `#hex` 或 `rgba()` 随机颜色。
 - 每个阶段完成后运行 `pnpm build`。
