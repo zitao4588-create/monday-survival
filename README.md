@@ -111,7 +111,7 @@ pnpm deploy:cloudbase
 pnpm wechat:check:cloudbase
 ```
 
-当前命令固定部署到既有测试环境 `cloud1-d3g4v0ms8ee56bd94`。首次使用或凭证过期时，先运行 `tcb login` 完成浏览器授权。
+当前命令固定部署到既有环境 `cloud1-d3g4v0ms8ee56bd94`。正式入口为 `https://monday.playgamelab.cn`；CloudBase 默认域名仅保留作部署诊断地址。首次使用或凭证过期时，先运行 `tcb login` 完成浏览器授权。
 
 CloudBase 默认测试域名会先显示带倒计时的“页面访问提示”；线上验收会确认提示、进入游戏，再干净刷新一次，以区分平台提示页错误与游戏自身错误。
 
@@ -123,11 +123,11 @@ CloudBase 默认测试域名会先显示带倒计时的“页面访问提示”�
 - Android 微信能否打开、游玩、结算。
 - 结果图是否能长按保存。
 - 分享文案是否能复制或调起系统分享。
-- CloudBase 默认测试域名的风险提醒页是否影响内测体验。
+- 正式入口 `https://monday.playgamelab.cn` 是否能直接打开且不出现 CloudBase 默认域名提示。
 
 正式传播准备见 [WeChat Release Prep](./docs/wechat-release-prep.md)。
 
-正式域名和 ICP 执行清单见 [Domain and ICP Action Plan](./docs/domain-icp-action-plan.md)。
+正式域名、ICP 与 HTTPS 的完成状态见 [Domain, ICP, and HTTPS Status](./docs/domain-icp-action-plan.md)。
 
 微信分享卡片规格见 [WeChat Share Card Spec](./docs/wechat-share-card-spec.md)。
 

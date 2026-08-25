@@ -1,10 +1,12 @@
 # WeChat Release Prep
 
-This document tracks what is needed before `monday-survival` moves from an internal CloudBase test link to a more public WeChat H5 sharing link.
+This document tracks the remaining release checks now that `monday-survival` has a public custom WeChat H5 domain.
 
 ## Current State
 
 - The game is a static Vite React H5 app.
+- The production URL is `https://monday.playgamelab.cn`.
+- ICP `陕ICP备2026012759号-2`, public-security filing `陕公网安备61010202000523号`, CloudBase custom-domain binding, and HTTPS are complete.
 - The CloudBase test URL is usable for internal testing:
   - `https://cloud1-d3g4v0ms8ee56bd94-1434679773.tcloudbaseapp.com`
 - The latest Fixed build was deployed on 2026-08-25; all nine published files match the local `dist/` output byte-for-byte.
@@ -20,17 +22,17 @@ This document tracks what is needed before `monday-survival` moves from an inter
 - Do not add payment.
 - Do not add Docker.
 - Keep the approved Fixed round, feedback, and result visual system.
-- Do not add WeChat JS-SDK until the final domain decision is made.
+- Do not add WeChat JS-SDK without a separate product decision.
 
 ## Public Sharing Checklist
 
 ### P0 Required Before Wider Sharing
 
-- [ ] Choose a custom domain for the game.
-- [ ] Complete ICP filing for mainland China access.
-- [ ] Bind the custom domain to CloudBase static hosting.
-- [ ] Configure HTTPS with an SSL certificate.
-- [ ] Confirm the custom domain opens directly in WeChat without the CloudBase default-domain risk warning.
+- [x] Use `monday.playgamelab.cn` as the custom domain for the game.
+- [x] Complete ICP filing for mainland China access: `陕ICP备2026012759号-2`.
+- [x] Bind the custom domain to CloudBase static hosting.
+- [x] Configure HTTPS with an SSL certificate.
+- [x] Confirm the custom domain returns the current game directly without the CloudBase default-domain risk warning.
 - [x] Rebuild and deploy the latest `dist/` to CloudBase.
 - [ ] Generate a new QR code for the custom domain.
 - [x] Run `pnpm test`.
@@ -95,6 +97,6 @@ Before wider sharing, keep these in the project or closeout notes:
 
 ## Known Limitations
 
-- CloudBase default test domain can show a Tencent CloudBase risk warning page.
+- CloudBase default test domain can show a Tencent CloudBase risk warning page, so it remains a diagnostic URL rather than the public sharing URL.
 - Real WeChat save/share behavior still depends on iOS / Android WebView permissions.
 - Custom WeChat share cards require JS-SDK and a signature service, which is intentionally not implemented yet.

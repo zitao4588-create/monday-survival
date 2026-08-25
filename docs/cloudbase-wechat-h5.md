@@ -27,20 +27,21 @@ pnpm install --frozen-lockfile
 pnpm deploy:cloudbase
 ```
 
-The current deployment target is `cloud1-d3g4v0ms8ee56bd94`. After deployment, run the live three-viewport flow:
+The current deployment target is `cloud1-d3g4v0ms8ee56bd94`, and the public custom domain is `https://monday.playgamelab.cn`. After deployment, run the default-domain diagnostic and the custom-domain three-viewport flow:
 
 ```bash
 pnpm wechat:check:cloudbase
+MS_WECHAT_BASE_URL=https://monday.playgamelab.cn pnpm wechat:check
 ```
 
-The default CloudBase test domain shows a timed access notice. The live check confirms that notice, waits for the game, reloads in the confirmed browser context, and then evaluates only the game runtime.
+The default CloudBase test domain shows a timed access notice. `pnpm wechat:check:cloudbase` handles that diagnostic path. The custom domain is the production-facing URL and should open without the default-domain notice.
 
 `tcb hosting deploy` uploads or overwrites current files but does not prune old hashed assets. Use `tcb hosting list` after deployment and remove only verified stale project files; preserve CloudBase-managed `__auth/` and `cloud-admin/` paths.
 
 ## WeChat Test Checklist
 
-- Open the CloudBase HTTPS URL in WeChat on iOS.
-- Open the same URL in WeChat on Android.
+- Open `https://monday.playgamelab.cn` in WeChat on iOS.
+- Open the same custom URL in WeChat on Android.
 - Share the link to a chat and open it from the chat card.
 - Share the link to Moments and open it from Moments.
 - Confirm the game starts on the round screen and no horizontal scrolling appears.
@@ -48,4 +49,4 @@ The default CloudBase test domain shows a timed access notice. The live check co
 
 ## Later WeChat Sharing Work
 
-Basic link sharing works as a normal H5 page. Custom WeChat share title, description, and cover image require a verified domain and WeChat JS-SDK signing service. Do not add that until the CloudBase URL and custom domain are confirmed.
+Basic link sharing works as a normal H5 page. The custom domain, ICP filing, and HTTPS are confirmed. Custom WeChat share title, description, and cover image still require a WeChat JS-SDK signing service; do not add that without a separate product decision because it introduces a backend or cloud function.
