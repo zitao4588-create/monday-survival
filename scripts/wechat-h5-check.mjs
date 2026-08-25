@@ -35,6 +35,10 @@ async function waitForServer(expectedReady = true) {
 
 async function ensureServer() {
   if (await isServerReady()) {
+    if (!localHosts.has(base.hostname)) {
+      return null;
+    }
+
     throw new Error(`${baseURL} 已被旧服务占用，请先停止该服务再运行微信 H5 验收`);
   }
 
@@ -86,6 +90,24 @@ async function assertNoHorizontalOverflow(page, viewportName) {
   if (overflow > 1) {
     throw new Error(`${viewportName} has horizontal overflow: ${JSON.stringify(metrics)}`);
   }
+}
+
+async function continuePastCloudBaseNotice(page) {
+  if (!base.hostname.endsWith(".tcloudbaseapp.com")) {
+    return false;
+  }
+
+  const confirmLink = page.getByText("确定访问", { exact: true });
+  const isVisible = await confirmLink.waitFor({ state: "visible", timeout: 5_000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (isVisible) {
+    await confirmLink.click();
+    return true;
+  }
+
+  return false;
 }
 
 async function playToResult(page) {
@@ -153,6 +175,12 @@ async function run() {
       });
 
       await page.goto(baseURL, { waitUntil: "load" });
+      const continuedPastCloudBaseNotice = await continuePastCloudBaseNotice(page);
+      if (continuedPastCloudBaseNotice) {
+        await page.getByLabel("当前回合").waitFor();
+        consoleErrors.length = 0;
+        await page.reload({ waitUntil: "load" });
+      }
       await page.getByLabel("当前回合").waitFor();
       await assertNoHorizontalOverflow(page, viewport.name);
 

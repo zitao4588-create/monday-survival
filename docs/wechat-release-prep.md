@@ -7,7 +7,8 @@ This document tracks what is needed before `monday-survival` moves from an inter
 - The game is a static Vite React H5 app.
 - The CloudBase test URL is usable for internal testing:
   - `https://cloud1-d3g4v0ms8ee56bd94-1434679773.tcloudbaseapp.com`
-- User device feedback on the current internal test build: experience OK.
+- The latest Fixed build was deployed on 2026-08-25; all nine published files match the local `dist/` output byte-for-byte.
+- `pnpm wechat:check:cloudbase` passes the three mobile viewports after the CloudBase access notice; fresh iOS and Android WeChat checks are still pending.
 - The result screen can generate a `853 x 1844` PNG result poster in the browser.
 - `pnpm wechat:check` verifies local mobile flow, no horizontal overflow, poster generation, and share text success state.
 
@@ -30,11 +31,12 @@ This document tracks what is needed before `monday-survival` moves from an inter
 - [ ] Bind the custom domain to CloudBase static hosting.
 - [ ] Configure HTTPS with an SSL certificate.
 - [ ] Confirm the custom domain opens directly in WeChat without the CloudBase default-domain risk warning.
-- [ ] Rebuild and deploy the latest `dist/` to CloudBase.
+- [x] Rebuild and deploy the latest `dist/` to CloudBase.
 - [ ] Generate a new QR code for the custom domain.
-- [ ] Run `pnpm test`.
-- [ ] Run `pnpm build`.
-- [ ] Run `pnpm wechat:check`.
+- [x] Run `pnpm test`.
+- [x] Run `pnpm build`.
+- [x] Run `pnpm wechat:check`.
+- [x] Run `pnpm wechat:check:cloudbase` against the deployed test URL.
 - [ ] Open the final custom domain on iOS WeChat.
 - [ ] Open the final custom domain on Android WeChat.
 - [ ] Play through to the result screen on both devices.

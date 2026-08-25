@@ -106,12 +106,14 @@ CloudBase 构建配置：
 CLI 部署：
 
 ```bash
-npm i -g @cloudbase/cli
-tcb login
 pnpm install --frozen-lockfile
-pnpm build
-tcb hosting deploy dist -e <env-id>
+pnpm deploy:cloudbase
+pnpm wechat:check:cloudbase
 ```
+
+当前命令固定部署到既有测试环境 `cloud1-d3g4v0ms8ee56bd94`。首次使用或凭证过期时，先运行 `tcb login` 完成浏览器授权。
+
+CloudBase 默认测试域名会先显示带倒计时的“页面访问提示”；线上验收会确认提示、进入游戏，再干净刷新一次，以区分平台提示页错误与游戏自身错误。
 
 更多说明见 [CloudBase WeChat H5 Deployment](./docs/cloudbase-wechat-h5.md)。
 

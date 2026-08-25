@@ -20,19 +20,22 @@ npm i -g @cloudbase/cli
 tcb login
 ```
 
-Build and upload `dist`:
+Build and upload the complete `dist` directory, including copied `public/` files such as `beian-icon.png`:
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm build
-tcb hosting deploy dist -e <env-id>
+pnpm deploy:cloudbase
 ```
 
-Alternative one-command app deploy:
+The current deployment target is `cloud1-d3g4v0ms8ee56bd94`. After deployment, run the live three-viewport flow:
 
 ```bash
-tcb app deploy --framework react --build-command "pnpm build" --output-dir dist -e <env-id>
+pnpm wechat:check:cloudbase
 ```
+
+The default CloudBase test domain shows a timed access notice. The live check confirms that notice, waits for the game, reloads in the confirmed browser context, and then evaluates only the game runtime.
+
+`tcb hosting deploy` uploads or overwrites current files but does not prune old hashed assets. Use `tcb hosting list` after deployment and remove only verified stale project files; preserve CloudBase-managed `__auth/` and `cloud-admin/` paths.
 
 ## WeChat Test Checklist
 

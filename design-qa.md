@@ -43,4 +43,6 @@
 - Game Lab 根 `pnpm test`：通过，4 个测试文件、12 项测试全部通过。
 - Game Lab 根 `pnpm build`：通过，Monday Survival 及两个源码消费 app 均完成生产构建。
 - Game Lab 根 Monday E2E：桌面 Chromium 与 mobile-chrome 2/2 通过。
+- CloudBase 线上 `pnpm wechat:check:cloudbase`：通过；三档视口进入 Fixed 页面，目标视口完成五回合、结果图与分享状态，确认提示后的干净 reload 无控制台错误。
+- CloudBase 发布文件：当前普通 H5 的 9 个文件均与本地 `dist/` 字节一致；远端旧项目资源已清理，平台管理文件保留。
 - 端口 postflight：5180、5321、5322、5323 均无监听，未残留本轮 Vite、Playwright 或 Chromium 进程。

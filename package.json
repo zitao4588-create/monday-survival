@@ -25,14 +25,14 @@
     "dev": "vite --port 5180",
     "build": "tsc -p tsconfig.json && vite build",
     "build:xhs": "tsc -p tsconfig.json && vite build --mode xhs && node scripts/xhs-build-check.mjs",
-    "deploy:cloudbase": "pnpm build && tcb hosting deploy dist -e",
-    "deploy:cloudbase:app": "tcb app deploy --framework react --build-command \"pnpm build\" --output-dir dist -e",
+    "deploy:cloudbase": "pnpm build && tcb hosting deploy dist -e cloud1-d3g4v0ms8ee56bd94",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json",
     "visual:capture": "node scripts/visual-capture.mjs",
     "visual:report": "node scripts/visual-report.mjs",
     "visual:check": "pnpm visual:capture && pnpm visual:report",
     "wechat:check": "node scripts/wechat-h5-check.mjs",
+    "wechat:check:cloudbase": "MS_WECHAT_BASE_URL=https://cloud1-d3g4v0ms8ee56bd94-1434679773.tcloudbaseapp.com pnpm wechat:check",
     "xhs:artifact-check": "node scripts/xhs-build-check.mjs",
     "xhs:check": "pnpm build:xhs && node scripts/xhs-h5-check.mjs"
   }
