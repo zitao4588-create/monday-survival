@@ -4,6 +4,8 @@ import { PrintIcon } from "../PrintIcon";
 import type { ResultViewModel, StatViewModel } from "../visualTypes";
 import { SkinIcon, type SkinIconName } from "../skin/SkinIcon";
 
+const isXhsBuild = import.meta.env.MODE === "xhs";
+
 export interface FixedResultScreenProps {
   onCloseResultImage?: () => void;
   onCreateResultImage?: () => void;
@@ -29,14 +31,14 @@ function getShareStatusText(shareStatus: NonNullable<FixedResultScreenProps["sha
   }
 
   if (shareStatus === "ready") {
-    return __XHS_BUILD__ ? "结果图已生成，请长按图片或使用系统截图保存。" : "结果图已生成，长按可保存。";
+    return isXhsBuild ? "结果图已生成，请长按图片或使用系统截图保存。" : "结果图已生成，长按可保存。";
   }
 
   if (shareStatus === "failed") {
     return "暂时无法生成，请手动截图。";
   }
 
-  if (!__XHS_BUILD__ && shareStatus === "copied") {
+  if (!isXhsBuild && shareStatus === "copied") {
     return "分享文案已准备好，可以发给同事。";
   }
 
@@ -158,7 +160,7 @@ export function FixedResultScreen({
               ×
             </button>
             <img className="ms-fixed-result-poster-preview" src={resultImageUrl} alt="可保存的周一结果图" />
-            {__XHS_BUILD__ ? (
+            {isXhsBuild ? (
               <p className="ms-fixed-result-poster-hint">长按图片或使用系统截图保存</p>
             ) : (
               <>

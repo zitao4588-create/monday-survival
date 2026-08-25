@@ -11,9 +11,6 @@ export default defineConfig(({ mode }) => {
       modulePreload: isXhsBuild ? { polyfill: false } : undefined,
       outDir: isXhsBuild ? "dist-xhs" : "dist"
     },
-    define: {
-      __XHS_BUILD__: JSON.stringify(isXhsBuild)
-    },
     plugins: [
       react(),
       isXhsBuild

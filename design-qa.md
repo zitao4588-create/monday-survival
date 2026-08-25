@@ -40,4 +40,7 @@
 - `pnpm xhs:check`：通过；375×667、390×844、426×922 三档视口均完成五回合、结果页、`853 × 1844` 海报和重开，零外部请求，preview 服务退出已确认。
 - `pnpm wechat:check`：通过；三档移动视口完成普通 H5 海报、下载和分享文案验收。
 - `pnpm visual:check`：通过；三张当前截图和 `visual-report/index.html` 已重新生成，人工查看未发现缺图、裁切或横向溢出。
+- Game Lab 根 `pnpm test`：通过，4 个测试文件、12 项测试全部通过。
+- Game Lab 根 `pnpm build`：通过，Monday Survival 及两个源码消费 app 均完成生产构建。
+- Game Lab 根 Monday E2E：桌面 Chromium 与 mobile-chrome 2/2 通过。
 - 端口 postflight：5180、5321、5322、5323 均无监听，未残留本轮 Vite、Playwright 或 Chromium 进程。

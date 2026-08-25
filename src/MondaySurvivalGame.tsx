@@ -18,6 +18,8 @@ import { toChoiceViewModel, toEventViewModel, toResultViewModel, toStatViewModel
 import { createResultPosterDataUrl } from "./resultPoster";
 import { createResultShareText, toResultShareData } from "./resultShare";
 
+const isXhsBuild = import.meta.env.MODE === "xhs";
+
 export interface MondaySurvivalGameProps {
   onEvent?: (name: string, properties?: Record<string, string | number | boolean>) => void;
 }
@@ -192,7 +194,7 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
   }
 
   async function shareResultText(result: ResultViewModel, stats: ReturnType<typeof toStatViewModels>) {
-    if (__XHS_BUILD__) {
+    if (isXhsBuild) {
       return;
     }
 
@@ -237,7 +239,7 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
         <FixedResultScreen
           onCloseResultImage={() => setResultImageUrl(null)}
           onRestart={restart}
-          onShareText={__XHS_BUILD__ ? undefined : () => void shareResultText(resultViewModel, stats)}
+          onShareText={isXhsBuild ? undefined : () => void shareResultText(resultViewModel, stats)}
           onCreateResultImage={() => void createResultImage(resultViewModel, stats)}
           result={resultViewModel}
           resultImageUrl={resultImageUrl}
