@@ -38,7 +38,7 @@ interface FixedStatProps {
 function FixedStat({ stat }: FixedStatProps) {
   const isPerformance = stat.kind === "score";
   const displayValue = getDisplayValue(stat.value);
-  const fillCount = getStatSegmentCount(stat.kind, displayValue);
+  const fillCount = getStatSegmentCount(stat.kind, stat.value);
   const renderedValue = isPerformance ? formatPerformance(stat.value) : displayValue;
 
   return (
@@ -53,13 +53,11 @@ function FixedStat({ stat }: FixedStatProps) {
         <span className="ms-fixed-stat__value">{renderedValue}</span>
         {isPerformance ? null : <small>/100</small>}
       </div>
-      {isPerformance ? null : (
-        <div className="ms-fixed-stat__bar" aria-hidden="true">
-          {Array.from({ length: 7 }, (_, index) => (
-            <span className={index < fillCount ? "is-filled" : undefined} key={index} />
-          ))}
-        </div>
-      )}
+      <div className="ms-fixed-stat__bar" aria-hidden="true">
+        {Array.from({ length: 7 }, (_, index) => (
+          <span className={index < fillCount ? "is-filled" : undefined} key={index} />
+        ))}
+      </div>
     </article>
   );
 }

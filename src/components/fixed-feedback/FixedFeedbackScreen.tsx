@@ -3,12 +3,12 @@ import { formatPerformance, getStatSegmentCount } from "../../gameViewModels";
 import "../../styles/fixed-feedback.css";
 import { ChoiceIcon } from "../ChoiceIcon";
 import { ViewportAssist } from "../ViewportAssist";
-import type { ChoiceViewModel, EventViewModel, StatViewModel } from "../visualTypes";
+import type { ChoiceViewModel, StatViewModel } from "../visualTypes";
 import { SkinIcon, type SkinIconName } from "../skin/SkinIcon";
 
 export interface FixedFeedbackScreenProps {
   currentRound: number;
-  nextEvent?: EventViewModel;
+  isRunComplete: boolean;
   onContinue?: () => void;
   selectedChoice: ChoiceViewModel;
   stats: StatViewModel[];
@@ -75,7 +75,7 @@ function getFeedbackSummary(selectedChoice: ChoiceViewModel, stats: StatViewMode
 function FixedFeedbackStat({ stat }: { stat: StatViewModel }) {
   const isPerformance = stat.kind === "score";
   const displayValue = getDisplayValue(stat.value);
-  const fillCount = getStatSegmentCount(stat.kind, displayValue);
+  const fillCount = getStatSegmentCount(stat.kind, stat.value);
   const renderedValue = isPerformance ? formatPerformance(stat.value) : displayValue;
   const deltaTone = stat.delta === undefined
     ? ""
@@ -97,13 +97,11 @@ function FixedFeedbackStat({ stat }: { stat: StatViewModel }) {
         <span>{renderedValue}</span>
         {isPerformance ? null : <small>/100</small>}
       </div>
-      {isPerformance ? null : (
-        <div className="ms-fixed-feedback-stat__bar" aria-hidden="true">
-          {Array.from({ length: 7 }, (_, index) => (
-            <span className={index < fillCount ? "is-filled" : undefined} key={index} />
-          ))}
-        </div>
-      )}
+      <div className="ms-fixed-feedback-stat__bar" aria-hidden="true">
+        {Array.from({ length: 7 }, (_, index) => (
+          <span className={index < fillCount ? "is-filled" : undefined} key={index} />
+        ))}
+      </div>
       {stat.delta === undefined ? null : (
         <strong className={`ms-fixed-feedback-stat__delta${deltaTone}`} data-delta-kind={stat.kind}>
           {formatDelta(stat.delta)}
@@ -115,7 +113,7 @@ function FixedFeedbackStat({ stat }: { stat: StatViewModel }) {
 
 export function FixedFeedbackScreen({
   currentRound,
-  nextEvent,
+  isRunComplete,
   onContinue,
   selectedChoice,
   stats,
@@ -127,7 +125,7 @@ export function FixedFeedbackScreen({
   const feedbackLines = splitFeedback(selectedChoice.description);
   const feedbackSummary = getFeedbackSummary(selectedChoice, orderedStats);
   const isFinalRound = currentRound >= totalRounds;
-  const continueLabel = nextEvent ? "继续" : "查看结果";
+  const continueLabel = isRunComplete ? "查看结果" : "继续";
 
   return (
     <section className="ms-fixed-feedback-screen" aria-label="选择反馈">
@@ -173,20 +171,7 @@ export function FixedFeedbackScreen({
         <p aria-atomic="true" aria-live="polite" role="status">{feedbackSummary}</p>
       </article>
 
-      {nextEvent ? (
-        <section className="ms-fixed-feedback-next" aria-label="下一事件预告">
-          <strong className="ms-fixed-feedback-next__label">下一事件预告</strong>
-          <div className="ms-fixed-feedback-next__time">
-            <SkinIcon name="alarm" />
-            <time>{nextEvent.time}</time>
-          </div>
-          <h2>{nextEvent.title}</h2>
-          <p>{nextEvent.body}</p>
-          {nextEvent.visual ? (
-            <SkinIcon className="ms-fixed-feedback-next__visual" name={nextEvent.visual} />
-          ) : null}
-        </section>
-      ) : (
+      {isRunComplete ? (
         <section className="ms-fixed-feedback-next ms-fixed-feedback-next--complete" aria-label="本周结算">
           <strong className="ms-fixed-feedback-next__label">本周结算</strong>
           <div className="ms-fixed-feedback-next__time">
@@ -200,6 +185,12 @@ export function FixedFeedbackScreen({
               : "能量或心情已经见底，先查看本周生存结果。"}
           </p>
           <SkinIcon className="ms-fixed-feedback-next__visual" name="coffee" />
+        </section>
+      ) : (
+        <section className="ms-fixed-feedback-next ms-fixed-feedback-next--round" aria-label="本回合结算">
+          <strong className="ms-fixed-feedback-next__label">本回合结算</strong>
+          <h2>状态已更新</h2>
+          <p>本回合变化已记账，继续进入下一回合。</p>
         </section>
       )}
 

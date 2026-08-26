@@ -139,9 +139,13 @@ describe("monday-survival", () => {
     }
   });
 
-  it("keeps bounded energy and mood visible as seven segments", () => {
+  it("keeps all three stats visible as seven segments without clamping performance text", () => {
     expect(getStatSegmentCount("energy", 78)).toBe(6);
     expect(getStatSegmentCount("mood", 64)).toBe(5);
+    expect(getStatSegmentCount("score", -18)).toBe(0);
+    expect(getStatSegmentCount("score", 0)).toBe(0);
+    expect(getStatSegmentCount("score", 12)).toBe(2);
+    expect(getStatSegmentCount("score", 130)).toBe(7);
     expect(formatPerformance(12)).toBe("+12");
     expect(formatPerformance(0)).toBe("0");
     expect(formatPerformance(-18)).toBe("-18");

@@ -89,7 +89,7 @@ function StaticMondayScreen({ screen }: { screen: "feedback" | "result" | "round
       <FixedScreenStage>
         <FixedFeedbackScreen
           currentRound={1}
-          nextEvent={toEventViewModel(mondayTurns[1], "train")}
+          isRunComplete={false}
           selectedChoice={previewSelectedChoice}
           stats={previewFeedbackStats}
           totalRounds={mondayTurns.length}
@@ -281,13 +281,13 @@ function PlayableMondaySurvivalGame({ onEvent }: MondaySurvivalGameProps) {
   }
 
   if (phase === "feedback" && feedback) {
-    const nextEvent = isMondayRunComplete(feedback.after) ? undefined : getEventViewModel(feedback.after.turnIndex);
+    const isRunComplete = isMondayRunComplete(feedback.after);
 
     return (
       <FixedScreenStage>
         <FixedFeedbackScreen
           currentRound={Math.min(feedback.before.turnIndex + 1, mondayTurns.length)}
-          nextEvent={nextEvent}
+          isRunComplete={isRunComplete}
           onContinue={continueRun}
           selectedChoice={feedback.selectedChoice}
           stats={toStatViewModels(feedback.after, getStatDelta(feedback.before, feedback.after))}

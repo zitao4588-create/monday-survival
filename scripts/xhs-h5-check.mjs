@@ -11,7 +11,14 @@ const viewports = [
   { width: 426, height: 922, name: "target-stage" }
 ];
 const resultPath = [0, 2, 0, 1, 0];
-const eventTitles = ["闹钟第三次响起", "通勤路上", "周会突然加长", "下午低电量", "下班前最后一击"];
+const expectedPerformanceAtRoundStart = [0, 12, 32, 50, 54];
+const expectedPerformanceAfterRound = [12, 32, 50, 54, 72];
+const forbiddenFutureEventTextByRound = [
+  ["09:11", "通勤路上", "地铁很挤，老板发来一句：到了聊一下。门关上，你的灵魂先迟到了。"],
+  ["10:30", "周会突然加长", "每个人都说“我简单讲两句”。投影仪都开始怀疑人生。"],
+  ["15:07", "下午低电量", "三个需求、两个催促和一份“很快就好”的文档同时敲门。"],
+  ["18:46", "下班前最后一击", "有人说：这个能不能今天顺手改一下？顺手两个字最不顺手。"]
+];
 const expectedRoundStatOrder = ["energy", "mood", "score"];
 const expectedResultStatOrder = ["score", "energy", "mood"];
 const expectedChoiceIconsByRound = [
@@ -199,11 +206,11 @@ async function assertCompactStatCards(page, screenLabel, roundNumber, expectDelt
   }
 
   const bars = screen.locator(expectDeltas ? ".ms-fixed-feedback-stat__bar" : ".ms-fixed-stat__bar");
-  if ((await bars.count()) !== 2) {
-    throw new Error(`${screenLabel}第 ${roundNumber} 回合能量和心情没有恰好显示 2 条七段进度条`);
+  if ((await bars.count()) !== 3) {
+    throw new Error(`${screenLabel}第 ${roundNumber} 回合三项状态没有恰好显示 3 条七段进度条`);
   }
 
-  for (let index = 0; index < 2; index += 1) {
+  for (let index = 0; index < 3; index += 1) {
     if ((await bars.nth(index).locator("span").count()) !== 7) {
       throw new Error(`${screenLabel}第 ${roundNumber} 回合第 ${index + 1} 张统计卡不是七段进度条`);
     }
@@ -211,8 +218,22 @@ async function assertCompactStatCards(page, screenLabel, roundNumber, expectDelt
 
   const performanceCard = screen.locator('[data-stat-kind="score"]');
   const performanceLabel = await performanceCard.getAttribute("aria-label");
-  if (!performanceLabel?.startsWith("绩效 ") || performanceLabel.includes("/100") || (await performanceCard.locator(".is-filled").count()) !== 0) {
-    throw new Error(`${screenLabel}第 ${roundNumber} 回合绩效仍被截断或显示为进度条：${performanceLabel}`);
+  const performanceMatch = performanceLabel?.match(/^绩效 ([+-]?\d+)(?:，变化 [+-]?\d+)?$/);
+  const expectedPerformance = expectDeltas
+    ? expectedPerformanceAfterRound[roundNumber - 1]
+    : expectedPerformanceAtRoundStart[roundNumber - 1];
+  const performanceValue = performanceMatch ? Number.parseInt(performanceMatch[1], 10) : Number.NaN;
+  const expectedFilledCount = performanceValue <= 0
+    ? 0
+    : Math.max(2, Math.ceil((Math.min(100, performanceValue) / 100) * 7));
+  const performanceBar = performanceCard.locator(expectDeltas ? ".ms-fixed-feedback-stat__bar" : ".ms-fixed-stat__bar");
+
+  if (!performanceMatch
+    || performanceLabel?.includes("/100")
+    || performanceValue !== expectedPerformance
+    || (await performanceBar.locator("span").count()) !== 7
+    || (await performanceBar.locator(".is-filled").count()) !== expectedFilledCount) {
+    throw new Error(`${screenLabel}第 ${roundNumber} 回合绩效值或七段条错误：${performanceLabel}`);
   }
 
   const deltaKinds = states.map((state) => state.deltaKind);
@@ -285,11 +306,25 @@ async function getVisibleAction(page, originalLabel, fixedLabel) {
   return page.getByLabel(originalLabel, { exact: true });
 }
 
-async function assertNextEventOrSettlement(page, roundNumber) {
-  const nextTitle = eventTitles[roundNumber];
-  if (nextTitle) {
-    await page.getByText("下一事件预告", { exact: true }).waitFor();
-    await page.getByText(nextTitle, { exact: true }).waitFor();
+async function assertSettlementWithoutNextEvent(page, roundNumber) {
+  const feedbackScreen = page.getByLabel("选择反馈", { exact: true });
+  const feedbackText = await feedbackScreen.innerText();
+
+  if (feedbackText.includes("下一事件预告")) {
+    throw new Error(`第 ${roundNumber} 回合反馈页重新泄露了下一事件预告`);
+  }
+
+  const leakedText = forbiddenFutureEventTextByRound[roundNumber - 1]?.find((text) => feedbackText.includes(text));
+  if (leakedText) {
+    throw new Error(`第 ${roundNumber} 回合反馈页泄露下一事件内容：${leakedText}`);
+  }
+
+  if (roundNumber < resultPath.length) {
+    await page.getByLabel("本回合结算", { exact: true }).waitFor();
+    await page.getByText("状态已更新", { exact: true }).waitFor();
+    if ((await feedbackScreen.locator(".ms-fixed-feedback-next time, .ms-fixed-feedback-next__visual").count()) !== 0) {
+      throw new Error(`第 ${roundNumber} 回合结算仍包含下一事件时间或插画`);
+    }
     await page.getByLabel("继续", { exact: true }).waitFor();
     return;
   }
@@ -329,7 +364,7 @@ async function playToResult(page) {
     await assertScreenReady(page, "选择反馈", `第 ${roundIndex + 1} 回合选择反馈`);
     await assertCompactStatCards(page, "选择反馈", roundIndex + 1, true);
     await assertDeltaDisclosure(page, roundIndex + 1);
-    await assertNextEventOrSettlement(page, roundIndex + 1);
+    await assertSettlementWithoutNextEvent(page, roundIndex + 1);
 
     const feedbackDescription = (await page.locator(".ms-fixed-feedback-message h2").innerText()).trim();
     if (!feedbackDescription || selectedRoundText.includes(feedbackDescription)) {

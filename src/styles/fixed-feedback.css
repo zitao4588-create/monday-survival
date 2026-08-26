@@ -314,6 +314,17 @@
   max-width: 154px;
 }
 
+.ms-fixed-feedback-next.ms-fixed-feedback-next--round h2 {
+  top: 50px;
+  left: 27px;
+  max-width: 300px;
+}
+
+.ms-fixed-feedback-next.ms-fixed-feedback-next--round p {
+  top: 91px;
+  width: 300px;
+}
+
 .ms-fixed-feedback-next h2 {
   position: absolute;
   top: 48px;
