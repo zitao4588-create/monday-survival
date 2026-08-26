@@ -152,9 +152,16 @@ async function assertFeedbackSettlement(page, roundNumber) {
   }
 
   if (roundNumber < resultPath.length) {
-    await page.getByLabel("本回合结算", { exact: true }).waitFor();
-    if ((await feedbackScreen.locator(".ms-fixed-feedback-next time, .ms-fixed-feedback-next__visual").count()) !== 0) {
-      throw new Error(`第 ${roundNumber} 回合结算仍包含下一事件时间或插画`);
+    if ((await feedbackScreen.locator(".ms-fixed-feedback-next").count()) !== 0
+      || feedbackText.includes("本回合结算")
+      || feedbackText.includes("状态已更新")) {
+      throw new Error(`第 ${roundNumber} 回合反馈页仍包含额外结算提示`);
+    }
+    const resultSummary = feedbackScreen.getByLabel("选择结果说明", { exact: true });
+    await resultSummary.waitFor();
+    if (!(await resultSummary.innerText()).trim()
+      || (await feedbackScreen.locator(".ms-fixed-feedback-message p").count()) !== 0) {
+      throw new Error(`第 ${roundNumber} 回合结果说明未正确移动到下方纸卡`);
     }
     return;
   }

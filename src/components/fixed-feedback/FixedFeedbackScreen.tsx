@@ -168,8 +168,18 @@ export function FixedFeedbackScreen({
         <h2>
           {feedbackLines.map((line) => <span key={line}>{line}</span>)}
         </h2>
-        <p aria-atomic="true" aria-live="polite" role="status">{feedbackSummary}</p>
       </article>
+
+      {isRunComplete ? (
+        <p
+          className="ms-fixed-feedback-status--hidden"
+          aria-atomic="true"
+          aria-live="polite"
+          role="status"
+        >
+          {feedbackSummary}
+        </p>
+      ) : null}
 
       {isRunComplete ? (
         <section className="ms-fixed-feedback-next ms-fixed-feedback-next--complete" aria-label="本周结算">
@@ -187,10 +197,8 @@ export function FixedFeedbackScreen({
           <SkinIcon className="ms-fixed-feedback-next__visual" name="coffee" />
         </section>
       ) : (
-        <section className="ms-fixed-feedback-next ms-fixed-feedback-next--round" aria-label="本回合结算">
-          <strong className="ms-fixed-feedback-next__label">本回合结算</strong>
-          <h2>状态已更新</h2>
-          <p>本回合变化已记账，继续进入下一回合。</p>
+        <section className="ms-fixed-feedback-summary" aria-label="选择结果说明">
+          <p aria-atomic="true" aria-live="polite" role="status">{feedbackSummary}</p>
         </section>
       )}
 

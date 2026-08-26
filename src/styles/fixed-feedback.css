@@ -216,13 +216,19 @@
   left: 44px;
   width: 339px;
   height: 226px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
   text-align: center;
 }
 
 .ms-fixed-feedback-message__icon {
   width: 60px;
   height: 60px;
-  margin: 20px auto 0;
+  margin: 0;
   display: grid;
   place-items: center;
   border: 1.5px solid #65734f;
@@ -248,19 +254,44 @@
   display: block;
 }
 
-.ms-fixed-feedback-message p {
-  margin: 11px auto 0;
-  color: #61594d;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 19px;
-}
-
 .ms-fixed-feedback-next {
   top: 596px;
   left: 34px;
   width: 359px;
   height: 164px;
+}
+
+.ms-fixed-feedback-summary {
+  top: 596px;
+  left: 34px;
+  width: 359px;
+  height: 164px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: 28px 20px 10px;
+  text-align: center;
+}
+
+.ms-fixed-feedback-summary p {
+  width: 100%;
+  margin: 0;
+  color: #514a40;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 25px;
+  text-wrap: balance;
+}
+
+.ms-fixed-feedback-status--hidden {
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .ms-fixed-feedback-next__label {
@@ -312,17 +343,6 @@
 .ms-fixed-feedback-next--complete h2 {
   left: 127px;
   max-width: 154px;
-}
-
-.ms-fixed-feedback-next.ms-fixed-feedback-next--round h2 {
-  top: 50px;
-  left: 27px;
-  max-width: 300px;
-}
-
-.ms-fixed-feedback-next.ms-fixed-feedback-next--round p {
-  top: 91px;
-  width: 300px;
 }
 
 .ms-fixed-feedback-next h2 {
