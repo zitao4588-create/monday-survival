@@ -198,6 +198,7 @@ export function FixedFeedbackScreen({
         </section>
       ) : (
         <section className="ms-fixed-feedback-summary" aria-label="选择结果说明">
+          <strong className="ms-fixed-feedback-summary__label">结果说明</strong>
           <p aria-atomic="true" aria-live="polite" role="status">{feedbackSummary}</p>
         </section>
       )}

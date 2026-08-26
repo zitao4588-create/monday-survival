@@ -327,7 +327,8 @@ async function assertSettlementWithoutNextEvent(page, roundNumber) {
     }
     const resultSummary = feedbackScreen.getByLabel("选择结果说明", { exact: true });
     await resultSummary.waitFor();
-    if (!(await resultSummary.innerText()).trim()
+    await resultSummary.getByText("结果说明", { exact: true }).waitFor();
+    if (!(await resultSummary.locator("p").innerText()).trim()
       || (await feedbackScreen.locator(".ms-fixed-feedback-message p").count()) !== 0) {
       throw new Error(`第 ${roundNumber} 回合结果说明未正确移动到下方纸卡`);
     }
