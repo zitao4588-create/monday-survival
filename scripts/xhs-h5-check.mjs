@@ -636,6 +636,40 @@ async function playToResult(page) {
       if (!keyChoice.includes("去露个脸") || /\d+%|玩家/.test(resultText) || resultText.includes("本周")) {
         throw new Error(`结果页关键一手或真实性边界错误：${keyChoice}`);
       }
+
+      const resultCopyLayout = await page.evaluate(() => {
+        const subtitle = document.querySelector(".ms-fixed-result-ending__subtitle");
+        const quote = document.querySelector(".ms-fixed-result-ending__quote");
+        const description = document.querySelector(".ms-fixed-result-ending__description");
+        const keyChoiceCopy = document.querySelector(".ms-fixed-result-key-choice p");
+        const lineState = (element) => element
+          ? {
+              clientHeight: element.clientHeight,
+              lineHeight: Number.parseFloat(getComputedStyle(element).lineHeight),
+              scrollHeight: element.scrollHeight
+            }
+          : null;
+
+        return {
+          description: lineState(description),
+          keyChoice: lineState(keyChoiceCopy),
+          labelCount: document.querySelectorAll(".ms-fixed-result-ending__label").length,
+          quote: lineState(quote),
+          quoteGap: subtitle && quote
+            ? quote.getBoundingClientRect().top - subtitle.getBoundingClientRect().bottom
+            : -1
+        };
+      });
+      const isSingleLine = (state) => state
+        && state.clientHeight <= state.lineHeight + 1
+        && state.scrollHeight <= state.clientHeight + 1;
+      if (resultCopyLayout.labelCount !== 0
+        || resultCopyLayout.quoteGap < 23
+        || !isSingleLine(resultCopyLayout.quote)
+        || !isSingleLine(resultCopyLayout.description)
+        || !isSingleLine(resultCopyLayout.keyChoice)) {
+        throw new Error(`结果页精简文案没有保持预期布局：${JSON.stringify(resultCopyLayout)}`);
+      }
       await assertResultActions(page);
       const saveAction = await getVisibleAction(page, "生成我的周一战报", "生成我的周一战报（固定操作）");
       await assertButtonInViewport(page, saveAction, "结果页生成周一战报按钮");

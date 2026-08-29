@@ -254,7 +254,6 @@ export function FixedResultScreen({
         </header>
 
         <section className="ms-fixed-result-ending" aria-label={`今日周一人格：${data.personaLabel}`}>
-          <p className="ms-fixed-result-ending__label">今日周一人格</p>
           <h2 className={endingTitleClassName}>{data.personaLabel}</h2>
           <p className="ms-fixed-result-ending__subtitle">今日结局：{data.todayEnding}</p>
           <p className="ms-fixed-result-ending__quote">“{data.personaQuote}”</p>

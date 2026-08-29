@@ -52,9 +52,9 @@ const previewFeedbackStats = toStatViewModels(
 );
 const previewResultStats = toStatViewModels({ energy: 52, mood: 92, score: 78 });
 const previewResult: ResultViewModel = {
-  description: "你不仅熬过了周一，还保住了明天的自己。",
+  description: "你守住节奏，完整下班。",
   personaLabel: "边界感幸存者",
-  personaQuote: "在混乱里守住边界，就是一种高级生存力。",
+  personaQuote: "守住边界，就是高级生存力。",
   title: "体面下班"
 };
 const previewResultPresentation = toResultPresentation(

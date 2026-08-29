@@ -129,9 +129,9 @@ export const mondayTurnPools: Record<GameTurnPeriod, GameTurn[]> = {
       body: "有人说：这个能不能今天顺手改一下？顺手两个字最不顺手。",
       echoes: { "afternoon-refuel": "下午补给让你还剩一点耐心。有人问：能不能今天顺手改一下？", "afternoon-push": "下午硬扛留下的疲惫刚到货，又有人问：能不能今天顺手改一下？" },
       choices: [
-        { id: "closing-boundary", label: "说明明早处理", preview: "礼貌说明情况，承诺明早第一件事处理。", description: "边界感上线，语气像自动回复。", impactSummary: "你守住了下班线，也要承受一句不够配合的想象。", visual: "calendar-clock", effect: { scoreDelta: 18, energyDelta: -5, moodDelta: 12 }, tags: ["closing-boundary", "self-care"] },
-        { id: "closing-overtime", label: "硬着头皮加班", preview: "留下来把它做完再走。", description: "今晚赢了需求，明天输给自己。", impactSummary: "事情今晚结束了，疲惫会把明天提前借走。", visual: "laptop", effect: { scoreDelta: 30, energyDelta: -32, moodDelta: -24 }, tags: ["closing-overtime", "performance-first"] },
-        { id: "closing-disappear", label: "光速撤离", preview: "关电脑背包走人，动作一气呵成。", description: "人走了，消息还在追定位。", impactSummary: "脚步先获得自由，没回的消息仍在背后追赶。", visual: "door-open", effect: { scoreDelta: -26, energyDelta: 8, moodDelta: 4 }, tags: ["closing-escaped", "mood-first"] }
+        { id: "closing-boundary", label: "说明明早处理", preview: "礼貌说明情况，承诺明早第一件事处理。", description: "边界感上线，语气像自动回复。", impactSummary: "守住下班线，也背上一点“不配合”。", visual: "calendar-clock", effect: { scoreDelta: 18, energyDelta: -5, moodDelta: 12 }, tags: ["closing-boundary", "self-care"] },
+        { id: "closing-overtime", label: "硬着头皮加班", preview: "留下来把它做完再走。", description: "今晚赢了需求，明天输给自己。", impactSummary: "今晚做完，明天还债。", visual: "laptop", effect: { scoreDelta: 30, energyDelta: -32, moodDelta: -24 }, tags: ["closing-overtime", "performance-first"] },
+        { id: "closing-disappear", label: "光速撤离", preview: "关电脑背包走人，动作一气呵成。", description: "人走了，消息还在追定位。", impactSummary: "人先下班，消息继续追。", visual: "door-open", effect: { scoreDelta: -26, energyDelta: 8, moodDelta: 4 }, tags: ["closing-escaped", "mood-first"] }
       ]
     },
     {
@@ -139,9 +139,9 @@ export const mondayTurnPools: Record<GameTurnPeriod, GameTurn[]> = {
       body: "监控突然飘红，群里问是不是大问题。外卖和回家路线同时弹窗。",
       echoes: { "afternoon-refuel": "下午补过电，你还能看清监控红灯。群里问：是不是大问题？", "afternoon-push": "下午硬扛耗掉专注力，监控偏在此刻飘红。群里开始追问。" },
       choices: [
-        { id: "closing-bug-handoff", label: "定位后交接", preview: "查清影响范围，留下步骤给值班同事。", description: "问题没消失，但终于有了门牌号。", impactSummary: "你完成了可靠交接，也为下班线付出一点精力。", visual: "notebook-text", effect: { scoreDelta: 20, energyDelta: -10, moodDelta: 8 }, tags: ["closing-boundary", "problem-solved"] },
-        { id: "closing-bug-fix", label: "留下彻底修好", preview: "点外卖，今晚把根因一起处理。", description: "红灯灭了，你也快灭了。", impactSummary: "你换来一次漂亮收尾，身体和情绪承担全部加班费。", visual: "laptop", effect: { scoreDelta: 32, energyDelta: -30, moodDelta: -24 }, tags: ["closing-overtime", "performance-first"] },
-        { id: "closing-bug-mute", label: "先静音告警", preview: "确认暂不扩散，明早再完整处理。", description: "世界安静了，风险没有睡。", impactSummary: "你获得今晚的安静，也把不确定性留给明早。", visual: "eye-off", effect: { scoreDelta: -20, energyDelta: 8, moodDelta: 6 }, tags: ["closing-escaped", "risk-deferred"] }
+        { id: "closing-bug-handoff", label: "定位后交接", preview: "查清影响范围，留下步骤给值班同事。", description: "问题没消失，但终于有了门牌号。", impactSummary: "交接可靠，下班稍晚。", visual: "notebook-text", effect: { scoreDelta: 20, energyDelta: -10, moodDelta: 8 }, tags: ["closing-boundary", "problem-solved"] },
+        { id: "closing-bug-fix", label: "留下彻底修好", preview: "点外卖，今晚把根因一起处理。", description: "红灯灭了，你也快灭了。", impactSummary: "漂亮收尾，身体买单。", visual: "laptop", effect: { scoreDelta: 32, energyDelta: -30, moodDelta: -24 }, tags: ["closing-overtime", "performance-first"] },
+        { id: "closing-bug-mute", label: "先静音告警", preview: "确认暂不扩散，明早再完整处理。", description: "世界安静了，风险没有睡。", impactSummary: "今晚安静，风险留到明早。", visual: "eye-off", effect: { scoreDelta: -20, energyDelta: 8, moodDelta: 6 }, tags: ["closing-escaped", "risk-deferred"] }
       ]
     },
     {
@@ -149,9 +149,9 @@ export const mondayTurnPools: Record<GameTurnPeriod, GameTurn[]> = {
       body: "部门群说临时聚餐，备注‘自愿参加’。你的回家倒计时已经开始。",
       echoes: { "afternoon-refuel": "下午补给后状态尚可，部门群又发来一场‘自愿参加’的聚餐。", "afternoon-push": "下午硬扛让电量见底，部门群偏偏发来一场‘自愿参加’的聚餐。" },
       choices: [
-        { id: "closing-dinner-go", label: "去露个脸", preview: "吃半小时再走，完成社交打卡。", description: "饭吃到了，人情也签收了。", impactSummary: "你维持了团队连接，回家时间和社交电量一起减少。", visual: "sandwich", effect: { scoreDelta: 16, energyDelta: -14, moodDelta: 5 }, tags: ["closing-social", "performance-first"] },
-        { id: "closing-dinner-decline", label: "坦白今天不去", preview: "简单说明疲惫，直接回家。", description: "拒绝发出去了，肩膀先下班。", impactSummary: "你守住休息安排，也接受一次不合群的想象。", visual: "door-open", effect: { scoreDelta: -14, energyDelta: 12, moodDelta: 14 }, tags: ["closing-boundary", "self-care"] },
-        { id: "closing-dinner-work", label: "借口继续工作", preview: "留在工位避开聚餐，顺手清掉待办。", description: "社交躲过了，工作没有。", impactSummary: "你避开人群并推进任务，却把下班继续押后。", visual: "laptop", effect: { scoreDelta: 24, energyDelta: -22, moodDelta: -18 }, tags: ["closing-overtime", "commute-escaped"] }
+        { id: "closing-dinner-go", label: "去露个脸", preview: "吃半小时再走，完成社交打卡。", description: "饭吃到了，人情也签收了。", impactSummary: "维持团队连接，也消耗社交电量。", visual: "sandwich", effect: { scoreDelta: 16, energyDelta: -14, moodDelta: 5 }, tags: ["closing-social", "performance-first"] },
+        { id: "closing-dinner-decline", label: "坦白今天不去", preview: "简单说明疲惫，直接回家。", description: "拒绝发出去了，肩膀先下班。", impactSummary: "守住休息，也接受“不合群”。", visual: "door-open", effect: { scoreDelta: -14, energyDelta: 12, moodDelta: 14 }, tags: ["closing-boundary", "self-care"] },
+        { id: "closing-dinner-work", label: "借口继续工作", preview: "留在工位避开聚餐，顺手清掉待办。", description: "社交躲过了，工作没有。", impactSummary: "躲过社交，下班仍被推迟。", visual: "laptop", effect: { scoreDelta: 24, energyDelta: -22, moodDelta: -18 }, tags: ["closing-overtime", "commute-escaped"] }
       ]
     }
   ]

@@ -192,9 +192,9 @@ export async function createResultPosterDataUrl(backgroundSrc: string, data: Res
 
   context.fillStyle = "#46402f";
   context.font = getFont(600, 29);
-  drawCenteredText(context, `“${data.personaQuote}”`, 340, 882, 500, 39, 2);
+  drawCenteredText(context, `“${data.personaQuote}”`, RESULT_POSTER_WIDTH / 2, 882, 500, 39, 1);
   context.font = getFont(500, 27);
-  drawCenteredText(context, data.description, 340, 978, 500, 37, 2);
+  drawCenteredText(context, data.description, RESULT_POSTER_WIDTH / 2, 928, 500, 37, 1);
 
   context.fillStyle = "#3d4730";
   context.font = getFont(800, 32);
