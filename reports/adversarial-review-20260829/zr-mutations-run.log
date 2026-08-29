@@ -1,0 +1,55 @@
+
+ RUN  v2.1.9 /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+
+ ✓ review-output/zr-mutations.checks.ts > AR-01 内容与 schema 深检 > 15 事件 / 45 选择 / 全局唯一 ID / 每事件恰好 3 选择
+ ✓ review-output/zr-mutations.checks.ts > AR-01 内容与 schema 深检 > 文本字段非空且长度在安全范围内（记录最大长度）
+ ✓ review-output/zr-mutations.checks.ts > AR-01 内容与 schema 深检 > effect 数值有限、icons 全部在受支持集合内、tags 非空且无重复
+ ✓ review-output/zr-mutations.checks.ts > AR-01 内容与 schema 深检 > choice 对象没有 schema 之外的额外字段（运行时对象键白名单）
+ ✓ review-output/zr-mutations.checks.ts > AR-01 内容与 schema 深检 > echo 键都能由更早时段的真实选择产生，且回响键对在任一前置选择中互斥
+ ✓ review-output/zr-mutations.checks.ts > AR-02 周种子与时间矩阵 > 固定时钟矩阵：weekKey/weekStart 与独立参考实现一致
+ ✓ review-output/zr-mutations.checks.ts > AR-02 周种子与时间矩阵 > 关键 ISO 周事实与已知日历事实吻合（独立于两种实现的第三重校验）
+ ✓ review-output/zr-mutations.checks.ts > AR-02 周种子与时间矩阵 > 周日 23:59:59 与周一 00:00 相邻两周：事件组合稳定且相邻周组合不同
+ ✓ review-output/zr-mutations.checks.ts > AR-02 周种子与时间矩阵 > 连续 156 周 weekKey 单调且无碰撞，eventIndexes 始终落在池内
+ ✓ review-output/zr-mutations.checks.ts > AR-02 周种子与时间矩阵 > 观察记录：事件组合向量仅存在 3 种（w, w+2, w+1, w, w+2 模式）
+ ✓ review-output/zr-mutations.checks.ts > AR-02 周种子与时间矩阵 > 系统时间回拨只改变所选周，不产生崩溃或非法索引
+ ✓ review-output/zr-mutations.checks.ts > AR-03 跨回合回响 > 三组回响事件全部就位（morning 3 / afternoon 3 / closing 3）
+ ✓ review-output/zr-mutations.checks.ts > AR-03 跨回合回响 > 回响只替换正文 body，不改 title/choices/period/id
+ ✓ review-output/zr-mutations.checks.ts > AR-03 跨回合回响 > boss-replied / boss-ignored 分别命中且互斥（对全部 morning 回响事件）
+ ✓ review-output/zr-mutations.checks.ts > AR-03 跨回合回响 > 多候选标签同时存在时优先级稳定（Object.keys 插入顺序优先）
+ ✓ review-output/zr-mutations.checks.ts > AR-03 跨回合回响 > 回响不污染基础数据（源对象不可变），且跨局标签不残留
+ ✓ review-output/zr-mutations.checks.ts > AR-03 跨回合回响 > 整局端到端：真实 tags 流经三个回响层且互不串扰
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 损坏输入 { name: '空字符串', raw: '' } 安全降级为合法结果
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 损坏输入 { name: '非法 JSON', raw: '{broken' } 安全降级为合法结果
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 损坏输入 { name: 'JSON 字符串而非法 JSON 文档', raw: '"just a string"' } 安全降级为合法结果
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 损坏输入 { name: '错误 version=2', raw: '{"version":2,"entries":[{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"情绪避险大师","score":56,"weekKey":"2026-W35"}]}' } 安全降级为合法结果
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 损坏输入 { name: '缺失 version', raw: '{"entries":[{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"情绪避险大师","score":56,"weekKey":"2026-W35"}]}' } 安全降级为合法结果
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 损坏输入 { name: 'entries 非数组（对象）', raw: '{"version":1,"entries":{"a":1}}' } 安全降级为合法结果
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 损坏输入 { name: 'entries 非数组（null）', raw: '{"version":1,"entries":null}' } 安全降级为合法结果
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 损坏输入 { name: 'entries 含 null/数字/字符串/布尔', raw: '{"version":1,"entries":[null,42,"x",true,{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"情绪避险大师","score":56,"weekKey":"2026-W35"}]}' } 安全降级为合法结果
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 损坏输入 { name: 'entries 含缺失字段与 NaN/Infinity', raw: '{"version":1,"entries":[{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"情绪避险大师","score":null,"weekKey":"2026-W35"},{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"","score":56,"weekKey":"2026-W35"},{"date":"2026-08-28","energy":60,"outcome":"体面下班","persona":"情绪避险大师","score":56,"weekKey":"2026-W35"},{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"情绪避险大师","score":56,"weekKey":"2026-W35"}]}' } 安全降级为合法结果
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 损坏输入 { name: '6 条记录（超出上限 1 条）', raw: '{"version":1,"entries":[{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"P1","score":56,"weekKey":"2026-W35"},{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"P2","score":56,"weekKey":"2026-W35"},{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"P3","score":56,"weekKey":"2026-W35"},{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"P4","score":56,"weekKey":"2026-W35"},{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"P5","score":56,"weekKey":"2026-W35"},{"date":"2026-08-28","energy":60,"mood":98,"outcome":"体面下班","persona":"P6","score":56,"weekKey":"2026-W35"}]}' } 安全降级为合法结果
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 含额外敏感字段（姓名/账号/设备标识/自由文本）被白名单剥离
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 连续保存 7 次只保留最近 5 次，最新在前
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > getItem / setItem / removeItem 各自抛异常时全部安全降级（变异用例 2）
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > null storage（window 未定义场景）安全降级
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 清除后可重新写入；重复保存同一条目不去重（记录行为）
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > 多标签页竞争（lost update）：两个视图同读旧快照先后保存，先保存的条目丢失
+ ✓ review-output/zr-mutations.checks.ts > AR-05 本地历史变异 > formatLocalHistoryDate 在跨时区边界正确取本地日期
+ ✓ review-output/zr-mutations.checks.ts > AR-07 AudioContext 变异 > window 不存在：play 不抛错、不构造上下文
+ ✓ review-output/zr-mutations.checks.ts > AR-07 AudioContext 变异 > AudioContext 不存在（window 上无该属性）：静默降级
+ ✓ review-output/zr-mutations.checks.ts > AR-07 AudioContext 变异 > 构造函数抛异常：不抛出、后续调用可重试
+ ✓ review-output/zr-mutations.checks.ts > AR-07 AudioContext 变异 > resume() reject：吞掉异常、无未处理 rejection、tone 仍被调度、主流程不受影响
+ ✓ review-output/zr-mutations.checks.ts > AR-07 AudioContext 变异 > 正常路径：首次 play 构造一次上下文，后续复用，每次都尝试 resume
+ ✓ review-output/zr-mutations.checks.ts > AR-07 AudioContext 变异 > 默认关闭由存储层保证：无存储/异常存储 readSoundEnabled 均为 false
+ ✓ review-output/zr-mutations.checks.ts > AR-06/AR-09 事件合同（单元级） > 事件名合同与 EXECUTION_PLAN 8.4 完全一致
+ ✓ review-output/zr-mutations.checks.ts > AR-06/AR-09 事件合同（单元级） > 无 handler 时 emit 不抛错；payload 只接受 string/number/boolean 值
+ ✓ review-output/zr-mutations.checks.ts > AR-06/AR-09 事件合同（单元级） > 历史 envelope 只含 version/entries 且不含任何标识性字段（AR-06）
+ ✓ review-output/zr-mutations.checks.ts > AR-11 结果一致性（单元级） > 固定路线：presentation 是页面、战报、分享、历史的唯一数据源，字段一致
+ ✓ review-output/zr-mutations.checks.ts > AR-11 结果一致性（单元级） > 提前结束路线：关键一手取结束前最后一个真实选择
+ ✓ review-output/zr-mutations.checks.ts > AR-11 结果一致性（单元级） > 空 history 调用 toResultPresentation 抛错（产品路径不可能出现，记录防御行为）
+ ✓ review-output/zr-mutations.checks.ts > AR-11 结果一致性（单元级） > 13 人格标签与 gameViewModels 导出一致（人格可达性独立复核的输入）
+
+ Test Files  1 passed (1)
+      Tests  47 passed (47)
+   Start at  23:59:51
+   Duration  300ms (transform 57ms, setup 0ms, collect 65ms, tests 41ms, environment 0ms, prepare 35ms)

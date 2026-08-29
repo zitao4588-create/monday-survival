@@ -25,6 +25,7 @@ export interface ChoiceViewModel {
     score: number;
   };
   id: string;
+  impactSummary: string;
   label: string;
   preview: string;
   visual: GameChoiceIcon;

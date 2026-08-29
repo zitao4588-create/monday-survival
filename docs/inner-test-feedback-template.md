@@ -1,67 +1,101 @@
-# Inner Test Feedback Template
+# Monday Survival 第一轮内测反馈表
 
-Use this template when asking early testers to play `monday-survival` in WeChat.
+> 每位测试者复制一份单独填写。请记录实际看到和做到的内容；不确定时写“不确定”，不要代替测试者解释规则。
 
-## Tester Info
+## 1. 测试信息
 
-- Device:
-- System version:
-- WeChat version:
-- Network:
-- Test URL or QR code:
-- Test time:
+- 测试者编号：
+- 测试时间：
+- 设备型号：
+- 操作系统及版本：
+- 微信版本：
+- 打开入口：微信聊天链接 / 朋友圈链接 / Safari / Chrome / 其他：
+- 网络环境：Wi-Fi / 蜂窝网络 / 其他：
+- 测试地址：
+- 是否第一次接触本游戏：是 / 否
 
-## Quick Rating
+## 2. 完成情况
 
-Score each item from 1 to 5.
+- 是否无需他人解释就开始游戏：是 / 否
+- 是否完整走完五回合：是 / 否
+- 若未完成，停在哪一页或哪一回合：
+- 总用时约：
+- 是否主动重玩：是 / 否
 
-| Item | Score | Notes |
-|---|---:|---|
-| Opened successfully in WeChat |  |  |
-| First screen is readable |  |  |
-| Choices are easy to tap |  |  |
-| Text is funny or relatable |  |  |
-| Feedback after choices is clear |  |  |
-| Result screen feels worth sharing |  |  |
-| Result poster can be saved |  |  |
-| Share text works |  |  |
-| Overall willingness to share |  |  |
+## 3. 规则与选择理解
 
-## Questions
+1. 只看首次规则层，你认为游戏要做什么？
 
-1. Did the game open directly in WeChat?
-2. Did you see any risk warning or blank screen?
-3. Which choice or line made you laugh?
-4. Which choice or line felt confusing?
-5. Did you understand energy, mood, and score?
-6. Did the game feel too short, too long, or about right?
-7. Did the result feel accurate enough to share?
-8. Could you save the result poster?
-9. Could you copy or share the result text?
-10. Would you send this to a coworker or friend?
+   回答：
 
-## Bug Report
+2. 首屏三个选项是否全部完整可见？
 
-Use this section if something breaks.
+   是 / 否；若否，请说明被遮挡、截断或需要滚动的位置：
 
-- Screen:
-- What happened:
-- What you expected:
-- Steps to reproduce:
-- Screenshot or screen recording:
-- Device and WeChat version:
+3. 选择前是否感觉三个选项存在明显的“系统推荐答案”？
 
-## Best Quote
+   是 / 否 / 不确定；原因：
 
-Paste the tester's most useful sentence here:
+4. 请分别用自己的话说明三个指标代表什么：
 
-> 
+   - 能量：
+   - 心情：
+   - 绩效：
 
-## Follow-up Decision
+5. 绩效的正数、零点和负数方向是否容易理解？
 
-- [ ] No action needed.
-- [ ] Copywriting tweak.
-- [ ] UI layout fix.
-- [ ] Result/share fix.
-- [ ] Performance/loading fix.
-- [ ] Needs product decision.
+   是 / 否 / 不确定；困惑点：
+
+6. 每次选择后的反馈是否让你明白“这一手的代价”？
+
+   是 / 否 / 部分明白；最清楚或最困惑的一次：
+
+## 4. 结果与记忆
+
+- 最终人格名称：
+- 你觉得这个人格描述准确吗？1（完全不准）—5（非常准确）：
+- 为什么：
+- 结果页是否正确记住了你的关键选择：是 / 否 / 不确定
+- 你记得自己哪一个关键选择：
+- 结果文字是否有截断、重叠或难读：无 / 有；说明：
+
+## 5. 战报、保存与分享
+
+- 是否成功生成战报：是 / 否
+- 是否成功保存战报到相册：是 / 否 / 未尝试
+- 保存方式：长按保存 / 下载 / 系统截图 / 其他：
+- 生成或保存过程中遇到的问题：
+- 你愿意重玩换一条路线吗？愿意 / 不愿意 / 不确定
+- 你愿意把结果发给同事或朋友吗？愿意 / 不愿意 / 不确定
+- 如果不愿意分享，最主要原因是什么：结果不准 / 内容不够有趣 / 图片不好看 / 操作麻烦 / 不想暴露选择或结果 / 不知道发给谁 / 其他：
+- 如果愿意分享，最想分享给谁、通过什么方式：
+
+## 6. 最有价值的一句话
+
+请保留测试者原话，不要润色：
+
+> （填写原话）
+
+## 7. 问题复现证据
+
+如未发现问题，填写“无”。每个问题单独复制一份本节。
+
+- 问题发生页面或回合：
+- 实际发生了什么：
+- 期望发生什么：
+- 从打开链接开始的完整复现步骤：
+  1. （步骤）
+  2. （步骤）
+  3. （步骤）
+- 是否每次都能复现：每次 / 偶发 / 仅一次
+- 截图或录屏文件名：
+- 控制台或错误文字（如有，原样记录）：
+- 当时设备、系统、微信版本：
+- 当时网络与打开入口：
+- 其他可帮助复现的信息：
+
+## 8. 记录人初步归类
+
+- 优先级：P0 阻断 / 文案或局部间距 / 结果与战报 / 平台兼容 / P1 内容候选 / 待判断
+- 是否需要复测：是 / 否
+- 仅记录依据，不写推断：

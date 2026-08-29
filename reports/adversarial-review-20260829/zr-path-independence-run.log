@@ -1,0 +1,17 @@
+
+ RUN  v2.1.9 /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+
+ ✓ review-output/zr-path-independence.checks.ts > AR-04 59,049 验证器独立重算 > 独立枚举覆盖全部 59,049 条路径且无重复
+ ✓ review-output/zr-path-independence.checks.ts > AR-04 59,049 验证器独立重算 > 独立重算的结局分布与产品验证器及落盘报告一致
+ ✓ review-output/zr-path-independence.checks.ts > AR-04 59,049 验证器独立重算 > 独立重算的提前结束与资源分布与产品验证器一致
+ ✓ review-output/zr-path-independence.checks.ts > AR-04 59,049 验证器独立重算 > 独立重算：13 人格全部可达
+ ✓ review-output/zr-path-independence.checks.ts > AR-04 59,049 验证器独立重算 > 独立重算：单事件条件失败率 ≤ 50%（与产品检查项同门槛）
+ ✓ review-output/zr-path-independence.checks.ts > AR-04 59,049 验证器独立重算 > 独立支配检查：45 个选择（全部 15 事件）无任何选择被另一选择全面支配
+ ✓ review-output/zr-path-independence.checks.ts > AR-04 59,049 验证器独立重算 > 抽样逐路径对照：独立 oracle 与产品 gameCore 在 2,000 条随机路径 + 全部 243 条基线路径上一致
+ ✓ review-output/zr-path-independence.checks.ts > AR-04 59,049 验证器独立重算 > 产品验证器与 UI 的提前结束语义一致（isMondayRunComplete）
+ ✓ review-output/zr-path-independence.checks.ts > AR-04 59,049 验证器独立重算 > 事件指标口径：playedEventIds 与产品 eventMetrics.paths 一致（15 事件各自总数）
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  23:59:58
+   Duration  402ms (transform 43ms, setup 0ms, collect 90ms, tests 157ms, environment 0ms, prepare 32ms)

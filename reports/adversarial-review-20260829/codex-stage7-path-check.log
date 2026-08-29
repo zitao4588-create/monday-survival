@@ -1,0 +1,21 @@
+
+> @game-lab/monday-survival@0.1.0 stage7:path-check /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+> node scripts/stage7-path-check.mjs
+
+# 阶段 7 路径验证摘要
+
+- 总结：通过
+- 枚举路径：59,049
+- 结局：赢 11887 / 存活 32020 / 失败 15142
+- 可达人格：13
+
+## 检查项
+
+- [x] path-count：枚举 59049 条，目标 59049 条
+- [x] content-fields：15 事件，45 选择，ID 与必填字段完整
+- [x] no-pareto-dominance：未发现全面支配
+- [x] three-resource-influence：选择正负影响完整；结局边界 {"energy":true,"mood":true,"score":true}
+- [x] no-single-event-mass-loss：单事件条件失败率最高 27.69%（门槛 50%）
+- [x] outcome-distribution：赢 20.13%，存活 54.23%，失败 25.64%
+- [x] early-ending-spread：提前结束 1359；资源最大占比 58.94%，事件最大占比 43.05%
+- [x] persona-reachability：13 种人格全部可达

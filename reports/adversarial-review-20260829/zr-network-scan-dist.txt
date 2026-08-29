@@ -1,0 +1,37 @@
+=== AR-06/AR-10 构建产物网络能力扫描（dist/，2026-08-28）===
+bundle: dist/assets/index-BnCTeGtY.js (  266266 bytes)
+
+--- 远端 URL（https?://，含相对协议）---
+dist/assets/index-BnCTeGtY.js:http://www.w3.org/1998/Math/MathML
+dist/assets/index-BnCTeGtY.js:http://www.w3.org/1999/xlink
+dist/assets/index-BnCTeGtY.js:http://www.w3.org/2000/svg
+dist/assets/index-BnCTeGtY.js:http://www.w3.org/XML/1998/namespace
+dist/assets/index-BnCTeGtY.js:https://react.dev/errors/
+dist/index.html:https://beian.miit.gov.cn/
+dist/index.html:https://beian.mps.gov.cn/#/query/webSearch?code=61010202000523
+
+--- 网络与旁路能力 token ---
+[fetch(] 1
+[XMLHttpRequest] 0
+[sendBeacon] 0
+[WebSocket] 0
+[EventSource] 0
+[navigator.share] 0
+[navigator.clipboard] 0
+[window.open] 0
+[new Function] 0
+[eval(] 0
+
+--- 精确定位 share/clipboard 别名残留（.share( / .clipboard / writeText / getShareUrl）---
+   3 .clipboard
+   3 .share
+   1 location.origin
+   3 writeText
+
+--- dist/index.html 中的外链 ---
+href="./assets/star-CZBYs-an.svg"
+src="./assets/index-BnCTeGtY.js"
+href="./assets/index-Dlni2kIj.css"
+href="https://beian.miit.gov.cn/"
+href="https://beian.mps.gov.cn/#/query/webSearch?code=61010202000523"
+src="./beian-icon.png"

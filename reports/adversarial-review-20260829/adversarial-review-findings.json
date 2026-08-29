@@ -1,0 +1,73 @@
+[
+  {
+    "id": "ZR-001",
+    "severity": "P1",
+    "title": "首次引导 modal 未将焦点移入且未形成焦点循环",
+    "status": "fixed_verified",
+    "files": [
+      "src/components/fixed-intro/FixedIntroOverlay.tsx",
+      "src/MondaySurvivalGame.tsx"
+    ],
+    "lines": [
+      "8-31",
+      "94-106"
+    ],
+    "preconditions": "首次进入普通 H5，键盘或辅助技术导航，390x844 Playwright Chromium。",
+    "reproduction": [
+      "node review-output/codex-browser-adversarial.mjs",
+      "打开首次引导后，在任何键盘输入前读取 document.activeElement。",
+      "连续按两次 Tab，记录活动元素。"
+    ],
+    "expected": "aria-modal dialog 打开后焦点位于对话框内；唯一的开始按钮应形成焦点循环，焦点不应回到 BODY。",
+    "actual": "打开后 document.activeElement 为 BODY；第一次 Tab 才进入开始按钮，第二次 Tab 又回到 BODY。背景 inert、触控尺寸和横向溢出均正常。",
+    "evidence": [
+      "review-output/codex-browser-adversarial-evidence.json#introFocus",
+      "review-output/codex-intro-focus.png",
+      "review-output/codex-browser-adversarial-run.log"
+    ],
+    "impact": "键盘及屏幕阅读器用户进入首次引导时缺少明确上下文，可能越出 modal 的交互范围；属于稳定可复现的可访问性错误。",
+    "confidence": "high",
+    "minimal_fix_direction": "为开始按钮增加 ref；modal 挂载后主动聚焦，并在 dialog 内处理 Tab/Shift+Tab 循环。保留现有背景 inert；是否允许 Escape 退出需按产品意图单独决定。",
+    "resolution": "FixedIntroOverlay 为开始按钮增加 ref，挂载后主动聚焦；dialog 拦截 Tab 和 Shift+Tab 并将焦点保持在唯一操作按钮。",
+    "verification": [
+      "scripts/xhs-h5-check.mjs 覆盖初始焦点、Tab 与 Shift+Tab",
+      "Stage 8 专用浏览器脚本三个移动视口通过",
+      "pnpm xhs:check 三个移动视口通过"
+    ]
+  },
+  {
+    "id": "ZR-002",
+    "severity": "P2",
+    "title": "最终反馈按钮快速双击会重复发出 feedback_continue",
+    "status": "fixed_verified",
+    "files": [
+      "src/MondaySurvivalGame.tsx",
+      "src/components/fixed-feedback/FixedFeedbackScreen.tsx"
+    ],
+    "lines": [
+      "185, 308, 326-343",
+      "214-231"
+    ],
+    "preconditions": "完成第五回合并停在最终反馈页；在 React 提交下一屏前同步触发两次同一可见“查看结果”按钮 click。",
+    "reproduction": [
+      "node review-output/codex-browser-adversarial.mjs",
+      "对最终可见按钮执行 button.click(); button.click();。",
+      "读取 window.__stage8Events、历史 envelope 和结果页状态。"
+    ],
+    "expected": "一次逻辑性继续操作只产生一个 feedback_continue 事件。",
+    "actual": "事件序列包含两个完全相同的 round=5、screen=result 的 feedback_continue；result_view 和历史条目仍各为 1，主流程没有重复跳转。",
+    "evidence": [
+      "review-output/codex-browser-adversarial-evidence.json#doubleFinal",
+      "review-output/codex-browser-adversarial-run.log"
+    ],
+    "impact": "当前事件只在本地回调中暴露，不破坏游戏结果；但会让后续接入的漏斗统计高估最终继续次数，并违反一次操作一次事件的合同。",
+    "confidence": "high",
+    "minimal_fix_direction": "在 continueRun 入口增加同步 ref 锁或过渡锁，并让页面内与固定操作按钮共享该锁；只在第一次调用时 setPhase 和 emit。",
+    "resolution": "continueRun 在状态更新与事件发送前取得同步 ref 锁；进入每个新反馈页时重置锁。",
+    "verification": [
+      "Stage 8 专用浏览器脚本对最终按钮同步执行两次 click()",
+      "三个移动视口均保持 feedback_continue=5、result_view=1、历史条目=1",
+      "pnpm test 18/18 与完整 H5 回归通过"
+    ]
+  }
+]

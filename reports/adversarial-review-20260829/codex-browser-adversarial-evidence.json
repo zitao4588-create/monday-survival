@@ -1,0 +1,328 @@
+{
+  "introFocus": {
+    "beforeTab": {
+      "activeTag": "BODY",
+      "activeText": "活过周一打工人生存测试第1/ 5 回合能量70/100心情60/100绩效0007:42闹钟第三次响起你还有 18 分钟出门。床很暖，消息已经开始跳。01冲澡开机用冷水把身体叫醒，先把自己找回来。02再刷五分钟再躺一会儿，看看消息和短视频。03空腹咖啡先来一杯提神的，早餐路上再说。小贴士每个选择都会影响你的能量、心情和绩效。今天你能体面下班吗?5 次选择，守住能量、心情和绩效。开始上班全部走完约2分钟，无需登录",
+      "underlayInert": true,
+      "overflow": 0
+    },
+    "afterFirstTab": "开始上班",
+    "afterSecondTab": {
+      "activeTag": "BODY",
+      "activeText": "活过周一打工人生存测试第1/ 5 回合能量70/100心情60/100绩效0007:42闹钟第三次响起你还有 18 分钟出门。床很暖，消息已经开始跳。01冲澡开机用冷水把身体叫醒，先把自己找回来。02再刷五分钟再躺一会儿，看看消息和短视频。03空腹咖啡先来一杯提神的，早餐路上再说。小贴士每个选择都会影响你的能量、心情和绩效。今天你能体面下班吗?5 次选择，守住能量、心情和绩效。开始上班全部走完约2分钟，无需登录"
+    },
+    "startButtonBox": {
+      "x": 55.387325286865234,
+      "y": 437.6056213378906,
+      "width": 279.22534561157227,
+      "height": 51.267608642578125
+    },
+    "initialFocusInsideDialog": false,
+    "focusWrappedToStart": false
+  },
+  "doubleFinal": {
+    "feedbackContinueCount": 6,
+    "resultViewCount": 1,
+    "historyEntryCount": 1,
+    "tail": [
+      {
+        "name": "round_view",
+        "properties": {
+          "round": 4,
+          "weekKey": "2026-W35"
+        }
+      },
+      {
+        "name": "choice_selected",
+        "properties": {
+          "choiceId": "afternoon-snack",
+          "danger": false,
+          "round": 4
+        }
+      },
+      {
+        "name": "feedback_continue",
+        "properties": {
+          "round": 5,
+          "screen": "round"
+        }
+      },
+      {
+        "name": "round_view",
+        "properties": {
+          "round": 5,
+          "weekKey": "2026-W35"
+        }
+      },
+      {
+        "name": "choice_selected",
+        "properties": {
+          "choiceId": "closing-dinner-go",
+          "danger": false,
+          "round": 5
+        }
+      },
+      {
+        "name": "feedback_continue",
+        "properties": {
+          "round": 5,
+          "screen": "result"
+        }
+      },
+      {
+        "name": "feedback_continue",
+        "properties": {
+          "round": 5,
+          "screen": "result"
+        }
+      },
+      {
+        "name": "result_view",
+        "properties": {
+          "outcome": "win",
+          "weekKey": "2026-W35"
+        }
+      }
+    ]
+  },
+  "doublePoster": {
+    "generatedCount": 1
+  },
+  "shareCancel": {
+    "clipboardCalls": 0,
+    "events": [
+      {
+        "name": "game_open",
+        "properties": {
+          "build": "h5",
+          "weekKey": "2026-W35"
+        }
+      },
+      {
+        "name": "intro_view",
+        "properties": {}
+      },
+      {
+        "name": "game_start",
+        "properties": {
+          "source": "intro",
+          "weekKey": "2026-W35"
+        }
+      },
+      {
+        "name": "round_view",
+        "properties": {
+          "round": 1,
+          "weekKey": "2026-W35"
+        }
+      },
+      {
+        "name": "choice_selected",
+        "properties": {
+          "choiceId": "wake-water",
+          "danger": false,
+          "round": 1
+        }
+      },
+      {
+        "name": "feedback_continue",
+        "properties": {
+          "round": 2,
+          "screen": "round"
+        }
+      },
+      {
+        "name": "round_view",
+        "properties": {
+          "round": 2,
+          "weekKey": "2026-W35"
+        }
+      },
+      {
+        "name": "choice_selected",
+        "properties": {
+          "choiceId": "commute-seat-reply",
+          "danger": false,
+          "round": 2
+        }
+      },
+      {
+        "name": "feedback_continue",
+        "properties": {
+          "round": 3,
+          "screen": "round"
+        }
+      },
+      {
+        "name": "round_view",
+        "properties": {
+          "round": 3,
+          "weekKey": "2026-W35"
+        }
+      },
+      {
+        "name": "choice_selected",
+        "properties": {
+          "choiceId": "meeting-deadline-scope",
+          "danger": false,
+          "round": 3
+        }
+      },
+      {
+        "name": "feedback_continue",
+        "properties": {
+          "round": 4,
+          "screen": "round"
+        }
+      },
+      {
+        "name": "round_view",
+        "properties": {
+          "round": 4,
+          "weekKey": "2026-W35"
+        }
+      },
+      {
+        "name": "choice_selected",
+        "properties": {
+          "choiceId": "afternoon-snack",
+          "danger": false,
+          "round": 4
+        }
+      },
+      {
+        "name": "feedback_continue",
+        "properties": {
+          "round": 5,
+          "screen": "round"
+        }
+      },
+      {
+        "name": "round_view",
+        "properties": {
+          "round": 5,
+          "weekKey": "2026-W35"
+        }
+      },
+      {
+        "name": "choice_selected",
+        "properties": {
+          "choiceId": "closing-dinner-go",
+          "danger": false,
+          "round": 5
+        }
+      },
+      {
+        "name": "feedback_continue",
+        "properties": {
+          "round": 5,
+          "screen": "result"
+        }
+      },
+      {
+        "name": "feedback_continue",
+        "properties": {
+          "round": 5,
+          "screen": "result"
+        }
+      },
+      {
+        "name": "result_view",
+        "properties": {
+          "outcome": "win",
+          "weekKey": "2026-W35"
+        }
+      },
+      {
+        "name": "result_image_generated",
+        "properties": {
+          "result": "体面下班"
+        }
+      },
+      {
+        "name": "share_attempted",
+        "properties": {
+          "method": "native",
+          "result": "体面下班"
+        }
+      }
+    ]
+  },
+  "shareFallbackClipboardCalls": 1,
+  "shareSummary": {
+    "attemptedCount": 5,
+    "completedCount": 3,
+    "attemptsAddedByDoubleClick": 1,
+    "completedMethods": [
+      "native",
+      "clipboard",
+      "native"
+    ],
+    "shareTail": [
+      {
+        "name": "share_attempted",
+        "properties": {
+          "method": "native",
+          "result": "体面下班"
+        }
+      },
+      {
+        "name": "share_attempted",
+        "properties": {
+          "method": "native",
+          "result": "体面下班"
+        }
+      },
+      {
+        "name": "share_completed",
+        "properties": {
+          "method": "native",
+          "result": "体面下班"
+        }
+      },
+      {
+        "name": "share_attempted",
+        "properties": {
+          "method": "native",
+          "result": "体面下班"
+        }
+      },
+      {
+        "name": "share_completed",
+        "properties": {
+          "method": "clipboard",
+          "result": "体面下班"
+        }
+      },
+      {
+        "name": "share_attempted",
+        "properties": {
+          "method": "clipboard",
+          "result": "体面下班"
+        }
+      },
+      {
+        "name": "share_attempted",
+        "properties": {
+          "method": "native",
+          "result": "体面下班"
+        }
+      },
+      {
+        "name": "share_completed",
+        "properties": {
+          "method": "native",
+          "result": "体面下班"
+        }
+      }
+    ]
+  },
+  "reloadRecovery": {
+    "hasRound": true,
+    "historyEntryCount": 1,
+    "bodyTextLength": 196
+  },
+  "externalRequests": [],
+  "consoleErrors": [],
+  "portReleased": true
+}

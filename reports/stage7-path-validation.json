@@ -1,0 +1,183 @@
+{
+  "checks": [
+    {
+      "id": "path-count",
+      "passed": true,
+      "detail": "枚举 59049 条，目标 59049 条"
+    },
+    {
+      "id": "content-fields",
+      "passed": true,
+      "detail": "15 事件，45 选择，ID 与必填字段完整"
+    },
+    {
+      "id": "no-pareto-dominance",
+      "passed": true,
+      "detail": "未发现全面支配"
+    },
+    {
+      "id": "three-resource-influence",
+      "passed": true,
+      "detail": "选择正负影响完整；结局边界 {\"energy\":true,\"mood\":true,\"score\":true}"
+    },
+    {
+      "id": "no-single-event-mass-loss",
+      "passed": true,
+      "detail": "单事件条件失败率最高 27.69%（门槛 50%）"
+    },
+    {
+      "id": "outcome-distribution",
+      "passed": true,
+      "detail": "赢 20.13%，存活 54.23%，失败 25.64%"
+    },
+    {
+      "id": "early-ending-spread",
+      "passed": true,
+      "detail": "提前结束 1359；资源最大占比 58.94%，事件最大占比 43.05%"
+    },
+    {
+      "id": "persona-reachability",
+      "passed": true,
+      "detail": "13 种人格全部可达"
+    }
+  ],
+  "generatedAt": "2026-08-29T13:22:03.599Z",
+  "metrics": {
+    "earlyEndings": {
+      "byEvent": {
+        "wake-up": 0,
+        "wake-rain": 0,
+        "wake-laundry": 0,
+        "commute": 0,
+        "commute-delay": 0,
+        "commute-seat": 0,
+        "meeting": 81,
+        "meeting-deadline": 0,
+        "meeting-credit": 0,
+        "afternoon": 585,
+        "afternoon-review": 414,
+        "afternoon-chat": 279,
+        "closing": 0,
+        "closing-bug": 0,
+        "closing-dinner": 0
+      },
+      "byPeriod": {
+        "wake-up": 0,
+        "commute": 0,
+        "morning": 81,
+        "afternoon": 1278,
+        "closing": 0
+      },
+      "byResource": {
+        "energy": 558,
+        "mood": 801
+      },
+      "total": 1359
+    },
+    "eventMetrics": {
+      "wake-up": {
+        "failures": 5055,
+        "paths": 19683,
+        "failRate": 0.2568206066148453
+      },
+      "wake-rain": {
+        "failures": 4970,
+        "paths": 19683,
+        "failRate": 0.25250215922369557
+      },
+      "wake-laundry": {
+        "failures": 5117,
+        "paths": 19683,
+        "failRate": 0.25997053294721334
+      },
+      "commute": {
+        "failures": 5187,
+        "paths": 19683,
+        "failRate": 0.2635269013869837
+      },
+      "commute-delay": {
+        "failures": 5385,
+        "paths": 19683,
+        "failRate": 0.2735863435451913
+      },
+      "commute-seat": {
+        "failures": 4570,
+        "paths": 19683,
+        "failRate": 0.23218005385357923
+      },
+      "meeting": {
+        "failures": 5450,
+        "paths": 19683,
+        "failRate": 0.2768886856678352
+      },
+      "meeting-deadline": {
+        "failures": 4947,
+        "paths": 19683,
+        "failRate": 0.2513336381649139
+      },
+      "meeting-credit": {
+        "failures": 4745,
+        "paths": 19683,
+        "failRate": 0.24107097495300514
+      },
+      "afternoon": {
+        "failures": 4803,
+        "paths": 19656,
+        "failRate": 0.24435286935286935
+      },
+      "afternoon-review": {
+        "failures": 5095,
+        "paths": 19656,
+        "failRate": 0.2592083842083842
+      },
+      "afternoon-chat": {
+        "failures": 5163,
+        "paths": 19656,
+        "failRate": 0.2626678876678877
+      },
+      "closing": {
+        "failures": 5108,
+        "paths": 19230,
+        "failRate": 0.2656266250650026
+      },
+      "closing-bug": {
+        "failures": 4693,
+        "paths": 19230,
+        "failRate": 0.24404576183047322
+      },
+      "closing-dinner": {
+        "failures": 3982,
+        "paths": 19230,
+        "failRate": 0.20707228289131566
+      }
+    },
+    "outcomes": {
+      "fail": 15142,
+      "survive": 32020,
+      "win": 11887
+    },
+    "outcomeRatios": {
+      "fail": 0.2564310995952514,
+      "survive": 0.5422615116259378,
+      "win": 0.20130738877881083
+    },
+    "pathCount": 59049,
+    "reachablePersonas": [
+      "会议防火墙型",
+      "低电量幸存者",
+      "微笑崩盘型",
+      "急需补给者",
+      "情绪停机型",
+      "情绪避险大师",
+      "摸鱼边缘人",
+      "燃尽通关者",
+      "电量清零型",
+      "绩效滑坡型",
+      "缓存型打工人",
+      "自救优先型",
+      "边界感幸存者"
+    ]
+  },
+  "passed": true,
+  "schemaVersion": 1
+}

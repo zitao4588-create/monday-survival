@@ -1,0 +1,18 @@
+
+> @game-lab/monday-survival@0.1.0 build /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+> tsc -p tsconfig.json && vite build
+
+vite v6.4.3 building for production...
+transforming...
+✓ 1860 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/assets/star-CZBYs-an.svg                              0.27 kB │ gzip:  0.21 kB
+dist/index.html                                            1.04 kB │ gzip:  0.60 kB
+dist/assets/wood-C-m6dVFi.webp                            18.57 kB
+dist/assets/feedback-background-fixed@2x-DxrOUKJg.jpg    342.01 kB
+dist/assets/result-background-fixed@2x-BorIkkW2.jpg      368.24 kB
+dist/assets/round-background-fixed@2x-DoODQPfU.png     2,264.42 kB
+dist/assets/index-Dlni2kIj.css                            37.66 kB │ gzip:  8.02 kB
+dist/assets/index-BnCTeGtY.js                            266.27 kB │ gzip: 85.39 kB
+✓ built in 751ms

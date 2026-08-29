@@ -5,29 +5,91 @@ import path from "node:path";
 const baseURL = process.env.MS_XHS_BASE_URL ?? "http://127.0.0.1:5322";
 const base = new URL(baseURL);
 const localHosts = new Set(["127.0.0.1", "localhost", "::1"]);
+const testNow = "2026-08-28T12:00:00.000Z";
+const testTimeZone = "Asia/Shanghai";
+const introStorageKey = "monday-survival:intro:v1";
+const introStorageValue = "seen";
+const introCopy = {
+  description: "5 次选择，守住能量、心情和绩效。",
+  duration: "全部走完约2分钟，无需登录",
+  start: "开始上班",
+  title: "今天你能体面下班吗?"
+};
 const viewports = [
   { width: 375, height: 667, name: "small-iphone" },
   { width: 390, height: 844, name: "modern-iphone" },
   { width: 426, height: 922, name: "target-stage" }
 ];
 const resultPath = [0, 2, 0, 1, 0];
-const expectedPerformanceAtRoundStart = [0, 12, 32, 50, 54];
-const expectedPerformanceAfterRound = [12, 32, 50, 54, 72];
+const expectedEventIndexes = [0, 2, 1, 0, 2];
+const expectedPerformanceAtRoundStart = [0, 12, 22, 40, 40];
+const expectedPerformanceAfterRound = [12, 22, 40, 40, 56];
 const forbiddenFutureEventTextByRound = [
-  ["09:11", "通勤路上", "地铁很挤，老板发来一句：到了聊一下。门关上，你的灵魂先迟到了。"],
-  ["10:30", "周会突然加长", "每个人都说“我简单讲两句”。投影仪都开始怀疑人生。"],
-  ["15:07", "下午低电量", "三个需求、两个催促和一份“很快就好”的文档同时敲门。"],
-  ["18:46", "下班前最后一击", "有人说：这个能不能今天顺手改一下？顺手两个字最不顺手。"]
+  ["09:03", "终于抢到座位", "空位像季度奖金突然出现。手机同时弹出一份待会要过的方案。"],
+  [
+    "10:18",
+    "截止时间被提前",
+    "原本周三的交付被一句‘最好今天’推到眼前。所有人开始研究桌面。",
+    "老板接着你早上的回复，把周三交付改成‘最好今天’。所有人开始研究桌面。",
+    "老板没等到早上的回复，顺手把周三交付改成‘最好今天’。空气更安静了。"
+  ],
+  [
+    "15:07",
+    "下午低电量",
+    "三个需求、两个催促和一份‘很快就好’的文档同时敲门。",
+    "上午那句强硬回应还在群里回响，三个需求和两个催促同时敲门。",
+    "上午漏掉的半句要求变成一份加急文档，和两个催促一起敲门。"
+  ],
+  [
+    "18:15",
+    "聚餐邀请弹出来",
+    "部门群说临时聚餐，备注‘自愿参加’。你的回家倒计时已经开始。",
+    "下午补给后状态尚可，部门群又发来一场‘自愿参加’的聚餐。",
+    "下午硬扛让电量见底，部门群偏偏发来一场‘自愿参加’的聚餐。"
+  ]
 ];
 const expectedRoundStatOrder = ["energy", "mood", "score"];
 const expectedResultStatOrder = ["score", "energy", "mood"];
 const expectedChoiceIconsByRound = [
   ["shower-head", "smartphone", "coffee"],
-  ["message-square-reply", "eye-off", "notebook-pen"],
-  ["notebook-text", "message-circle-warning", "power"],
+  ["notebook-text", "power", "list-filter"],
+  ["list-filter", "calendar-clock", "eye-off"],
   ["panels-top-left", "sandwich", "list-filter"],
-  ["calendar-clock", "laptop", "door-open"]
+  ["sandwich", "door-open", "laptop"]
 ];
+
+async function createTestContext(browser, options = {}) {
+  const context = await browser.newContext({
+    ...options,
+    timezoneId: testTimeZone
+  });
+
+  await context.addInitScript((isoNow) => {
+    const OriginalDate = Date;
+    const fixedTimestamp = OriginalDate.parse(isoNow);
+
+    function FrozenDate(...args) {
+      if (!new.target) {
+        return new OriginalDate(fixedTimestamp).toString();
+      }
+
+      return Reflect.construct(
+        OriginalDate,
+        args.length === 0 ? [fixedTimestamp] : args,
+        new.target
+      );
+    }
+
+    Object.setPrototypeOf(FrozenDate, OriginalDate);
+    FrozenDate.prototype = OriginalDate.prototype;
+    FrozenDate.now = () => fixedTimestamp;
+    FrozenDate.parse = OriginalDate.parse;
+    FrozenDate.UTC = OriginalDate.UTC;
+    globalThis.Date = FrozenDate;
+  }, testNow);
+
+  return context;
+}
 
 async function isServerReady() {
   try {
@@ -158,6 +220,129 @@ async function assertScreenReady(page, screenLabel, transitionName) {
   }
 }
 
+async function assertIntroCopy(page) {
+  const dialog = page.getByRole("dialog", { name: introCopy.title, exact: true });
+  const startButton = dialog.getByRole("button", { name: introCopy.start, exact: true });
+  await dialog.waitFor();
+  await dialog.getByText(introCopy.description, { exact: true }).waitFor();
+  await startButton.waitFor();
+  await dialog.getByText(introCopy.duration, { exact: true }).waitFor();
+
+  if ((await dialog.getByText(/任何一项/).count()) !== 0) {
+    throw new Error("首次引导恢复了已删除的‘任何一项……’文案");
+  }
+
+  if (!(await startButton.evaluate((button) => document.activeElement === button))) {
+    throw new Error("首次引导打开后焦点没有落在‘开始上班’按钮");
+  }
+
+  await page.keyboard.press("Tab");
+  if (!(await startButton.evaluate((button) => document.activeElement === button))) {
+    throw new Error("首次引导按 Tab 后焦点逃离弹窗操作按钮");
+  }
+
+  await page.keyboard.press("Shift+Tab");
+  if (!(await startButton.evaluate((button) => document.activeElement === button))) {
+    throw new Error("首次引导按 Shift+Tab 后焦点逃离弹窗操作按钮");
+  }
+}
+
+async function startFirstVisit(page) {
+  await assertIntroCopy(page);
+
+  const markerBeforeStart = await page.evaluate((key) => localStorage.getItem(key), introStorageKey);
+  if (markerBeforeStart !== null) {
+    throw new Error(`首次引导开始前已经写入标记：${markerBeforeStart}`);
+  }
+
+  await page.getByRole("button", { name: introCopy.start, exact: true }).click();
+  await assertScreenReady(page, "当前回合", "首次引导开始游戏");
+
+  const markerAfterStart = await page.evaluate((key) => localStorage.getItem(key), introStorageKey);
+  if (markerAfterStart !== introStorageValue) {
+    throw new Error(`首次引导没有写入版本化标记：${markerAfterStart}`);
+  }
+
+  await page.reload({ waitUntil: "load" });
+  await assertScreenReady(page, "当前回合", "刷新已开始的游戏");
+  if ((await page.getByRole("dialog", { name: introCopy.title, exact: true }).count()) !== 0) {
+    throw new Error("写入首次引导标记后刷新仍重复出现引导");
+  }
+}
+
+async function assertNeutralChoices(page, roundNumber) {
+  const choices = page.locator(".ms-fixed-choice");
+  if ((await choices.count()) !== 3) {
+    throw new Error(`第 ${roundNumber} 回合没有恰好显示三个选项`);
+  }
+
+  const states = await choices.evaluateAll((elements) => elements.map((element) => {
+    const icon = element.querySelector(".ms-fixed-choice__icon");
+    const choiceIcon = element.querySelector(".ms-choice-icon");
+    return {
+      className: element.className,
+      iconBorder: icon ? getComputedStyle(icon).borderColor : "",
+      iconColor: choiceIcon ? getComputedStyle(choiceIcon).color : "",
+      tone: element.getAttribute("data-choice-tone")
+    };
+  }));
+
+  if (states.some((state) => state.tone !== "neutral" || /--(?:green|yellow|red)\b/.test(state.className))) {
+    throw new Error(`第 ${roundNumber} 回合仍带固定好坏色类：${JSON.stringify(states)}`);
+  }
+
+  if (new Set(states.map((state) => state.iconBorder)).size !== 1
+    || new Set(states.map((state) => state.iconColor)).size !== 1) {
+    throw new Error(`第 ${roundNumber} 回合三个选项图标未统一为中性橄榄色：${JSON.stringify(states)}`);
+  }
+
+  if ((await page.getByText("上滑查看全部选项 ↑", { exact: true }).count()) !== 0) {
+    throw new Error(`第 ${roundNumber} 回合仍显示上滑提示`);
+  }
+}
+
+async function assertShortViewportChoices(page, roundNumber) {
+  const viewport = page.viewportSize();
+  if (!viewport || viewport.width !== 375 || viewport.height !== 667) {
+    return;
+  }
+
+  const state = await page.locator(".ms-fixed-choice").evaluateAll((elements) => ({
+    boxes: elements.map((element) => {
+      const box = element.getBoundingClientRect();
+      return { bottom: box.bottom, height: box.height, left: box.left, right: box.right, top: box.top, width: box.width };
+    }),
+    scrollY: window.scrollY
+  }));
+
+  if (Math.abs(state.scrollY) > 1
+    || state.boxes.length !== 3
+    || state.boxes.some((box) => box.top < 0 || box.bottom > viewport.height || box.height < 44 || box.width < 44)) {
+    throw new Error(`第 ${roundNumber} 回合 375x667 三选项首屏或触控尺寸错误：${JSON.stringify({ state, viewport })}`);
+  }
+}
+
+async function assertPerformanceMeterDirection(performanceBar, value, description) {
+  const segments = await performanceBar.locator("span").evaluateAll((elements) => (
+    elements.map((element) => element.getAttribute("data-meter-segment") ?? "")
+  ));
+  const expectedDirection = value < 0 ? "negative" : value > 0 ? "positive" : "zero";
+  const actualDirection = await performanceBar.getAttribute("data-performance-direction");
+  const negativeIndexes = segments.flatMap((segment, index) => segment === "negative" ? [index] : []);
+  const positiveIndexes = segments.flatMap((segment, index) => segment === "positive" ? [index] : []);
+
+  if (segments.length !== 7
+    || segments[3] !== "zero"
+    || actualDirection !== expectedDirection
+    || negativeIndexes.some((index) => index >= 3)
+    || positiveIndexes.some((index) => index <= 3)
+    || (value < 0 && negativeIndexes.length === 0)
+    || (value > 0 && positiveIndexes.length === 0)
+    || (value === 0 && (negativeIndexes.length > 0 || positiveIndexes.length > 0))) {
+    throw new Error(`${description}绩效中心刻度方向错误：${JSON.stringify({ actualDirection, segments, value })}`);
+  }
+}
+
 async function assertDeltaDisclosure(page, roundNumber) {
   const revealedDeltas = page.locator(".ms-fixed-feedback-stat__delta");
   if ((await revealedDeltas.count()) !== 3) {
@@ -223,18 +408,15 @@ async function assertCompactStatCards(page, screenLabel, roundNumber, expectDelt
     ? expectedPerformanceAfterRound[roundNumber - 1]
     : expectedPerformanceAtRoundStart[roundNumber - 1];
   const performanceValue = performanceMatch ? Number.parseInt(performanceMatch[1], 10) : Number.NaN;
-  const expectedFilledCount = performanceValue <= 0
-    ? 0
-    : Math.max(2, Math.ceil((Math.min(100, performanceValue) / 100) * 7));
   const performanceBar = performanceCard.locator(expectDeltas ? ".ms-fixed-feedback-stat__bar" : ".ms-fixed-stat__bar");
 
   if (!performanceMatch
     || performanceLabel?.includes("/100")
     || performanceValue !== expectedPerformance
-    || (await performanceBar.locator("span").count()) !== 7
-    || (await performanceBar.locator(".is-filled").count()) !== expectedFilledCount) {
+    || (await performanceBar.locator("span").count()) !== 7) {
     throw new Error(`${screenLabel}第 ${roundNumber} 回合绩效值或七段条错误：${performanceLabel}`);
   }
+  await assertPerformanceMeterDirection(performanceBar, performanceValue, `${screenLabel}第 ${roundNumber} 回合`);
 
   const deltaKinds = states.map((state) => state.deltaKind);
   if (expectDeltas && JSON.stringify(deltaKinds) !== JSON.stringify(expectedRoundStatOrder)) {
@@ -269,7 +451,7 @@ async function assertChoiceIcons(page, roundNumber) {
 
   const expectedIcons = expectedChoiceIconsByRound[roundNumber - 1];
   if (JSON.stringify(icons) !== JSON.stringify(expectedIcons)) {
-    throw new Error(`第 ${roundNumber} 回合语义图标错误：${JSON.stringify(icons)}`);
+    throw new Error(`第 ${roundNumber} 回合（事件池 index ${expectedEventIndexes[roundNumber - 1]}）语义图标错误：${JSON.stringify(icons)}`);
   }
 
   const renderedIcons = await page.locator(".ms-fixed-choice [data-choice-icon]").evaluateAll((elements) => (
@@ -280,6 +462,24 @@ async function assertChoiceIcons(page, roundNumber) {
   }
 
   return icons;
+}
+
+async function assertResultActions(page) {
+  const primaryActions = page.locator(".ms-fixed-result-actions > .ms-fixed-result-action");
+  const primaryLabels = (await primaryActions.allInnerTexts()).map((label) => label.trim());
+  if ((await primaryActions.count()) !== 2
+    || JSON.stringify(primaryLabels) !== JSON.stringify(["生成我的周一战报", "换条路线再试一次"])) {
+    throw new Error(`结果页两项主操作发生变化：${JSON.stringify(primaryLabels)}`);
+  }
+
+  const archiveAction = page.locator(".ms-fixed-result-actions > .ms-fixed-result-archive-trigger");
+  const archiveLabel = (await archiveAction.count()) === 1 ? (await archiveAction.innerText()).trim() : "";
+  const archiveAriaLabel = (await archiveAction.count()) === 1 ? await archiveAction.getAttribute("aria-label") : "";
+  if ((await archiveAction.count()) !== 1
+    || archiveLabel !== "周一档案 · 声音：关"
+    || archiveAriaLabel !== "打开周一档案，声音已关闭") {
+    throw new Error(`结果页档案入口数量或默认声音状态错误：${JSON.stringify({ archiveAriaLabel, archiveLabel })}`);
+  }
 }
 
 async function assertButtonInViewport(page, locator, description) {
@@ -319,25 +519,26 @@ async function assertSettlementWithoutNextEvent(page, roundNumber) {
     throw new Error(`第 ${roundNumber} 回合反馈页泄露下一事件内容：${leakedText}`);
   }
 
-  if (roundNumber < resultPath.length) {
-    if ((await feedbackScreen.locator(".ms-fixed-feedback-next").count()) !== 0
-      || feedbackText.includes("本回合结算")
-      || feedbackText.includes("状态已更新")) {
-      throw new Error(`第 ${roundNumber} 回合反馈页仍包含额外结算提示`);
-    }
-    const resultSummary = feedbackScreen.getByLabel("选择结果说明", { exact: true });
-    await resultSummary.waitFor();
-    await resultSummary.getByText("结果说明", { exact: true }).waitFor();
-    if (!(await resultSummary.locator("p").innerText()).trim()
-      || (await feedbackScreen.locator(".ms-fixed-feedback-message p").count()) !== 0) {
-      throw new Error(`第 ${roundNumber} 回合结果说明未正确移动到下方纸卡`);
-    }
-    await page.getByLabel("继续", { exact: true }).waitFor();
-    return;
+  if ((await feedbackScreen.locator(".ms-fixed-feedback-next").count()) !== 0
+    || feedbackText.includes("本回合结算")
+    || feedbackText.includes("今日结算")
+    || feedbackText.includes("状态已更新")) {
+    throw new Error(`第 ${roundNumber} 回合反馈页仍包含额外结算提示`);
   }
 
-  await page.getByText("本周结算", { exact: true }).waitFor();
-  await page.getByLabel("查看结果", { exact: true }).waitFor();
+  const resultSummary = feedbackScreen.getByLabel("这一手的代价", { exact: true });
+  await resultSummary.waitFor();
+  await resultSummary.getByText("这一手的代价", { exact: true }).waitFor();
+  const impactSummary = (await resultSummary.locator("p").innerText()).trim();
+  if (!impactSummary
+    || /[+-]?\d+/.test(impactSummary)
+    || impactSummary.includes("能量")
+    || impactSummary.includes("心情")
+    || impactSummary.includes("绩效")
+    || (await feedbackScreen.locator(".ms-fixed-feedback-message p").count()) !== 0) {
+    throw new Error(`第 ${roundNumber} 回合情绪代价未正确写入下方纸卡`);
+  }
+  await page.getByLabel(roundNumber === resultPath.length ? "查看结果" : "继续", { exact: true }).waitFor();
 }
 
 async function playToResult(page) {
@@ -356,14 +557,8 @@ async function playToResult(page) {
     }
 
     await assertChoiceIcons(page, roundIndex + 1);
-
-    if (page.viewportSize()?.height === 667) {
-      const hint = page.getByText("上滑查看全部选项 ↑", { exact: true });
-      await hint.waitFor({ state: "visible" });
-      await page.evaluate(() => window.scrollTo(0, 20));
-      await hint.waitFor({ state: "hidden" });
-      await page.evaluate(() => window.scrollTo(0, 0));
-    }
+    await assertNeutralChoices(page, roundIndex + 1);
+    await assertShortViewportChoices(page, roundIndex + 1);
 
     const selectedIndex = resultPath[roundIndex];
     const selectedRoundText = await page.locator(".ms-fixed-choice").nth(selectedIndex).innerText();
@@ -390,8 +585,15 @@ async function playToResult(page) {
     if (roundIndex === resultPath.length - 1) {
       await assertScreenReady(page, "结果分享卡", "进入结果页");
       await assertResultStatOrder(page);
-      const saveAction = await getVisibleAction(page, "生成结果图", "保存结果图（固定操作）");
-      await assertButtonInViewport(page, saveAction, "结果页保存结果图按钮");
+      await page.getByText("今日结局：体面下班", { exact: true }).waitFor();
+      const keyChoice = await page.getByLabel("关键一手", { exact: true }).innerText();
+      const resultText = await page.getByLabel("结果分享卡").innerText();
+      if (!keyChoice.includes("去露个脸") || /\d+%|玩家/.test(resultText) || resultText.includes("本周")) {
+        throw new Error(`结果页关键一手或真实性边界错误：${keyChoice}`);
+      }
+      await assertResultActions(page);
+      const saveAction = await getVisibleAction(page, "生成我的周一战报", "生成我的周一战报（固定操作）");
+      await assertButtonInViewport(page, saveAction, "结果页生成周一战报按钮");
     }
   }
 }
@@ -402,14 +604,14 @@ async function checkXhsResult(page) {
     throw new Error("XHS 页面仍包含新窗口、下载、嵌入或表单入口");
   }
 
-  if ((await page.getByText("分享文案", { exact: true }).count()) !== 0 || (await page.getByText("下载图片", { exact: true }).count()) !== 0) {
-    throw new Error("XHS 结果页仍包含分享文案或下载图片入口");
+  if ((await page.getByText("挑战一个同事", { exact: true }).count()) !== 0 || (await page.getByText("下载图片", { exact: true }).count()) !== 0) {
+    throw new Error("XHS 结果页仍包含分享或下载入口");
   }
 
-  const saveAction = await getVisibleAction(page, "生成结果图", "保存结果图（固定操作）");
-  await assertButtonInViewport(page, saveAction, "结果页保存结果图按钮");
+  const saveAction = await getVisibleAction(page, "生成我的周一战报", "生成我的周一战报（固定操作）");
+  await assertButtonInViewport(page, saveAction, "结果页生成周一战报按钮");
   await saveAction.click();
-  const poster = page.getByAltText("可保存的周一结果图");
+  const poster = page.getByAltText("可保存的周一战报");
   await poster.waitFor();
   await assertAtTop(page, "打开结果图弹层");
 
@@ -428,10 +630,12 @@ async function checkXhsResult(page) {
   }
 
   const viewport = page.viewportSize();
-  const closeBox = await page.getByLabel("关闭结果图").boundingBox();
+  const closeButton = page.getByLabel("关闭周一战报");
+  await page.waitForFunction(() => document.activeElement?.getAttribute("aria-label") === "关闭周一战报");
+  const closeBox = await closeButton.boundingBox();
   const posterBox = await poster.boundingBox();
 
-  if (!viewport || !closeBox || closeBox.y < 0 || closeBox.y + closeBox.height > viewport.height) {
+  if (!viewport || !closeBox || closeBox.width < 44 || closeBox.height < 44 || closeBox.y < 0 || closeBox.y + closeBox.height > viewport.height) {
     throw new Error(`结果图关闭按钮不在视口内：${JSON.stringify({ closeBox, viewport })}`);
   }
 
@@ -439,31 +643,131 @@ async function checkXhsResult(page) {
     throw new Error(`结果海报顶部不在视口内：${JSON.stringify({ posterBox, viewport })}`);
   }
 
-  await page.getByText("结果图已生成，请长按图片或使用系统截图保存。", { exact: true }).waitFor();
+  const modalState = await page.evaluate(() => ({
+    activeLabel: document.activeElement?.getAttribute("aria-label") ?? "",
+    underlayInert: document.querySelector(".ms-fixed-result-underlay")?.hasAttribute("inert") ?? false
+  }));
+  if (modalState.activeLabel !== "关闭周一战报" || !modalState.underlayInert) {
+    throw new Error(`XHS 战报弹层焦点或 inert 错误：${JSON.stringify(modalState)}`);
+  }
+
+  await page.getByText("周一战报已生成，请长按图片或使用系统截图保存。", { exact: true }).waitFor();
   await page.getByText("长按图片或使用系统截图保存", { exact: true }).waitFor();
 
   if ((await page.locator(forbiddenSelector).count()) !== 0
-    || (await page.getByText("分享文案", { exact: true }).count()) !== 0
+    || (await page.getByText("挑战一个同事", { exact: true }).count()) !== 0
     || (await page.getByText("下载图片", { exact: true }).count()) !== 0) {
     throw new Error("XHS 海报弹层暴露了下载或分享入口");
   }
 
-  await page.getByLabel("关闭结果图", { exact: true }).click();
+  await page.keyboard.press("Escape");
   await poster.waitFor({ state: "hidden" });
-  await assertAtTop(page, "关闭结果图弹层");
-
-  if ((await page.getByText("结果图已生成，请长按图片或使用系统截图保存。", { exact: true }).count()) !== 0) {
-    throw new Error("关闭结果图后仍残留已生成状态");
+  await page.waitForFunction(() => document.activeElement?.getAttribute("aria-label") === "生成我的周一战报");
+  const focusAfterEscape = await page.evaluate(() => document.activeElement?.getAttribute("aria-label") ?? "");
+  if (focusAfterEscape !== "生成我的周一战报") {
+    throw new Error(`Escape 关闭后焦点未恢复：${focusAfterEscape}`);
   }
 
-  const restartAction = await getVisibleAction(page, "再活一次周一", "再活一次周一（固定操作）");
+  await saveAction.click();
+  await poster.waitFor();
+  await page.locator(".ms-fixed-result-poster-modal").click({ position: { x: 4, y: 4 } });
+  await poster.waitFor({ state: "hidden" });
+  await page.waitForFunction(() => document.activeElement?.getAttribute("aria-label") === "生成我的周一战报");
+  const focusAfterBackdrop = await page.evaluate(() => document.activeElement?.getAttribute("aria-label") ?? "");
+  if (focusAfterBackdrop !== "生成我的周一战报") {
+    throw new Error(`遮罩关闭后焦点未恢复：${focusAfterBackdrop}`);
+  }
+
+  await saveAction.click();
+  await poster.waitFor();
+  await closeButton.click();
+  await poster.waitFor({ state: "hidden" });
+  await assertAtTop(page, "关闭周一战报弹层");
+
+  if ((await page.getByText("周一战报已生成，请长按图片或使用系统截图保存。", { exact: true }).count()) !== 0) {
+    throw new Error("关闭周一战报后仍残留已生成状态");
+  }
+
+  const restartAction = await getVisibleAction(page, "换条路线再试一次", "换条路线再试一次（固定操作）");
   await assertButtonInViewport(page, restartAction, "结果页再玩一次按钮");
   await restartAction.click();
   await assertScreenReady(page, "当前回合", "重新开始");
+  if ((await page.getByRole("dialog", { name: introCopy.title, exact: true }).count()) !== 0) {
+    throw new Error("换路线重玩后重复出现首次引导");
+  }
 }
 
 async function launchBrowser() {
   return chromium.launch({ headless: true });
+}
+
+async function checkStaticIntro(browser) {
+  const context = await createTestContext(browser, { viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  const introURL = new URL(baseURL);
+  introURL.searchParams.set("screen", "intro");
+
+  try {
+    await page.goto(introURL.href, { waitUntil: "load" });
+    await assertIntroCopy(page);
+    await page.getByRole("button", { name: introCopy.start, exact: true }).click();
+    await assertScreenReady(page, "当前回合", "静态 intro 入口开始");
+
+    const marker = await page.evaluate((key) => localStorage.getItem(key), introStorageKey);
+    if (marker !== null) {
+      throw new Error(`静态 intro 入口不应写入首次访问标记：${marker}`);
+    }
+  } finally {
+    await context.close();
+  }
+}
+
+async function checkStorageFailureFallback(browser) {
+  const context = await createTestContext(browser, { viewport: { width: 390, height: 844 } });
+  await context.addInitScript(() => {
+    Storage.prototype.getItem = () => {
+      throw new Error("simulated localStorage read failure");
+    };
+    Storage.prototype.setItem = () => {
+      throw new Error("simulated localStorage write failure");
+    };
+  });
+  const page = await context.newPage();
+
+  try {
+    await page.goto(baseURL, { waitUntil: "load" });
+    await assertIntroCopy(page);
+    await page.getByRole("button", { name: introCopy.start, exact: true }).click();
+    await assertScreenReady(page, "当前回合", "localStorage 异常降级");
+  } finally {
+    await context.close();
+  }
+}
+
+async function checkNegativePerformanceDirection(browser) {
+  const context = await createTestContext(browser, { viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+
+  try {
+    await page.goto(baseURL, { waitUntil: "load" });
+    await assertIntroCopy(page);
+    await page.getByRole("button", { name: introCopy.start, exact: true }).click();
+    await page.locator(".ms-fixed-choice").nth(1).click();
+    await assertScreenReady(page, "选择反馈", "负绩效选择反馈");
+
+    const performanceCard = page.locator('.ms-fixed-feedback-stat[data-stat-kind="score"]');
+    const performanceLabel = await performanceCard.getAttribute("aria-label");
+    if (!performanceLabel?.startsWith("绩效 -18")) {
+      throw new Error(`负绩效选择没有保留真实数值：${performanceLabel}`);
+    }
+    await assertPerformanceMeterDirection(
+      performanceCard.locator(".ms-fixed-feedback-stat__bar"),
+      -18,
+      "负绩效反馈"
+    );
+  } finally {
+    await context.close();
+  }
 }
 
 async function run() {
@@ -473,9 +777,12 @@ async function run() {
 
   try {
     browser = await launchBrowser();
+    await checkStaticIntro(browser);
+    await checkStorageFailureFallback(browser);
+    await checkNegativePerformanceDirection(browser);
 
     for (const viewport of viewports) {
-      const context = await browser.newContext({
+      const context = await createTestContext(browser, {
         deviceScaleFactor: 1,
         hasTouch: true,
         isMobile: true,
@@ -515,7 +822,7 @@ async function run() {
 
       try {
         await page.goto(baseURL, { waitUntil: "load" });
-        await page.getByLabel("当前回合").waitFor();
+        await startFirstVisit(page);
         await assertNoHorizontalOverflow(page, viewport.name);
         await playToResult(page);
         await assertNoHorizontalOverflow(page, viewport.name);

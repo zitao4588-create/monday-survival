@@ -1,5 +1,10 @@
+import { useEffect, useState } from "react";
 import feedbackBackground from "../../assets/backgrounds/feedback-background-fixed@2x.jpg";
-import { formatPerformance, getStatSegmentCount } from "../../gameViewModels";
+import {
+  formatPerformance,
+  getPerformanceMeterSegments,
+  getStatSegmentCount
+} from "../../gameViewModels";
 import "../../styles/fixed-feedback.css";
 import { ChoiceIcon } from "../ChoiceIcon";
 import { ViewportAssist } from "../ViewportAssist";
@@ -75,8 +80,9 @@ function getFeedbackSummary(selectedChoice: ChoiceViewModel, stats: StatViewMode
 function FixedFeedbackStat({ stat }: { stat: StatViewModel }) {
   const isPerformance = stat.kind === "score";
   const displayValue = getDisplayValue(stat.value);
-  const fillCount = getStatSegmentCount(stat.kind, stat.value);
   const renderedValue = isPerformance ? formatPerformance(stat.value) : displayValue;
+  const performanceSegments = isPerformance ? getPerformanceMeterSegments(stat.value) : null;
+  const fillCount = isPerformance ? 0 : getStatSegmentCount(stat.kind, stat.value);
   const deltaTone = stat.delta === undefined
     ? ""
     : stat.delta > 0
@@ -97,10 +103,21 @@ function FixedFeedbackStat({ stat }: { stat: StatViewModel }) {
         <span>{renderedValue}</span>
         {isPerformance ? null : <small>/100</small>}
       </div>
-      <div className="ms-fixed-feedback-stat__bar" aria-hidden="true">
-        {Array.from({ length: 7 }, (_, index) => (
-          <span className={index < fillCount ? "is-filled" : undefined} key={index} />
-        ))}
+      <div
+        className={`ms-fixed-feedback-stat__bar${isPerformance ? " ms-performance-meter" : ""}`}
+        data-performance-direction={isPerformance ? (stat.value < 0 ? "negative" : stat.value > 0 ? "positive" : "zero") : undefined}
+        aria-hidden="true"
+      >
+        {(performanceSegments ?? Array.from({ length: 7 }, (_, index) => index < fillCount ? "filled" : "empty"))
+          .map((segment, index) => (
+            <span
+              className={segment === "filled" ? "is-filled" : `is-${segment}`}
+              data-meter-segment={isPerformance ? segment : undefined}
+              key={index}
+            >
+              {segment === "zero" ? <small>0</small> : null}
+            </span>
+          ))}
       </div>
       {stat.delta === undefined ? null : (
         <strong className={`ms-fixed-feedback-stat__delta${deltaTone}`} data-delta-kind={stat.kind}>
@@ -119,16 +136,26 @@ export function FixedFeedbackScreen({
   stats,
   totalRounds
 }: FixedFeedbackScreenProps) {
+  const [continueEmphasized, setContinueEmphasized] = useState(false);
   const orderedStats = statKinds
     .map((kind) => stats.find((stat) => stat.kind === kind))
     .filter((stat): stat is StatViewModel => Boolean(stat));
   const feedbackLines = splitFeedback(selectedChoice.description);
   const feedbackSummary = getFeedbackSummary(selectedChoice, orderedStats);
-  const isFinalRound = currentRound >= totalRounds;
   const continueLabel = isRunComplete ? "查看结果" : "继续";
+  const hasDangerDrop = orderedStats.some((stat) => (stat.delta ?? 0) <= -15);
+
+  useEffect(() => {
+    setContinueEmphasized(false);
+    const timer = window.setTimeout(() => setContinueEmphasized(true), 1_000);
+    return () => window.clearTimeout(timer);
+  }, [currentRound, selectedChoice.id]);
 
   return (
-    <section className="ms-fixed-feedback-screen" aria-label="选择反馈">
+    <section
+      className={`ms-fixed-feedback-screen${hasDangerDrop ? " is-danger" : ""}`}
+      aria-label="选择反馈"
+    >
       <img
         className="ms-fixed-feedback-background"
         src={feedbackBackground}
@@ -170,42 +197,23 @@ export function FixedFeedbackScreen({
         </h2>
       </article>
 
-      {isRunComplete ? (
-        <p
-          className="ms-fixed-feedback-status--hidden"
-          aria-atomic="true"
-          aria-live="polite"
-          role="status"
-        >
-          {feedbackSummary}
-        </p>
-      ) : null}
+      <p
+        className="ms-fixed-feedback-status--hidden"
+        aria-atomic="true"
+        aria-live="polite"
+        role="status"
+      >
+        {feedbackSummary}
+      </p>
 
-      {isRunComplete ? (
-        <section className="ms-fixed-feedback-next ms-fixed-feedback-next--complete" aria-label="本周结算">
-          <strong className="ms-fixed-feedback-next__label">本周结算</strong>
-          <div className="ms-fixed-feedback-next__time">
-            <SkinIcon name="check" />
-            <span>已结束</span>
-          </div>
-          <h2>{isFinalRound ? "周一已收工" : "本轮提前结束"}</h2>
-          <p>
-            {isFinalRound
-              ? "五个事件已经处理完毕，查看本周生存结果。"
-              : "能量或心情已经见底，先查看本周生存结果。"}
-          </p>
-          <SkinIcon className="ms-fixed-feedback-next__visual" name="coffee" />
-        </section>
-      ) : (
-        <section className="ms-fixed-feedback-summary" aria-label="选择结果说明">
-          <strong className="ms-fixed-feedback-summary__label">结果说明</strong>
-          <p aria-atomic="true" aria-live="polite" role="status">{feedbackSummary}</p>
-        </section>
-      )}
+      <section className="ms-fixed-feedback-summary" aria-label="这一手的代价">
+        <strong className="ms-fixed-feedback-summary__label">这一手的代价</strong>
+        <p>{selectedChoice.impactSummary}</p>
+      </section>
 
       <button
         aria-label={continueLabel}
-        className="ms-fixed-feedback-continue"
+        className={`ms-fixed-feedback-continue${continueEmphasized ? " is-emphasized" : ""}`}
         type="button"
         onClick={onContinue}
       >
@@ -215,7 +223,7 @@ export function FixedFeedbackScreen({
       <ViewportAssist actionBottom={853} className="ms-viewport-assist--feedback">
         <button
           aria-label={`${continueLabel}（固定操作）`}
-          className="ms-viewport-assist__primary"
+          className={`ms-viewport-assist__primary${continueEmphasized ? " is-emphasized" : ""}`}
           onClick={onContinue}
           type="button"
         >

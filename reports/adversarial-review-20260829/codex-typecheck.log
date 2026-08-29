@@ -1,0 +1,3 @@
+
+> @game-lab/monday-survival@0.1.0 typecheck /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+> tsc -p tsconfig.json

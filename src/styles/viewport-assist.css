@@ -15,7 +15,8 @@
 }
 
 .ms-viewport-assist__primary,
-.ms-viewport-assist__secondary {
+.ms-viewport-assist__secondary,
+.ms-viewport-assist__archive {
   width: 100%;
   min-height: 50px;
   border: 1px solid rgba(238, 230, 215, 0.72);
@@ -34,6 +35,10 @@
   color: #f3ead8;
 }
 
+.ms-viewport-assist__primary.is-emphasized {
+  animation: ms-viewport-assist-pulse 1.6s ease-in-out infinite;
+}
+
 .ms-viewport-assist__secondary {
   min-height: 43px;
   margin-top: 8px;
@@ -41,8 +46,20 @@
   color: #4f5a44;
 }
 
+.ms-viewport-assist__archive {
+  min-height: 50px;
+  margin-top: 6px;
+  border-color: rgba(239, 231, 213, 0.52);
+  background: rgba(37, 31, 24, 0.9);
+  color: #e7dcc4;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(19, 13, 8, 0.22);
+}
+
 .ms-viewport-assist__primary:focus-visible,
-.ms-viewport-assist__secondary:focus-visible {
+.ms-viewport-assist__secondary:focus-visible,
+.ms-viewport-assist__archive:focus-visible {
   outline: 3px solid #f0d890;
   outline-offset: 2px;
 }
@@ -72,6 +89,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ms-viewport-assist * {
+    animation: none !important;
     scroll-behavior: auto;
+    transform: none !important;
   }
+}
+
+@keyframes ms-viewport-assist-pulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(19, 13, 8, 0.3); }
+  50% { box-shadow: 0 8px 27px rgba(239, 216, 144, 0.44); }
 }

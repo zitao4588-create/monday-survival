@@ -103,9 +103,10 @@
   width: 103px;
   height: 36px;
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: center;
   gap: 4px;
+  padding-top: 5px;
   color: #4e473d;
   font-size: 13px;
   font-weight: 600;
@@ -138,14 +139,16 @@
 
 .ms-fixed-stat__heading {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   height: 23px;
+  padding-top: 2px;
   white-space: nowrap;
 }
 
 .ms-fixed-stat__heading .ms-skin-icon {
   width: 20px;
   height: 20px;
+  align-self: center;
   margin-right: 6px;
   --ms-skin-icon-filter: brightness(0) saturate(100%) invert(12%) sepia(10%) saturate(792%) hue-rotate(4deg) brightness(91%) contrast(91%);
 }
@@ -188,8 +191,31 @@
 }
 
 .ms-fixed-stat--energy .ms-fixed-stat__bar span.is-filled,
-.ms-fixed-stat--score .ms-fixed-stat__bar span.is-filled {
+.ms-fixed-stat--score .ms-fixed-stat__bar span.is-positive {
   background: #5c6b4a;
+}
+
+.ms-fixed-stat--score .ms-fixed-stat__bar span.is-negative {
+  border-color: rgba(139, 62, 47, 0.45);
+  background: #a64f3b;
+}
+
+.ms-fixed-stat__bar.ms-performance-meter span.is-zero {
+  position: relative;
+  border-color: #6f6759;
+  background: #f0e7d5;
+  box-shadow: inset 0 0 0 1px rgba(92, 80, 61, 0.18);
+}
+
+.ms-fixed-stat__bar.ms-performance-meter span.is-zero small {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #4d473d;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .ms-fixed-stat--mood .ms-fixed-stat__bar span.is-filled {
@@ -261,6 +287,7 @@
 
 .ms-fixed-choice {
   position: relative;
+  isolation: isolate;
   width: 366px;
   height: 108px;
   border: 0;
@@ -273,21 +300,36 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.ms-fixed-choice::before {
+  content: "";
+  position: absolute;
+  inset: -1px 0;
+  z-index: 0;
+  border: 1px solid rgba(111, 94, 67, 0.34);
+  border-radius: 3px;
+  background:
+    linear-gradient(90deg, #4f5f3e 0 48px, rgba(242, 235, 220, 0.97) 48px 100%);
+  box-shadow: 0 2px 4px rgba(40, 29, 17, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  pointer-events: none;
+}
+
 .ms-fixed-choice::after {
   content: "";
   position: absolute;
   inset: 5px;
   border: 3px solid transparent;
   border-radius: 7px;
+  z-index: 2;
   pointer-events: none;
 }
 
 .ms-fixed-choice:hover {
-  background: rgba(255, 249, 235, 0.08);
+  filter: brightness(1.025);
 }
 
 .ms-fixed-choice:active {
-  background: rgba(72, 82, 53, 0.08);
+  transform: translateY(2px);
 }
 
 .ms-fixed-choice:focus-visible::after {
@@ -306,6 +348,7 @@
   line-height: 24px;
   font-variant-numeric: tabular-nums;
   text-shadow: 0 1px 1px rgba(38, 28, 16, 0.28);
+  z-index: 1;
 }
 
 .ms-fixed-choice__icon {
@@ -318,6 +361,7 @@
   place-items: center;
   border: 1.5px solid #64734d;
   border-radius: 50%;
+  z-index: 1;
 }
 
 .ms-fixed-choice__icon .ms-choice-icon {
@@ -326,27 +370,16 @@
   color: #5f6d4c;
 }
 
-.ms-fixed-choice--yellow .ms-fixed-choice__icon .ms-choice-icon {
-  color: #c99428;
-}
-
-.ms-fixed-choice--yellow .ms-fixed-choice__icon {
-  border-color: #c99428;
-}
-
-.ms-fixed-choice--red .ms-fixed-choice__icon .ms-choice-icon {
-  color: #bd552f;
-}
-
-.ms-fixed-choice--red .ms-fixed-choice__icon {
-  border-color: #bd552f;
-}
-
 .ms-fixed-choice__copy {
   position: absolute;
-  top: 22px;
+  top: 0;
   left: 116px;
   width: 210px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 1;
 }
 
 .ms-fixed-choice__copy strong {
@@ -400,5 +433,58 @@
 @media (prefers-reduced-motion: reduce) {
   .ms-fixed-choice {
     scroll-behavior: auto;
+  }
+}
+
+@media (max-height: 700px) {
+  .ms-fixed-round-screen::after {
+    content: "";
+    position: absolute;
+    top: 338px;
+    left: 21px;
+    z-index: 0;
+    width: 384px;
+    height: 454px;
+    border: 1px solid rgba(119, 99, 72, 0.24);
+    background:
+      radial-gradient(circle at 82% 14%, rgba(143, 104, 57, 0.08) 0 58px, transparent 60px),
+      rgba(236, 228, 211, 0.97);
+    box-shadow: 0 3px 8px rgba(41, 29, 17, 0.2);
+    clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    pointer-events: none;
+  }
+
+  .ms-fixed-event {
+    top: 228px;
+  }
+
+  .ms-fixed-event > p {
+    margin-top: 14px;
+  }
+
+  .ms-fixed-choices {
+    top: 366px;
+    gap: 6px;
+  }
+
+  .ms-fixed-choice {
+    min-height: 96px;
+    height: 96px;
+  }
+
+  .ms-fixed-choice__number {
+    top: 36px;
+  }
+
+  .ms-fixed-choice__icon {
+    top: 20px;
+  }
+
+  .ms-fixed-choice__copy {
+    top: 0;
+  }
+
+  .ms-fixed-tip {
+    display: none;
   }
 }

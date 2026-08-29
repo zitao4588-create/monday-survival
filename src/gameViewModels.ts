@@ -17,6 +17,22 @@ const resultPersonas = {
   }
 };
 
+export const mondayPersonaLabels = [
+  "边界感幸存者",
+  "会议防火墙型",
+  "燃尽通关者",
+  "情绪避险大师",
+  "急需补给者",
+  "电量清零型",
+  "情绪停机型",
+  "绩效滑坡型",
+  "缓存型打工人",
+  "低电量幸存者",
+  "微笑崩盘型",
+  "摸鱼边缘人",
+  "自救优先型"
+] as const;
+
 function getDynamicPersona(
   result: MondayResult,
   progress?: Pick<GameProgress, "energy" | "mood" | "score">
@@ -49,6 +65,10 @@ function getDynamicPersona(
   }
 
   if (result.outcome === "fail") {
+    if (progress.energy <= 0 && progress.mood <= 0) {
+      return resultPersonas.fail;
+    }
+
     if (progress.energy <= 0) {
       return {
         label: "电量清零型",
@@ -140,6 +160,7 @@ export function toChoiceViewModel(choice: GameChoice): ChoiceViewModel {
       score: choice.effect.scoreDelta
     },
     id: choice.id,
+    impactSummary: choice.impactSummary,
     label: choice.label,
     preview: choice.preview,
     visual: choice.visual
@@ -147,14 +168,41 @@ export function toChoiceViewModel(choice: GameChoice): ChoiceViewModel {
 }
 
 export function getStatSegmentCount(kind: "energy" | "mood" | "score", value: number) {
+  if (kind === "score") {
+    return getPerformanceMeterSegments(value).filter((segment) => segment !== "empty" && segment !== "zero").length;
+  }
+
   const clampedValue = Math.max(0, Math.min(100, value));
 
   if (clampedValue === 0) {
     return 0;
   }
 
-  const proportionalSegments = Math.ceil((clampedValue / 100) * 7);
-  return kind === "score" ? Math.max(2, proportionalSegments) : proportionalSegments;
+  return Math.ceil((clampedValue / 100) * 7);
+}
+
+export type PerformanceMeterSegment = "empty" | "negative" | "zero" | "positive";
+
+export function getPerformanceMeterSegments(value: number): PerformanceMeterSegment[] {
+  const activeCount = value === 0
+    ? 0
+    : Math.max(1, Math.ceil((Math.min(100, Math.abs(value)) / 100) * 3));
+
+  return Array.from({ length: 7 }, (_, index): PerformanceMeterSegment => {
+    if (index === 3) {
+      return "zero";
+    }
+
+    if (value < 0 && index < 3 && index >= 3 - activeCount) {
+      return "negative";
+    }
+
+    if (value > 0 && index > 3 && index <= 3 + activeCount) {
+      return "positive";
+    }
+
+    return "empty";
+  });
 }
 
 export function formatPerformance(value: number) {

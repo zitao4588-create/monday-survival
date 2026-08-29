@@ -1,0 +1,7 @@
+
+> @game-lab/monday-survival@0.1.0 wechat:check /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+> node scripts/wechat-h5-check.mjs
+
+Passed small-iphone
+Passed modern-iphone
+Passed target-stage

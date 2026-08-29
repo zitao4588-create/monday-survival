@@ -1,0 +1,4 @@
+Passed small-iphone: events, archive, history, sound opt-in and focus
+Passed modern-iphone: events, archive, history, sound opt-in and focus
+Passed target-stage: events, archive, history, sound opt-in and focus
+Stage 8 browser QA passed; no external requests and port 5323 released.

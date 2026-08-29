@@ -1,0 +1,97 @@
+.ms-fixed-intro-underlay {
+  position: absolute;
+  inset: 0;
+}
+
+.ms-fixed-intro-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: start center;
+  padding-top: 357px;
+  background: rgba(17, 13, 9, 0.62);
+}
+
+.ms-fixed-intro-card {
+  position: relative;
+  width: 366px;
+  min-height: 236px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 29px 29px 22px;
+  border: 1px solid rgba(109, 94, 69, 0.48);
+  background:
+    linear-gradient(rgba(248, 242, 227, 0.96), rgba(235, 225, 205, 0.98)),
+    #eee4d1;
+  box-shadow: 0 10px 30px rgba(17, 12, 8, 0.42), inset 0 0 20px rgba(119, 91, 55, 0.08);
+  clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  color: #28241d;
+  text-align: center;
+}
+
+.ms-fixed-intro-card h2 {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 950;
+  line-height: 34px;
+  letter-spacing: 0.01em;
+}
+
+.ms-fixed-intro-card p {
+  margin: 13px 0 0;
+  color: #4c4438;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.ms-fixed-intro-card button {
+  width: 305px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  border: 2px solid #677351;
+  border-radius: 3px;
+  background: #3f4f34;
+  box-shadow: inset 0 0 0 2px rgba(226, 218, 192, 0.2), 0 3px 6px rgba(38, 28, 17, 0.28);
+  color: #f5eddd;
+  cursor: pointer;
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ms-fixed-intro-card button:hover {
+  background: #485a3b;
+}
+
+.ms-fixed-intro-card button:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 0 0 2px rgba(226, 218, 192, 0.18), 0 1px 2px rgba(38, 28, 17, 0.25);
+}
+
+.ms-fixed-intro-card button:focus-visible {
+  outline: 3px solid #f4e7c5;
+  outline-offset: -7px;
+}
+
+.ms-fixed-intro-card small {
+  margin-top: 13px;
+  color: #494238;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 21px;
+}
+
+@media (max-height: 700px) {
+  .ms-fixed-intro-overlay {
+    padding-top: 282px;
+  }
+}

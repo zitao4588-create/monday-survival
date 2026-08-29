@@ -1,0 +1,45 @@
+# Monday Survival ZCode 对抗性审查命令日志
+# 模型: GLM-5.3, reasoning effort: max
+# Workspace: /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+# 审查开始: 2026-08-28 23:26:02 +0800
+# 规则: 只读审查, 仅写 review-output/
+
+## [2026-08-28 23:26:02] pwd → /private/tmp/monday-survival-zcode-review-20260828-9vgOqL (exit 0, 与授权路径一致)
+## [2026-08-28 23:26:02] 端口 preflight: 5180 free, 5321 free, 5322 free, 5323 free; 4173 属其他工作区 node 进程(pid 97207), 未触碰 (exit 0)
+## [23:47:04] pnpm exec vitest run --config review-output/zr-vitest.config.ts review-output/zr-mutations.checks.ts → 47/47 passed (exit 0)
+## [23:47:04] pnpm exec vitest run --config review-output/zr-vitest.config.ts review-output/zr-path-independence.checks.ts → 9/9 passed (exit 0; AR-04 独立重算与产品验证器/落盘报告三方一致)
+
+# Codex 主会话接手
+# 接手时间: 2026-08-28 23:59:51 +0800
+
+## [23:59:51] pnpm exec vitest run --config review-output/zr-vitest.config.ts review-output/zr-mutations.checks.ts --reporter=verbose → exit 0；47/47 passed；完整日志 zr-mutations-run.log
+## [23:59:59] pnpm exec vitest run --config review-output/zr-vitest.config.ts review-output/zr-path-independence.checks.ts --reporter=verbose → exit 0；9/9 passed；完整日志 zr-path-independence-run.log
+## [00:02:41] node tmp/design-qa/stage8-qa-20260828/stage8-browser-check.mjs → 沙盒内首次启动因 listen EPERM 失败；获准启动 loopback 后重跑 exit 0；三档、reduced-motion、事件/历史/声音/焦点、零外部请求和端口清理通过；日志 codex-stage8-browser-run.log
+## [00:06:32] node review-output/codex-browser-adversarial.mjs → exit 0；修正仅影响测试初始化的 reload 清理后，焦点、最终按钮双击、海报双击、分享五分支和刷新恢复证据写入 codex-browser-adversarial-evidence.json
+## [00:07:11] pnpm xhs:check 第 1 轮 → exit 0；三档五回合/结果/853x1844 海报与 8 文件产物通过；日志 codex-xhs-run1.log
+## [00:07:30] pnpm xhs:check 第 2 轮 → exit 0；结果和产物文件名/大小与第 1 轮一致，仅构建耗时不同；日志 codex-xhs-run2.log
+## [00:07:47] pnpm wechat:check 第 1 轮 → exit 0；三档通过；日志 codex-wechat-run1.log
+## [00:08:07] pnpm wechat:check 第 2 轮 → exit 0；三档通过；日志 codex-wechat-run2.log
+## [00:09:22] pnpm visual:check → exit 0；round/feedback/result 捕获与报告生成；主会话全图检查无新增阻断；日志 codex-visual-check.log
+## [00:10:35] pnpm typecheck → exit 0；日志 codex-typecheck.log
+## [00:10:41] pnpm test → exit 0；18/18 passed；日志 codex-project-test.log
+## [00:10:47] pnpm build → exit 0；1860 modules，正常产物生成；日志 codex-build.log
+## [00:10:52] pnpm stage7:path-check → exit 0；59,049 路径、13 人格、全部检查项通过；日志 codex-stage7-path-check.log
+## [00:11:20] 普通 dist 唯一 fetch( 精确定位 → Vite modulepreload polyfill；XHS modulePreload.polyfill=false，XHS 产物无 fetch/XHR/Beacon/WebSocket/share/clipboard
+## [00:11:35] source-manifest-after.sha256 生成并与 before cmp → exit 0；72/72 一致
+## [00:11:43] 端口 postflight → 5180 free, 5321 free, 5322 free, 5323 free；未触碰 4173
+
+# Finding 修复与复验
+# 执行日期: 2026-08-29
+# 范围: 仅 ZR-001、ZR-002 及对应回归断言；未 commit、push、deploy
+
+## pnpm typecheck → exit 0
+## pnpm test → exit 0；18/18 passed
+## node tmp/design-qa/stage8-qa-20260828/stage8-browser-check.mjs → exit 0；三个移动视口的初始焦点、同步双击去重、事件/历史/声音与零外部请求通过；5323 released
+## pnpm build → exit 0；1860 modules transformed
+## pnpm stage7:path-check → exit 0；59,049 路径、13 人格与全部门槛通过
+## pnpm xhs:check → exit 0；新增初始焦点/Tab/Shift+Tab 断言及三档五回合通过；preview 已清理
+## pnpm wechat:check → exit 0；三个移动视口通过
+## pnpm visual:check → exit 0；round/feedback/result 捕获与报告生成，三张全图人工检查无视觉回归
+## git diff --check → exit 0
+## 端口 postflight → 5180 free, 5321 free, 5322 free, 5323 free

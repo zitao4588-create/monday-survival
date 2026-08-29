@@ -1,0 +1,13 @@
+
+> @game-lab/monday-survival@0.1.0 test /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+> vitest run
+
+
+ RUN  v2.1.9 /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+
+ ✓ src/game.test.ts (18 tests) 42ms
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  23:48:14
+   Duration  294ms (transform 49ms, setup 0ms, collect 60ms, tests 42ms, environment 0ms, prepare 48ms)

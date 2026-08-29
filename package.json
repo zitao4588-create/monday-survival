@@ -28,6 +28,7 @@
     "build:xhs": "tsc -p tsconfig.json && vite build --mode xhs && node scripts/xhs-build-check.mjs",
     "deploy:cloudbase": "pnpm build && tcb hosting deploy dist -e cloud1-d3g4v0ms8ee56bd94",
     "test": "vitest run",
+    "stage7:path-check": "node scripts/stage7-path-check.mjs",
     "typecheck": "tsc -p tsconfig.json",
     "visual:capture": "node scripts/visual-capture.mjs",
     "visual:report": "node scripts/visual-report.mjs",

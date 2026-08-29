@@ -1,0 +1,27 @@
+
+> @game-lab/monday-survival@0.1.0 xhs:check /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+> pnpm build:xhs && node scripts/xhs-h5-check.mjs
+
+
+> @game-lab/monday-survival@0.1.0 build:xhs /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+> tsc -p tsconfig.json && vite build --mode xhs && node scripts/xhs-build-check.mjs
+
+vite v6.4.3 building for xhs...
+transforming...
+✓ 1859 modules transformed.
+rendering chunks...
+computing gzip size...
+dist-xhs/assets/star-CZBYs-an.svg                              0.27 kB │ gzip:  0.21 kB
+dist-xhs/index.html                                            0.55 kB │ gzip:  0.38 kB
+dist-xhs/assets/wood-C-m6dVFi.webp                            18.57 kB
+dist-xhs/assets/feedback-background-fixed@2x-DxrOUKJg.jpg    342.01 kB
+dist-xhs/assets/result-background-fixed@2x-BorIkkW2.jpg      368.24 kB
+dist-xhs/assets/round-background-fixed@2x-DoODQPfU.png     2,264.42 kB
+dist-xhs/assets/index-Dlni2kIj.css                            37.66 kB │ gzip:  8.02 kB
+dist-xhs/assets/index-CRU4d6_M.js                            263.82 kB │ gzip: 84.47 kB
+✓ built in 694ms
+XHS 产物检查通过：8 个文件，根入口、扩展名、模式标记、相对资源与禁用能力均符合要求。
+通过 small-iphone：5 回合、结果页与 853x1844 海报
+通过 modern-iphone：5 回合、结果页与 853x1844 海报
+通过 target-stage：5 回合、结果页与 853x1844 海报
+XHS H5 检查通过；3 个移动视口串行完成，preview 服务已清理并确认退出。

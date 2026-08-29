@@ -1,7 +1,10 @@
 import fixedRoundBackground from "../../assets/backgrounds/round-background-fixed@2x.png";
-import { formatPerformance, getStatSegmentCount } from "../../gameViewModels";
+import {
+  formatPerformance,
+  getPerformanceMeterSegments,
+  getStatSegmentCount
+} from "../../gameViewModels";
 import { ChoiceIcon } from "../ChoiceIcon";
-import { ViewportAssist } from "../ViewportAssist";
 import type { ChoiceViewModel, EventViewModel, StatViewModel } from "../visualTypes";
 import { SkinIcon, type SkinIconName } from "../skin/SkinIcon";
 
@@ -21,7 +24,6 @@ const statIcons: Record<StatViewModel["kind"], SkinIconName> = {
 };
 
 const roundStatKinds: StatViewModel["kind"][] = ["energy", "mood", "score"];
-const choiceTones = ["green", "yellow", "red"] as const;
 
 function splitChineseSentences(text: string) {
   return text.match(/[^。！？]+[。！？]?/g)?.map((line) => line.trim()).filter(Boolean) ?? [text];
@@ -38,8 +40,9 @@ interface FixedStatProps {
 function FixedStat({ stat }: FixedStatProps) {
   const isPerformance = stat.kind === "score";
   const displayValue = getDisplayValue(stat.value);
-  const fillCount = getStatSegmentCount(stat.kind, stat.value);
   const renderedValue = isPerformance ? formatPerformance(stat.value) : displayValue;
+  const performanceSegments = isPerformance ? getPerformanceMeterSegments(stat.value) : null;
+  const fillCount = isPerformance ? 0 : getStatSegmentCount(stat.kind, stat.value);
 
   return (
     <article
@@ -53,10 +56,21 @@ function FixedStat({ stat }: FixedStatProps) {
         <span className="ms-fixed-stat__value">{renderedValue}</span>
         {isPerformance ? null : <small>/100</small>}
       </div>
-      <div className="ms-fixed-stat__bar" aria-hidden="true">
-        {Array.from({ length: 7 }, (_, index) => (
-          <span className={index < fillCount ? "is-filled" : undefined} key={index} />
-        ))}
+      <div
+        className={`ms-fixed-stat__bar${isPerformance ? " ms-performance-meter" : ""}`}
+        data-performance-direction={isPerformance ? (stat.value < 0 ? "negative" : stat.value > 0 ? "positive" : "zero") : undefined}
+        aria-hidden="true"
+      >
+        {(performanceSegments ?? Array.from({ length: 7 }, (_, index) => index < fillCount ? "filled" : "empty"))
+          .map((segment, index) => (
+            <span
+              className={segment === "filled" ? "is-filled" : `is-${segment}`}
+              data-meter-segment={isPerformance ? segment : undefined}
+              key={index}
+            >
+              {segment === "zero" ? <small>0</small> : null}
+            </span>
+          ))}
       </div>
     </article>
   );
@@ -69,13 +83,13 @@ interface FixedChoiceProps {
 }
 
 function FixedChoice({ choice, index, onChoose }: FixedChoiceProps) {
-  const tone = choiceTones[index] ?? "green";
   const number = String(index + 1).padStart(2, "0");
 
   return (
     <button
       aria-label={`选择 ${number}：${choice.label}。${choice.preview}`}
-      className={`ms-fixed-choice ms-fixed-choice--${tone}`}
+      className="ms-fixed-choice ms-fixed-choice--neutral"
+      data-choice-tone="neutral"
       data-fixed-choice-icon={choice.visual}
       onClick={() => onChoose?.(choice)}
       type="button"
@@ -150,10 +164,6 @@ export function FixedRoundScreen({
         <strong>小贴士</strong>
         <p>每个选择都会影响你的能量、心情和绩效。</p>
       </aside>
-
-      <ViewportAssist actionBottom={805} className="ms-viewport-assist--round-hint" hideAfterScroll>
-        <span className="ms-viewport-assist__hint" role="status">上滑查看全部选项 ↑</span>
-      </ViewportAssist>
     </section>
   );
 }

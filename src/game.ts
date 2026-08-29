@@ -9,8 +9,11 @@ import {
 import { mondaySurvivalDefinition } from "./data/metadata";
 import { mondayResultCopy } from "./data/results";
 import { mondayTurns } from "./data/turns";
+import { getMondayTurnsForDate, getNaturalWeekSelection } from "./weeklyTurns";
 
-export { mondaySurvivalDefinition, mondayTurns };
+export { getMondayTurnsForDate, getNaturalWeekSelection, mondaySurvivalDefinition, mondayTurns };
+
+export const MONDAY_ROUND_COUNT = 5;
 
 export interface MondayResult {
   outcome: GameOutcome;
@@ -27,7 +30,7 @@ export function chooseMondayAction(progress: GameProgress, choice: GameChoice): 
 }
 
 export function isMondayRunComplete(progress: GameProgress): boolean {
-  return progress.turnIndex >= mondayTurns.length || progress.energy <= 0 || progress.mood <= 0;
+  return progress.turnIndex >= MONDAY_ROUND_COUNT || progress.energy <= 0 || progress.mood <= 0;
 }
 
 export function calculateMondayResult(progress: GameProgress): MondayResult {

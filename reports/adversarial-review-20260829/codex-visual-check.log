@@ -1,0 +1,16 @@
+
+> @game-lab/monday-survival@0.1.0 visual:check /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+> pnpm visual:capture && pnpm visual:report
+
+
+> @game-lab/monday-survival@0.1.0 visual:capture /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+> node scripts/visual-capture.mjs
+
+Captured round: /private/tmp/monday-survival-zcode-review-20260828-9vgOqL/visual-report/current/round.png
+Captured feedback: /private/tmp/monday-survival-zcode-review-20260828-9vgOqL/visual-report/current/feedback.png
+Captured result: /private/tmp/monday-survival-zcode-review-20260828-9vgOqL/visual-report/current/result.png
+
+> @game-lab/monday-survival@0.1.0 visual:report /private/tmp/monday-survival-zcode-review-20260828-9vgOqL
+> node scripts/visual-report.mjs
+
+Generated visual report: /private/tmp/monday-survival-zcode-review-20260828-9vgOqL/visual-report/index.html

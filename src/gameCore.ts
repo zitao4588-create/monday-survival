@@ -1,5 +1,7 @@
 export type GameOutcome = "win" | "survive" | "fail";
 
+export type GameTurnPeriod = "wake-up" | "commute" | "morning" | "afternoon" | "closing";
+
 export type GamePlatform = "h5" | "mobile-web" | "pwa" | "app-shell";
 export type GameStatus = "idea" | "prototype" | "playtest" | "released";
 
@@ -42,15 +44,19 @@ export interface GameChoice {
   label: string;
   preview: string;
   description: string;
+  impactSummary: string;
   visual: GameChoiceIcon;
   effect: ChoiceEffect;
+  tags: string[];
 }
 
 export interface GameTurn {
   id: string;
+  period: GameTurnPeriod;
   title: string;
   body: string;
   choices: GameChoice[];
+  echoes?: Record<string, string>;
 }
 
 export interface GameProgress {
@@ -59,6 +65,7 @@ export interface GameProgress {
   mood: number;
   turnIndex: number;
   history: string[];
+  tags: string[];
 }
 
 export function clamp(value: number, min: number, max: number): number {
@@ -71,7 +78,8 @@ export function createGameProgress(): GameProgress {
     energy: 70,
     mood: 60,
     turnIndex: 0,
-    history: []
+    history: [],
+    tags: []
   };
 }
 
@@ -81,7 +89,21 @@ export function applyChoice(progress: GameProgress, choice: GameChoice): GamePro
     energy: clamp(progress.energy + (choice.effect.energyDelta ?? 0), 0, 100),
     mood: clamp(progress.mood + (choice.effect.moodDelta ?? 0), 0, 100),
     turnIndex: progress.turnIndex + 1,
-    history: [...progress.history, choice.id]
+    history: [...progress.history, choice.id],
+    tags: [...progress.tags, ...choice.tags]
+  };
+}
+
+export function applyTurnEcho(turn: GameTurn, tags: readonly string[]): GameTurn {
+  const matchedTag = Object.keys(turn.echoes ?? {}).find((tag) => tags.includes(tag));
+
+  if (!matchedTag) {
+    return turn;
+  }
+
+  return {
+    ...turn,
+    body: turn.echoes?.[matchedTag] ?? turn.body
   };
 }
 

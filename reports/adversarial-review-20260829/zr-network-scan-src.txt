@@ -1,0 +1,78 @@
+=== AR-06 源码网络能力扫描（src/ + index.html + vite.config.ts，2026-08-28）===
+
+--- 可执行网络 API（应只出现在注释或零命中）---
+[fetch(]
+  （源码零命中）
+[XMLHttpRequest]
+  （源码零命中）
+[sendBeacon]
+  （源码零命中）
+[WebSocket]
+  （源码零命中）
+[EventSource]
+  （源码零命中）
+[navigator.share]
+  （源码零命中）
+[navigator.clipboard]
+  （源码零命中）
+[window.open]
+  （源码零命中）
+[new Function]
+  （源码零命中）
+[eval(]
+  （源码零命中）
+
+--- 远端 URL（http/https，排除 localhost）---
+  （源码零命中）
+12:      <a class="ms-filing-link" href="https://beian.miit.gov.cn/" rel="noreferrer" target="_blank">
+15:      <a class="ms-filing-link" href="https://beian.mps.gov.cn/#/query/webSearch?code=61010202000523" rel="noreferrer" target="_blank">
+
+--- 统计 SDK 关键词 ---
+[segment] 34 hits:
+src/game.test.ts:11:  getPerformanceMeterSegments,
+src/game.test.ts:12:  getStatSegmentCount,
+src/game.test.ts:353:  it("keeps energy and mood on seven segments without clamping performance text", () => {
+src/game.test.ts:354:    expect(getStatSegmentCount("energy", 78)).toBe(6);
+src/game.test.ts:355:    expect(getStatSegmentCount("mood", 64)).toBe(5);
+src/game.test.ts:361:  it("maps performance to three negative segments, a zero point, and three positive segments", () => {
+src/game.test.ts:362:    expect(getPerformanceMeterSegments(-18)).toEqual([
+src/game.test.ts:365:    expect(getPerformanceMeterSegments(0)).toEqual([
+src/game.test.ts:368:    expect(getPerformanceMeterSegments(12)).toEqual([
+src/game.test.ts:371:    expect(getPerformanceMeterSegments(-100)).toEqual([
+src/game.test.ts:374:    expect(getPerformanceMeterSegments(130)).toEqual([
+src/gameViewModels.ts:170:export function getStatSegmentCount(kind: "energy" | "mood" | "score", value: number) {
+src/gameViewModels.ts:172:    return getPerformanceMeterSegments(value).filter((segment) => segment !== "empty" && segment !== "zero").length;
+src/gameViewModels.ts:184:export type PerformanceMeterSegment = "empty" | "negative" | "zero" | "positive";
+src/gameViewModels.ts:186:export function getPerformanceMeterSegments(value: number): PerformanceMeterSegment[] {
+src/gameViewModels.ts:191:  return Array.from({ length: 7 }, (_, index): PerformanceMeterSegment => {
+src/components/fixed-round/FixedRoundScreen.tsx:4:  getPerformanceMeterSegments,
+src/components/fixed-round/FixedRoundScreen.tsx:5:  getStatSegmentCount
+src/components/fixed-round/FixedRoundScreen.tsx:44:  const performanceSegments = isPerformance ? getPerformanceMeterSegments(stat.value) : null;
+src/components/fixed-round/FixedRoundScreen.tsx:45:  const fillCount = isPerformance ? 0 : getStatSegmentCount(stat.kind, stat.value);
+src/components/fixed-round/FixedRoundScreen.tsx:64:        {(performanceSegments ?? Array.from({ length: 7 }, (_, index) => index < fillCount ? "filled" : "empty"))
+src/components/fixed-round/FixedRoundScreen.tsx:65:          .map((segment, index) => (
+src/components/fixed-round/FixedRoundScreen.tsx:67:              className={segment === "filled" ? "is-filled" : `is-${segment}`}
+src/components/fixed-round/FixedRoundScreen.tsx:68:              data-meter-segment={isPerformance ? segment : undefined}
+src/components/fixed-round/FixedRoundScreen.tsx:71:              {segment === "zero" ? <small>0</small> : null}
+src/components/fixed-feedback/FixedFeedbackScreen.tsx:5:  getPerformanceMeterSegments,
+src/components/fixed-feedback/FixedFeedbackScreen.tsx:6:  getStatSegmentCount
+src/components/fixed-feedback/FixedFeedbackScreen.tsx:84:  const performanceSegments = isPerformance ? getPerformanceMeterSegments(stat.value) : null;
+src/components/fixed-feedback/FixedFeedbackScreen.tsx:85:  const fillCount = isPerformance ? 0 : getStatSegmentCount(stat.kind, stat.value);
+src/components/fixed-feedback/FixedFeedbackScreen.tsx:111:        {(performanceSegments ?? Array.from({ length: 7 }, (_, index) => index < fillCount ? "filled" : "empty"))
+src/components/fixed-feedback/FixedFeedbackScreen.tsx:112:          .map((segment, index) => (
+src/components/fixed-feedback/FixedFeedbackScreen.tsx:114:              className={segment === "filled" ? "is-filled" : `is-${segment}`}
+src/components/fixed-feedback/FixedFeedbackScreen.tsx:115:              data-meter-segment={isPerformance ? segment : undefined}
+src/components/fixed-feedback/FixedFeedbackScreen.tsx:118:              {segment === "zero" ? <small>0</small> : null}
+[report] 11 hits:
+src/game.test.ts:212:    const report = runStage7PathValidation(new Date("2026-08-28T00:00:00.000Z"));
+src/game.test.ts:214:    expect(report.metrics.pathCount).toBe(59_049);
+src/game.test.ts:215:    expect(report.passed, report.checks.filter((check) => !check.passed).map((check) => check.detail).join("; ")).toBe(true);
+src/stage7PathValidation.ts:20:export interface Stage7PathValidationReport {
+src/stage7PathValidation.ts:114:export function runStage7PathValidation(now = new Date()): Stage7PathValidationReport {
+src/stage7PathValidation.ts:219:export function formatStage7PathValidationSummary(report: Stage7PathValidationReport) {
+src/stage7PathValidation.ts:223:    `- 总结：${report.passed ? "通过" : "未通过"}`,
+src/stage7PathValidation.ts:224:    `- 枚举路径：${report.metrics.pathCount.toLocaleString("en-US")}`,
+src/stage7PathValidation.ts:225:    `- 结局：赢 ${report.metrics.outcomes.win} / 存活 ${report.metrics.outcomes.survive} / 失败 ${report.metrics.outcomes.fail}`,
+src/stage7PathValidation.ts:226:    `- 可达人格：${report.metrics.reachablePersonas.length}`,
+src/stage7PathValidation.ts:232:  for (const check of report.checks) {
+（未列出的关键词零命中）
