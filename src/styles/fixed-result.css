@@ -127,7 +127,14 @@
 }
 
 .ms-fixed-result-ending__quote {
-  margin: 7px -6px 0;
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  max-width: calc(100% + 12px);
+  margin: 7px auto 0;
+  padding: 0 8px;
+  background: rgba(239, 232, 216, 0.94);
+  box-shadow: 0 0 6px 4px rgba(239, 232, 216, 0.94);
   color: #4b483f;
   font-size: 13px;
   font-weight: 700;
@@ -506,7 +513,7 @@
   position: relative;
   width: 350px;
   max-height: 829px;
-  overflow-y: auto;
+  overflow: hidden;
   box-sizing: border-box;
   border: 1px solid rgba(104, 87, 61, 0.55);
   border-radius: 3px;
@@ -518,7 +525,6 @@
     inset 0 0 0 6px rgba(121, 99, 68, 0.07);
   padding: 30px 24px 22px;
   color: #343027;
-  overscroll-behavior: contain;
 }
 
 .ms-fixed-result-archive-panel::before {
@@ -816,5 +822,23 @@
 
   .ms-fixed-result-sound-toggle i.is-on::after {
     left: 24px;
+  }
+}
+
+@media (max-height: 700px) {
+  .ms-fixed-result-poster-close,
+  .ms-fixed-result-archive-close {
+    width: 66px;
+    height: 66px;
+  }
+
+  .ms-fixed-result-archive-header {
+    padding-right: 60px;
+  }
+
+  .ms-fixed-result-poster-action,
+  .ms-fixed-result-history-clear > button,
+  .ms-fixed-result-history-clear div button {
+    min-height: 66px;
   }
 }

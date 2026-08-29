@@ -5,7 +5,6 @@ import type { LocalHistoryEntry } from "../../localHistory";
 import type { ResultPresentation } from "../../resultPresentation";
 import "../../styles/fixed-result.css";
 import { PrintIcon } from "../PrintIcon";
-import { ViewportAssist } from "../ViewportAssist";
 import type { StatViewModel } from "../visualTypes";
 import { SkinIcon, type SkinIconName } from "../skin/SkinIcon";
 
@@ -308,40 +307,6 @@ export function FixedResultScreen({
 
         <p className="ms-fixed-result-thanks">感谢你认真活过今天。</p>
 
-        {!resultImageUrl ? (
-          <ViewportAssist actionBottom={878} className="ms-viewport-assist--result">
-            <div
-              aria-hidden={archiveOpen ? "true" : undefined}
-              hidden={archiveOpen}
-              inert={archiveOpen ? true : undefined}
-            >
-              <button
-                aria-label="生成我的周一战报（固定操作）"
-                className="ms-viewport-assist__primary"
-                onClick={onCreateResultImage}
-                type="button"
-              >
-                生成我的周一战报
-              </button>
-              <button
-                aria-label="换条路线再试一次（固定操作）"
-                className="ms-viewport-assist__secondary"
-                onClick={onRestart}
-                type="button"
-              >
-                换条路线再试一次
-              </button>
-              <button
-                aria-label={`打开周一档案，声音已${soundEnabled ? "开启" : "关闭"}`}
-                className="ms-viewport-assist__archive"
-                onClick={(event) => openArchive(event.currentTarget)}
-                type="button"
-              >
-                周一档案 · 声音：{soundEnabled ? "开" : "关"}
-              </button>
-            </div>
-          </ViewportAssist>
-        ) : null}
       </div>
 
       {resultImageUrl ? (

@@ -156,16 +156,42 @@ async function stopServer(server) {
   await waitForServer(false);
 }
 
-async function assertNoHorizontalOverflow(page, viewportName) {
+async function assertNoViewportOverflow(page, viewportName) {
   const metrics = await page.evaluate(() => ({
+    bodyScrollHeight: document.body.scrollHeight,
     bodyScrollWidth: document.body.scrollWidth,
+    clientHeight: document.documentElement.clientHeight,
     clientWidth: document.documentElement.clientWidth,
+    docScrollHeight: document.documentElement.scrollHeight,
     docScrollWidth: document.documentElement.scrollWidth
   }));
-  const overflow = Math.max(metrics.bodyScrollWidth, metrics.docScrollWidth) - metrics.clientWidth;
+  const horizontalOverflow = Math.max(metrics.bodyScrollWidth, metrics.docScrollWidth) - metrics.clientWidth;
+  const verticalOverflow = Math.max(metrics.bodyScrollHeight, metrics.docScrollHeight) - metrics.clientHeight;
 
-  if (overflow > 1) {
-    throw new Error(`${viewportName} 存在横向溢出：${JSON.stringify(metrics)}`);
+  if (horizontalOverflow > 1 || verticalOverflow > 1) {
+    throw new Error(`${viewportName} 存在页面溢出：${JSON.stringify(metrics)}`);
+  }
+}
+
+async function assertStageContained(page, screenLabel) {
+  const boxes = await page.locator(".ms-fixed-round-page, .ms-fixed-screen-page").first().evaluate((pageElement) => {
+    const stageElement = pageElement.querySelector(".ms-fixed-round-viewport, .ms-fixed-screen-viewport");
+    const pageBox = pageElement.getBoundingClientRect();
+    const stageBox = stageElement?.getBoundingClientRect();
+    return {
+      page: { bottom: pageBox.bottom, left: pageBox.left, right: pageBox.right, top: pageBox.top },
+      stage: stageBox
+        ? { bottom: stageBox.bottom, left: stageBox.left, right: stageBox.right, top: stageBox.top }
+        : null
+    };
+  });
+
+  if (!boxes.stage
+    || boxes.stage.left < boxes.page.left - 1
+    || boxes.stage.right > boxes.page.right + 1
+    || boxes.stage.top < boxes.page.top - 1
+    || boxes.stage.bottom > boxes.page.bottom + 1) {
+    throw new Error(`${screenLabel} 固定画布没有完整包含在单屏内：${JSON.stringify(boxes)}`);
   }
 }
 
@@ -186,6 +212,8 @@ async function assertScreenReady(page, screenLabel, transitionName) {
   const screen = page.getByLabel(screenLabel, { exact: true });
   await screen.waitFor();
   await assertAtTop(page, transitionName);
+  await assertNoViewportOverflow(page, transitionName);
+  await assertStageContained(page, transitionName);
 
   const background = screen.locator(
     ".ms-fixed-round-background, .ms-fixed-feedback-background, .ms-fixed-result-background"
@@ -227,6 +255,8 @@ async function assertIntroCopy(page) {
   await dialog.getByText(introCopy.description, { exact: true }).waitFor();
   await startButton.waitFor();
   await dialog.getByText(introCopy.duration, { exact: true }).waitFor();
+  await assertNoViewportOverflow(page, "首次引导");
+  await assertStageContained(page, "首次引导");
 
   if ((await dialog.getByText(/任何一项/).count()) !== 0) {
     throw new Error("首次引导恢复了已删除的‘任何一项……’文案");
@@ -298,6 +328,21 @@ async function assertNeutralChoices(page, roundNumber) {
 
   if ((await page.getByText("上滑查看全部选项 ↑", { exact: true }).count()) !== 0) {
     throw new Error(`第 ${roundNumber} 回合仍显示上滑提示`);
+  }
+
+  const previewStates = await choices.locator(".ms-fixed-choice__copy small").evaluateAll((elements) => (
+    elements.map((element) => ({
+      clientHeight: element.clientHeight,
+      clientWidth: element.clientWidth,
+      lineHeight: Number.parseFloat(getComputedStyle(element).lineHeight),
+      scrollHeight: element.scrollHeight,
+      scrollWidth: element.scrollWidth
+    }))
+  ));
+  if (previewStates.some((state) => state.clientHeight > state.lineHeight + 1
+    || state.scrollHeight > state.clientHeight + 1
+    || state.scrollWidth > state.clientWidth + 1)) {
+    throw new Error(`第 ${roundNumber} 回合选项说明没有完整保持单行：${JSON.stringify(previewStates)}`);
   }
 }
 
@@ -823,9 +868,9 @@ async function run() {
       try {
         await page.goto(baseURL, { waitUntil: "load" });
         await startFirstVisit(page);
-        await assertNoHorizontalOverflow(page, viewport.name);
+        await assertNoViewportOverflow(page, viewport.name);
         await playToResult(page);
-        await assertNoHorizontalOverflow(page, viewport.name);
+        await assertNoViewportOverflow(page, viewport.name);
         await checkXhsResult(page);
 
         if (runtimeErrors.length > 0) {

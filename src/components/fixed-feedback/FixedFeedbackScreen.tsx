@@ -7,7 +7,6 @@ import {
 } from "../../gameViewModels";
 import "../../styles/fixed-feedback.css";
 import { ChoiceIcon } from "../ChoiceIcon";
-import { ViewportAssist } from "../ViewportAssist";
 import type { ChoiceViewModel, StatViewModel } from "../visualTypes";
 import { SkinIcon, type SkinIconName } from "../skin/SkinIcon";
 
@@ -220,16 +219,6 @@ export function FixedFeedbackScreen({
         <span>{continueLabel}</span>
       </button>
 
-      <ViewportAssist actionBottom={853} className="ms-viewport-assist--feedback">
-        <button
-          aria-label={`${continueLabel}（固定操作）`}
-          className={`ms-viewport-assist__primary${continueEmphasized ? " is-emphasized" : ""}`}
-          onClick={onContinue}
-          type="button"
-        >
-          {continueLabel}
-        </button>
-      </ViewportAssist>
     </section>
   );
 }

@@ -94,4 +94,8 @@
   .ms-fixed-intro-overlay {
     padding-top: 282px;
   }
+
+  .ms-fixed-intro-card button {
+    min-height: 66px;
+  }
 }

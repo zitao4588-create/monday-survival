@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import "../../styles/fixed-screen.css";
 
 const STAGE_WIDTH = 426;
@@ -8,29 +8,32 @@ export interface FixedScreenStageProps {
   children: ReactNode;
 }
 
-function getWidthScale() {
-  if (typeof window === "undefined") {
-    return 1;
-  }
-
-  return Math.min(window.innerWidth / STAGE_WIDTH, 1);
+function getContainedScale(width: number, height: number) {
+  return Math.min(width / STAGE_WIDTH, height / STAGE_HEIGHT, 1);
 }
 
 export function FixedScreenStage({ children }: FixedScreenStageProps) {
-  const [scale, setScale] = useState(getWidthScale);
+  const pageRef = useRef<HTMLElement>(null);
+  const [scale, setScale] = useState(1);
 
-  useEffect(() => {
-    function syncScale() {
-      setScale(getWidthScale());
+  useLayoutEffect(() => {
+    const page = pageRef.current;
+    if (!page) {
+      return;
     }
 
+    const syncScale = () => {
+      setScale(getContainedScale(page.clientWidth, page.clientHeight));
+    };
+
+    const observer = new ResizeObserver(syncScale);
+    observer.observe(page);
     syncScale();
-    window.addEventListener("resize", syncScale);
-    return () => window.removeEventListener("resize", syncScale);
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <main className="ms-fixed-screen-page">
+    <main className="ms-fixed-screen-page" ref={pageRef}>
       <div
         className="ms-fixed-screen-viewport"
         style={{

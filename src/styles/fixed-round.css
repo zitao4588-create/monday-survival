@@ -5,12 +5,13 @@
 
 .ms-fixed-round-page {
   width: 100%;
-  min-width: 100vw;
-  min-height: 100dvh;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  overflow-x: hidden;
+  overflow: hidden;
   background: #17100b;
   color: #25221b;
   font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
@@ -374,7 +375,7 @@
   position: absolute;
   top: 0;
   left: 116px;
-  width: 210px;
+  width: 220px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -395,16 +396,16 @@
 
 .ms-fixed-choice__copy small {
   display: block;
-  max-width: 210px;
-  max-height: 40px;
+  max-width: 220px;
+  max-height: 20px;
   margin-top: 5px;
   overflow: hidden;
   color: #5a5143;
-  font-size: 13.5px;
+  font-size: 12px;
   font-weight: 500;
   line-height: 20px;
-  overflow-wrap: anywhere;
-  text-wrap: balance;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ms-fixed-tip {

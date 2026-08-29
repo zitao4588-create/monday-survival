@@ -151,16 +151,20 @@ async function stopServer(server) {
   await waitForServer(false);
 }
 
-async function assertNoHorizontalOverflow(page, viewportName) {
+async function assertNoViewportOverflow(page, viewportName) {
   const metrics = await page.evaluate(() => ({
+    bodyScrollHeight: document.body.scrollHeight,
     bodyScrollWidth: document.body.scrollWidth,
+    clientHeight: document.documentElement.clientHeight,
     clientWidth: document.documentElement.clientWidth,
+    docScrollHeight: document.documentElement.scrollHeight,
     docScrollWidth: document.documentElement.scrollWidth
   }));
-  const overflow = Math.max(metrics.bodyScrollWidth, metrics.docScrollWidth) - metrics.clientWidth;
+  const horizontalOverflow = Math.max(metrics.bodyScrollWidth, metrics.docScrollWidth) - metrics.clientWidth;
+  const verticalOverflow = Math.max(metrics.bodyScrollHeight, metrics.docScrollHeight) - metrics.clientHeight;
 
-  if (overflow > 1) {
-    throw new Error(`${viewportName} has horizontal overflow: ${JSON.stringify(metrics)}`);
+  if (horizontalOverflow > 1 || verticalOverflow > 1) {
+    throw new Error(`${viewportName} has viewport overflow: ${JSON.stringify(metrics)}`);
   }
 }
 
@@ -277,8 +281,9 @@ async function assertResultActions(page) {
   }
 }
 
-async function playToResult(page) {
+async function playToResult(page, viewportName) {
   for (let roundIndex = 0; roundIndex < resultPath.length; roundIndex += 1) {
+    await assertNoViewportOverflow(page, `${viewportName} 第 ${roundIndex + 1} 回合`);
     await assertPerformanceBar(page, "当前回合", expectedPerformanceAtRoundStart[roundIndex]);
     const icons = await page.locator(".ms-fixed-choice").evaluateAll((elements) => (
       elements.map((element) => element.getAttribute("data-fixed-choice-icon") ?? "")
@@ -288,12 +293,17 @@ async function playToResult(page) {
     }
     await page.locator(".ms-fixed-choice").nth(resultPath[roundIndex]).click();
     await page.getByLabel("选择反馈").waitFor();
+    await assertNoViewportOverflow(page, `${viewportName} 第 ${roundIndex + 1} 回合反馈`);
     await assertPerformanceBar(page, "选择反馈", expectedPerformanceAfterRound[roundIndex]);
     await assertFeedbackSettlement(page, roundIndex + 1);
     await page.getByLabel(roundIndex === resultPath.length - 1 ? "查看结果" : "继续", { exact: true }).click();
+    if (roundIndex < resultPath.length - 1) {
+      await page.getByLabel("当前回合").waitFor();
+    }
   }
 
   await page.getByLabel("结果分享卡").waitFor();
+  await assertNoViewportOverflow(page, `${viewportName} 结果页`);
   await page.getByText("今日结局：体面下班", { exact: true }).waitFor();
   const resultText = await page.getByLabel("结果分享卡").innerText();
   const keyChoice = await page.getByLabel("关键一手", { exact: true }).innerText();
@@ -404,6 +414,79 @@ async function checkResultImage(page) {
   }
 }
 
+async function checkFullArchive(browser) {
+  const context = await createTestContext(browser, {
+    deviceScaleFactor: 1,
+    hasTouch: true,
+    isMobile: true,
+    viewport: { width: 375, height: 667 }
+  });
+  const entries = Array.from({ length: 5 }, (_, index) => ({
+    date: `2026-08-${String(24 + index).padStart(2, "0")}`,
+    energy: 60 + index,
+    mood: 70 + index,
+    outcome: "体面下班",
+    persona: `测试人格${index + 1}`,
+    score: 50 + index,
+    weekKey: `2026-W${31 + index}`
+  }));
+
+  await context.addInitScript(({ historyEntries }) => {
+    try {
+      localStorage.setItem("monday-survival:history:v1", JSON.stringify({
+        entries: historyEntries,
+        version: 1
+      }));
+    } catch {
+      // The script can also run in an origin without storage before navigation.
+    }
+  }, { historyEntries: entries });
+
+  const page = await context.newPage();
+  try {
+    await page.goto(baseURL, { waitUntil: "load" });
+    await startFirstVisit(page);
+    await playToResult(page, "small-iphone 满档案");
+    await page.getByRole("button", { name: "打开周一档案，声音已关闭", exact: true }).click();
+
+    const panel = page.locator(".ms-fixed-result-archive-panel");
+    await panel.waitFor();
+    const state = await panel.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      const close = element.querySelector(".ms-fixed-result-archive-close")?.getBoundingClientRect();
+      return {
+        bottom: box.bottom,
+        clientHeight: element.clientHeight,
+        close: close ? { height: close.height, width: close.width } : null,
+        historyCount: element.querySelectorAll(".ms-fixed-result-history li").length,
+        left: box.left,
+        right: box.right,
+        scrollHeight: element.scrollHeight,
+        top: box.top,
+        viewportHeight: document.documentElement.clientHeight,
+        viewportWidth: document.documentElement.clientWidth
+      };
+    });
+
+    if (state.historyCount !== 5
+      || state.scrollHeight - state.clientHeight > 1
+      || state.top < -1
+      || state.left < -1
+      || state.bottom > state.viewportHeight + 1
+      || state.right > state.viewportWidth + 1
+      || !state.close
+      || state.close.width < 44
+      || state.close.height < 44) {
+      throw new Error(`满档案没有完整显示在 375x667 单屏内：${JSON.stringify(state)}`);
+    }
+
+    await assertNoViewportOverflow(page, "small-iphone 满档案");
+    console.log("Passed small-iphone full archive");
+  } finally {
+    await context.close();
+  }
+}
+
 async function run() {
   const server = await ensureServer();
   let browser;
@@ -440,11 +523,12 @@ async function run() {
         await page.reload({ waitUntil: "load" });
       }
       await startFirstVisit(page);
-      await assertNoHorizontalOverflow(page, viewport.name);
+      await assertNoViewportOverflow(page, viewport.name);
+
+      await playToResult(page, viewport.name);
+      await assertNoViewportOverflow(page, viewport.name);
 
       if (viewport.name === "target-stage") {
-        await playToResult(page);
-        await assertNoHorizontalOverflow(page, viewport.name);
         await checkResultImage(page);
       }
 
@@ -455,6 +539,8 @@ async function run() {
       await context.close();
       console.log(`Passed ${viewport.name}`);
     }
+
+    await checkFullArchive(browser);
   } finally {
     try {
       await browser?.close();

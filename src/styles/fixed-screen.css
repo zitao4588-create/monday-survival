@@ -5,12 +5,13 @@
 
 .ms-fixed-screen-page {
   width: 100%;
-  min-width: 100vw;
-  min-height: 100dvh;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  overflow-x: hidden;
+  overflow: hidden;
   background: #17100b;
   color: #25221b;
   font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;

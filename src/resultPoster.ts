@@ -4,6 +4,10 @@ import type { ResultPresentation } from "./resultPresentation";
 export const RESULT_POSTER_WIDTH = 853;
 export const RESULT_POSTER_HEIGHT = 1844;
 
+const POSTER_METRIC_CENTERS = [206, 428, 650] as const;
+const POSTER_METRIC_LABEL_Y = 1072;
+const POSTER_METRIC_VALUE_Y = 1120;
+
 function getTitleFontSize(title: string) {
   if (title.length >= 8) {
     return 84;
@@ -194,14 +198,14 @@ export async function createResultPosterDataUrl(backgroundSrc: string, data: Res
 
   context.fillStyle = "#3d4730";
   context.font = getFont(800, 32);
-  context.fillText("绩效", 211, 1162, 220);
-  context.fillText("能量", 434, 1162, 220);
-  context.fillText("心情", 650, 1162, 220);
+  context.fillText("绩效", POSTER_METRIC_CENTERS[0], POSTER_METRIC_LABEL_Y, 196);
+  context.fillText("能量", POSTER_METRIC_CENTERS[1], POSTER_METRIC_LABEL_Y, 196);
+  context.fillText("心情", POSTER_METRIC_CENTERS[2], POSTER_METRIC_LABEL_Y, 196);
 
   context.font = getFont(800, 90);
-  context.fillText(formatPerformance(data.score), 211, 1214, 220);
-  context.fillText(String(data.energy), 434, 1214, 220);
-  context.fillText(String(data.mood), 650, 1214, 220);
+  context.fillText(formatPerformance(data.score), POSTER_METRIC_CENTERS[0], POSTER_METRIC_VALUE_Y, 196);
+  context.fillText(String(data.energy), POSTER_METRIC_CENTERS[1], POSTER_METRIC_VALUE_Y, 196);
+  context.fillText(String(data.mood), POSTER_METRIC_CENTERS[2], POSTER_METRIC_VALUE_Y, 196);
 
   drawKeyChoice(context, data);
 
