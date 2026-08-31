@@ -445,7 +445,7 @@
     left: 21px;
     z-index: 0;
     width: 384px;
-    height: 454px;
+    height: 480px;
     border: 1px solid rgba(119, 99, 72, 0.24);
     background:
       radial-gradient(circle at 82% 14%, rgba(143, 104, 57, 0.08) 0 58px, transparent 60px),
@@ -464,28 +464,24 @@
   }
 
   .ms-fixed-choices {
-    top: 366px;
-    gap: 6px;
+    top: 392px;
+    gap: 10px;
   }
 
   .ms-fixed-choice {
-    min-height: 96px;
-    height: 96px;
+    min-height: 102px;
+    height: 102px;
   }
 
   .ms-fixed-choice__number {
-    top: 36px;
+    top: 39px;
   }
 
   .ms-fixed-choice__icon {
-    top: 20px;
+    top: 23px;
   }
 
   .ms-fixed-choice__copy {
     top: 0;
-  }
-
-  .ms-fixed-tip {
-    display: none;
   }
 }
